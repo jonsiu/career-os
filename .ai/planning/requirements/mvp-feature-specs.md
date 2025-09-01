@@ -15,7 +15,7 @@
 
 **Technical Implementation**:
 - Use `react-dropzone` for file uploads
-- PDF parsing with `pdf-parse` or similar
+- PDF parsing with `pdfjs-dist` (browser-compatible PDF.js)
 - DOCX parsing with `mammoth` or similar
 - Fallback to manual entry if parsing fails
 - **NEW**: Abstract file storage for vendor flexibility

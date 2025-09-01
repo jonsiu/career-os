@@ -15,8 +15,7 @@ npx create-next-app@latest . --typescript --tailwind --app --src-dir --import-al
 npm install @clerk/nextjs convex@latest
 npm install @radix-ui/react-slot @radix-ui/react-dialog @radix-ui/react-dropdown-menu
 npm install lucide-react class-variance-authority clsx tailwind-merge
-npm install react-dropzone pdf-parse mammoth
-npm install @types/pdf-parse
+npm install react-dropzone pdfjs-dist mammoth
 ```
 
 ### Step 2: Convex Setup + Vendor Abstractions (45 minutes)
@@ -272,7 +271,7 @@ cd career-os
 
 ### 2. **Install Dependencies** (5 minutes)
 ```bash
-npm install @clerk/nextjs convex @convex/react react-dropzone pdf-parse mammoth
+npm install @clerk/nextjs convex @convex/react react-dropzone pdfjs-dist mammoth
 ```
 
 ### 3. **Set Up Convex** (10 minutes)

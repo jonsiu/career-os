@@ -102,8 +102,8 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
     try {
       const pdfjsLib = await import('pdfjs-dist');
       
-      // Set worker source for PDF.js
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+      // Set worker source to use local worker file
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
       
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;

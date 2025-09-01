@@ -12,11 +12,11 @@ This guide provides the exact steps to start building CareerOS today, optimized 
 npx create-next-app@latest . --typescript --tailwind --app --src-dir --import-alias "@/*"
 
 # Install additional dependencies
-npm install @clerk/nextjs convex @convex/react
+npm install @clerk/nextjs convex@latest
 npm install @radix-ui/react-slot @radix-ui/react-dialog @radix-ui/react-dropdown-menu
 npm install lucide-react class-variance-authority clsx tailwind-merge
 npm install react-dropzone pdf-parse mammoth
-npm install @types/pdf-parse @types/mammoth
+npm install @types/pdf-parse
 ```
 
 ### Step 2: Convex Setup + Vendor Abstractions (45 minutes)

@@ -265,6 +265,7 @@ export default function ResumePage() {
           <ResumeBuilder
             userId={user.id}
             onResumeCreated={handleResumeCreated}
+            onResumeUpdated={handleResumeUpdated}
             initialData={editingResume || undefined}
           />
         </div>

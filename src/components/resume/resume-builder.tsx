@@ -32,6 +32,7 @@ import { useUser } from "@clerk/nextjs";
 interface ResumeBuilderProps {
   userId: string;
   onResumeCreated?: (resume: Resume) => void;
+  onResumeUpdated?: (resume: Resume) => void;
   initialData?: Partial<Resume>;
 }
 
@@ -92,7 +93,7 @@ const steps = [
   { id: 'preview', title: 'Preview', icon: Eye },
 ];
 
-export function ResumeBuilder({ userId, onResumeCreated, initialData }: ResumeBuilderProps) {
+export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initialData }: ResumeBuilderProps) {
   const { user } = useUser();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
@@ -404,7 +405,7 @@ export function ResumeBuilder({ userId, onResumeCreated, initialData }: ResumeBu
         // Update existing resume
         console.log('Updating existing resume:', resumeData);
         
-        if (onResumeCreated) {
+        if (onResumeUpdated) {
           const updatedResume: Resume = {
             ...initialData,
             title: formData.title,
@@ -412,7 +413,7 @@ export function ResumeBuilder({ userId, onResumeCreated, initialData }: ResumeBu
             updatedAt: new Date(),
             metadata: resumeData.metadata,
           };
-          onResumeCreated(updatedResume);
+          onResumeUpdated(updatedResume);
         }
       } else {
         // Create new resume

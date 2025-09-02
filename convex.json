@@ -1,0 +1,13 @@
+{
+  "functions": "convex",
+  "auth": {
+    "enabled": true,
+    "domain": "career-os.clerk.accounts.dev",
+    "providers": [
+      "clerk"
+    ]
+  },
+  "deployment": {
+    "type": "vercel"
+  }
+}

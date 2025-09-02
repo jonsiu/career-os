@@ -68,6 +68,7 @@ export interface AuthProvider {
 
 // Input types for database operations
 export interface CreateUserInput {
+  clerkUserId?: string; // Clerk user ID for authentication
   email: string;
   name: string;
   avatar?: string;

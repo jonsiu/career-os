@@ -3,6 +3,7 @@ import { v } from "convex/values";
 
 export default defineSchema({
   users: defineTable({
+    clerkUserId: v.string(), // Store Clerk's user ID
     email: v.string(),
     name: v.string(),
     avatar: v.optional(v.string()),
@@ -11,6 +12,7 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_email", ["email"])
+    .index("by_clerk_user_id", ["clerkUserId"]) // Index for Clerk user ID lookups
     .index("by_created_at", ["createdAt"]),
 
   resumes: defineTable({

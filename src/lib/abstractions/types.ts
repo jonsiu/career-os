@@ -35,6 +35,18 @@ export interface DatabaseProvider {
   getUserPlans(userId: string): Promise<Plan[]>;
   updatePlan(id: string, updates: Partial<Plan>): Promise<Plan>;
   deletePlan(id: string): Promise<void>;
+
+  // Skills operations
+  createSkill(skill: CreateSkillInput): Promise<Skill>;
+  getSkillById(id: string): Promise<Skill | null>;
+  getUserSkills(userId: string): Promise<Skill[]>;
+  getUserSkillsByCategory(userId: string, category: string): Promise<Skill[]>;
+  getUserSkillsByStatus(userId: string, status: Skill['status']): Promise<Skill[]>;
+  updateSkill(id: string, updates: Partial<Skill>): Promise<Skill>;
+  deleteSkill(id: string): Promise<void>;
+  updateSkillProgress(id: string, progress: number, timeSpent?: number, status?: Skill['status']): Promise<Skill>;
+  addSkillResource(id: string, resource: SkillResource): Promise<Skill>;
+  updateResourceCompletion(id: string, resourceIndex: number, completed: boolean): Promise<Skill>;
 }
 
 export interface FileStorageProvider {
@@ -238,4 +250,47 @@ export interface Milestone {
   status: 'pending' | 'in-progress' | 'completed';
   dependencies: string[];
   effort: number; // hours
+}
+
+export interface SkillResource {
+  name: string;
+  type: 'course' | 'book' | 'video' | 'project' | 'mentorship';
+  url?: string;
+  estimatedHours: number;
+  completed: boolean;
+}
+
+export interface Skill {
+  id: string;
+  userId: string;
+  name: string;
+  category: string;
+  currentLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  targetLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  progress: number; // 0-100
+  timeSpent: number; // hours
+  estimatedTimeToTarget: number; // hours
+  priority: 'low' | 'medium' | 'high';
+  status: 'learning' | 'practicing' | 'mastered' | 'not-started';
+  resources: SkillResource[];
+  notes?: string;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateSkillInput {
+  userId: string;
+  name: string;
+  category: string;
+  currentLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  targetLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  progress: number;
+  timeSpent: number;
+  estimatedTimeToTarget: number;
+  priority: 'low' | 'medium' | 'high';
+  status: 'learning' | 'practicing' | 'mastered' | 'not-started';
+  resources: SkillResource[];
+  notes?: string;
+  metadata?: Record<string, any>;
 }

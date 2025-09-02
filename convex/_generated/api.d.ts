@@ -18,6 +18,7 @@ import type * as files from "../files.js";
 import type * as jobs from "../jobs.js";
 import type * as plans from "../plans.js";
 import type * as resumes from "../resumes.js";
+import type * as skills from "../skills.js";
 import type * as users from "../users.js";
 
 /**
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   jobs: typeof jobs;
   plans: typeof plans;
   resumes: typeof resumes;
+  skills: typeof skills;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

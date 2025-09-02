@@ -28,28 +28,7 @@ import {
   Filter
 } from "lucide-react";
 import { database } from "@/lib/abstractions";
-
-interface Skill {
-  id: string;
-  name: string;
-  category: string;
-  currentLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
-  targetLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
-  progress: number; // 0-100
-  timeSpent: number; // hours
-  estimatedTimeToTarget: number; // hours
-  priority: 'low' | 'medium' | 'high';
-  status: 'learning' | 'practicing' | 'mastered' | 'not-started';
-  resources: Array<{
-    name: string;
-    type: 'course' | 'book' | 'video' | 'project' | 'mentorship';
-    url?: string;
-    estimatedHours: number;
-    completed: boolean;
-  }>;
-  notes: string;
-  lastUpdated: Date;
-}
+import { Skill, SkillResource } from "@/lib/abstractions/types";
 
 interface SkillsTrackingProps {
   onSkillUpdated?: (skill: Skill) => void;
@@ -89,69 +68,20 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
   const loadUserSkills = async () => {
     try {
       setIsLoading(true);
-      // TODO: Replace with actual database call when schema is ready
-      // const userSkills = await database.getUserSkills(user!.id);
-      
-      // Mock data for now
-      const mockSkills: Skill[] = [
-        {
-          id: '1',
-          name: 'React',
-          category: 'Frameworks & Libraries',
-          currentLevel: 'intermediate',
-          targetLevel: 'advanced',
-          progress: 65,
-          timeSpent: 120,
-          estimatedTimeToTarget: 80,
-          priority: 'high',
-          status: 'learning',
-          resources: [
-            {
-              name: 'React Advanced Patterns',
-              type: 'course',
-              url: 'https://example.com/react-advanced',
-              estimatedHours: 40,
-              completed: false
-            }
-          ],
-          notes: 'Focus on hooks and performance optimization',
-          lastUpdated: new Date()
-        },
-        {
-          id: '2',
-          name: 'Leadership',
-          category: 'Management',
-          currentLevel: 'beginner',
-          targetLevel: 'intermediate',
-          progress: 25,
-          timeSpent: 20,
-          estimatedTimeToTarget: 60,
-          priority: 'medium',
-          status: 'learning',
-          resources: [
-            {
-              name: 'Team Management Fundamentals',
-              type: 'book',
-              estimatedHours: 30,
-              completed: false
-            }
-          ],
-          notes: 'Start with small team projects',
-          lastUpdated: new Date()
-        }
-      ];
-      
-      setSkills(mockSkills);
+      const userSkills = await database.getUserSkills(user!.id);
+      setSkills(userSkills);
     } catch (error) {
       console.error('Failed to load skills:', error);
+      // If database fails, start with empty skills array
+      setSkills([]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const addSkill = () => {
-    const newSkill: Skill = {
-      id: Date.now().toString(),
+    const newSkill: Omit<Skill, 'id' | 'createdAt' | 'updatedAt'> = {
+      userId: user!.id,
       name: '',
       category: 'Programming Languages',
       currentLevel: 'beginner',
@@ -162,10 +92,9 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
       priority: 'medium',
       status: 'not-started',
       resources: [],
-      notes: '',
-      lastUpdated: new Date()
+      notes: ''
     };
-    setEditingSkill(newSkill);
+    setEditingSkill(newSkill as any);
     setIsAddingSkill(true);
   };
 
@@ -177,15 +106,44 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
 
     try {
       if (isAddingSkill) {
-        // Add new skill
-        setSkills(prev => [editingSkill, ...prev]);
-        if (onSkillUpdated) onSkillUpdated(editingSkill);
+        // Create new skill in database
+        const newSkill = await database.createSkill({
+          userId: user!.id,
+          name: editingSkill.name,
+          category: editingSkill.category,
+          currentLevel: editingSkill.currentLevel,
+          targetLevel: editingSkill.targetLevel,
+          progress: editingSkill.progress,
+          timeSpent: editingSkill.timeSpent,
+          estimatedTimeToTarget: editingSkill.estimatedTimeToTarget,
+          priority: editingSkill.priority,
+          status: editingSkill.status,
+          resources: editingSkill.resources,
+          notes: editingSkill.notes,
+        });
+        
+        setSkills(prev => [newSkill, ...prev]);
+        if (onSkillUpdated) onSkillUpdated(newSkill);
       } else {
-        // Update existing skill
+        // Update existing skill in database
+        const updatedSkill = await database.updateSkill(editingSkill.id, {
+          name: editingSkill.name,
+          category: editingSkill.category,
+          currentLevel: editingSkill.currentLevel,
+          targetLevel: editingSkill.targetLevel,
+          progress: editingSkill.progress,
+          timeSpent: editingSkill.timeSpent,
+          estimatedTimeToTarget: editingSkill.estimatedTimeToTarget,
+          priority: editingSkill.priority,
+          status: editingSkill.status,
+          resources: editingSkill.resources,
+          notes: editingSkill.notes,
+        });
+        
         setSkills(prev => prev.map(skill => 
-          skill.id === editingSkill.id ? editingSkill : skill
+          skill.id === editingSkill.id ? updatedSkill : skill
         ));
-        if (onSkillUpdated) onSkillUpdated(editingSkill);
+        if (onSkillUpdated) onSkillUpdated(updatedSkill);
       }
 
       setEditingSkill(null);
@@ -196,12 +154,15 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
     }
   };
 
-  const updateSkillProgress = (skillId: string, newProgress: number) => {
-    setSkills(prev => prev.map(skill => 
-      skill.id === skillId 
-        ? { ...skill, progress: Math.min(100, Math.max(0, newProgress)), lastUpdated: new Date() }
-        : skill
-    ));
+  const updateSkillProgress = async (skillId: string, newProgress: number) => {
+    try {
+      const updatedSkill = await database.updateSkillProgress(skillId, newProgress);
+      setSkills(prev => prev.map(skill => 
+        skill.id === skillId ? updatedSkill : skill
+      ));
+    } catch (error) {
+      console.error('Failed to update skill progress:', error);
+    }
   };
 
   const addResource = (skillId: string) => {

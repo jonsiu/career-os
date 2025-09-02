@@ -90,6 +90,48 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_created_at", ["createdAt"]),
 
+  skills: defineTable({
+    userId: v.id("users"),
+    name: v.string(),
+    category: v.string(),
+    currentLevel: v.union(
+      v.literal("beginner"),
+      v.literal("intermediate"),
+      v.literal("advanced"),
+      v.literal("expert")
+    ),
+    targetLevel: v.union(
+      v.literal("beginner"),
+      v.literal("intermediate"),
+      v.literal("advanced"),
+      v.literal("expert")
+    ),
+    progress: v.number(), // 0-100
+    timeSpent: v.number(), // hours
+    estimatedTimeToTarget: v.number(), // hours
+    priority: v.union(
+      v.literal("low"),
+      v.literal("medium"),
+      v.literal("high")
+    ),
+    status: v.union(
+      v.literal("learning"),
+      v.literal("practicing"),
+      v.literal("mastered"),
+      v.literal("not-started")
+    ),
+    resources: v.array(v.any()), // Resource objects
+    notes: v.optional(v.string()),
+    metadata: v.optional(v.any()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user_id", ["userId"])
+    .index("by_category", ["category"])
+    .index("by_status", ["status"])
+    .index("by_priority", ["priority"])
+    .index("by_created_at", ["createdAt"]),
+
   files: defineTable({
     userId: v.id("users"),
     name: v.string(),

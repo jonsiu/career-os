@@ -1,93 +1,41 @@
-import { DatabaseProvider, FileStorageProvider, AnalysisProvider, RealTimeProvider, AuthProvider } from './types';
+import { DatabaseProvider, FileStorageProvider, AnalysisProvider } from './types';
 import { ConvexDatabaseProvider } from './providers/convex-database';
 import { ConvexFileStorageProvider } from './providers/convex-file-storage';
 import { ConvexAnalysisProvider } from './providers/convex-analysis';
-import { ConvexRealTimeProvider } from './providers/convex-real-time';
-import { ClerkAuthProvider } from './providers/clerk-auth';
+import { OpenAIAnalysisProvider } from './providers/openai-analysis';
 
-// Service factory that provides vendor-abstracted implementations
+// Service factory for creating provider instances
 export class ServiceFactory {
   private static instance: ServiceFactory;
-  private databaseProvider: DatabaseProvider;
-  private fileStorageProvider: FileStorageProvider;
-  private analysisProvider: AnalysisProvider;
-  private realTimeProvider: RealTimeProvider;
-  private authProvider: AuthProvider;
-
-  private constructor() {
-    // Initialize with Convex providers by default
-    this.databaseProvider = new ConvexDatabaseProvider();
-    this.fileStorageProvider = new ConvexFileStorageProvider();
-    this.analysisProvider = new ConvexAnalysisProvider();
-    this.realTimeProvider = new ConvexRealTimeProvider();
-    this.authProvider = new ClerkAuthProvider();
-  }
-
-  public static getInstance(): ServiceFactory {
+  
+  private constructor() {}
+  
+  static getInstance(): ServiceFactory {
     if (!ServiceFactory.instance) {
       ServiceFactory.instance = new ServiceFactory();
     }
     return ServiceFactory.instance;
   }
 
-  // Getter methods for each service
-  public getDatabase(): DatabaseProvider {
-    return this.databaseProvider;
+  // Create database provider
+  createDatabaseProvider(): DatabaseProvider {
+    return new ConvexDatabaseProvider();
   }
 
-  public getFileStorage(): FileStorageProvider {
-    return this.fileStorageProvider;
+  // Create file storage provider
+  createFileStorageProvider(): FileStorageProvider {
+    return new ConvexFileStorageProvider();
   }
 
-  public getAnalysis(): AnalysisProvider {
-    return this.analysisProvider;
-  }
-
-  public getRealTime(): RealTimeProvider {
-    return this.realTimeProvider;
-  }
-
-  public getAuth(): AuthProvider {
-    return this.authProvider;
-  }
-
-  // Methods to switch providers (useful for testing or switching services)
-  public setDatabaseProvider(provider: DatabaseProvider): void {
-    this.databaseProvider = provider;
-  }
-
-  public setFileStorageProvider(provider: FileStorageProvider): void {
-    this.fileStorageProvider = provider;
-  }
-
-  public setAnalysisProvider(provider: AnalysisProvider): void {
-    this.analysisProvider = provider;
-  }
-
-  public setRealTimeProvider(provider: RealTimeProvider): void {
-    this.realTimeProvider = provider;
-  }
-
-  public setAuthProvider(provider: AuthProvider): void {
-    this.authProvider = provider;
-  }
-
-  // Reset to default providers
-  public resetToDefaults(): void {
-    this.databaseProvider = new ConvexDatabaseProvider();
-    this.fileStorageProvider = new ConvexFileStorageProvider();
-    this.analysisProvider = new ConvexAnalysisProvider();
-    this.realTimeProvider = new ConvexRealTimeProvider();
-    this.authProvider = new ClerkAuthProvider();
+  // Create analysis provider - use OpenAI for better accuracy
+  createAnalysisProvider(): AnalysisProvider {
+    // Check if OpenAI API key is available
+    if (process.env.OPENAI_API_KEY) {
+      console.log('Using OpenAI GPT-4 for resume parsing and analysis');
+      return new OpenAIAnalysisProvider();
+    } else {
+      console.log('OpenAI API key not found, falling back to rule-based analysis');
+      return new ConvexAnalysisProvider();
+    }
   }
 }
-
-// Export singleton instance
-export const serviceFactory = ServiceFactory.getInstance();
-
-// Convenience exports for direct access
-export const database = serviceFactory.getDatabase();
-export const fileStorage = serviceFactory.getFileStorage();
-export const analysis = serviceFactory.getAnalysis();
-export const realTime = serviceFactory.getRealTime();
-export const auth = serviceFactory.getAuth();

@@ -1,12 +1,13 @@
-// Export all abstraction types and interfaces
+import { ServiceFactory } from './service-factory';
+
+// Create service factory instance
+const serviceFactory = ServiceFactory.getInstance();
+
+// Export service instances
+export const database = serviceFactory.createDatabaseProvider();
+export const fileStorage = serviceFactory.createFileStorageProvider();
+export const analysis = serviceFactory.createAnalysisProvider();
+
+// Export types
 export * from './types';
-
-// Export the service factory and convenience exports
-export { ServiceFactory, serviceFactory, database, fileStorage, analysis, realTime, auth } from './service-factory';
-
-// Export provider implementations
-export { ConvexDatabaseProvider } from './providers/convex-database';
-export { ConvexFileStorageProvider } from './providers/convex-file-storage';
-export { ConvexAnalysisProvider } from './providers/convex-analysis';
-export { ConvexRealTimeProvider } from './providers/convex-real-time';
-export { ClerkAuthProvider } from './providers/clerk-auth';
+export * from './service-factory';

@@ -58,8 +58,50 @@ export interface FileStorageProvider {
 }
 
 export interface AnalysisProvider {
-  analyzeResume(resume: Resume, job?: Job): Promise<AnalysisResult>;
-  analyzeCareerTransition(user: User, targetRole: string): Promise<CareerAnalysis>;
+  analyzeResume(resume: Resume, job: Job): Promise<AnalysisResult>;
+  analyzeCareerTransition(currentRole: string, targetRole: string, experience: string): Promise<CareerAnalysis>;
+  parseResumeContent(content: string): Promise<{
+    personalInfo: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      location: string;
+      summary: string;
+    };
+    experience: Array<{
+      title: string;
+      company: string;
+      location: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+      description: string;
+    }>;
+    education: Array<{
+      degree: string;
+      institution: string;
+      location: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+      gpa?: string;
+      description: string;
+    }>;
+    skills: Array<{
+      name: string;
+      level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+    }>;
+    projects: Array<{
+      name: string;
+      description: string;
+      technologies: string[];
+      url?: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+    }>;
+  }>;
   generateSkillsGap(resume: Resume, job: Job): Promise<SkillsGap>;
   provideRecommendations(analysis: AnalysisResult): Promise<Recommendation[]>;
 }

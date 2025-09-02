@@ -607,7 +607,7 @@ export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: Development
       )}
 
       {/* No Plans State */}
-      {!isLoading && plans.length === 0 && !isEditing && (
+      {isLoaded && plans.length === 0 && !isEditing && (
         <Card className="border-2 border-dashed border-gray-300 bg-gray-50">
           <CardContent className="text-center py-12">
             <Target className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -615,7 +615,7 @@ export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: Development
             <p className="text-gray-600 mb-4">
               Create your first development roadmap to start tracking your career progress.
             </p>
-            <Button onClick={() => setIsEditing(true)}>
+            <Button onClick={startNewPlan}>
               <Plus className="h-4 w-4 mr-2" />
               Create First Plan
             </Button>
@@ -624,7 +624,7 @@ export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: Development
       )}
 
       {/* Start Editing State */}
-      {!isLoading && plans.length > 0 && !activePlan && !isEditing && (
+      {isLoaded && plans.length > 0 && !activePlan && !isEditing && (
         <Card className="border-2 border-dashed border-gray-300 bg-gray-50">
           <CardContent className="text-center py-12">
             <Target className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -632,7 +632,7 @@ export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: Development
             <p className="text-gray-600 mb-4">
               Select a plan to view or create a new one to get started.
             </p>
-            <Button onClick={() => setIsEditing(true)}>
+            <Button onClick={startNewPlan}>
               <Plus className="h-4 w-4 mr-2" />
               Create New Plan
             </Button>

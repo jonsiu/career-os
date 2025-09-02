@@ -39,10 +39,6 @@ export default function PlanPage() {
     setLastUpdatedPlan(plan);
   };
 
-  const handleStartPlanning = () => {
-    setActiveTab("roadmap");
-  };
-
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-64">
@@ -137,6 +133,7 @@ export default function PlanPage() {
 
         <TabsContent value="roadmap" className="mt-6">
           <DevelopmentRoadmap 
+            plans={userPlans}
             onPlanCreated={handlePlanCreated}
             onPlanUpdated={handlePlanUpdated}
           />
@@ -176,55 +173,6 @@ export default function PlanPage() {
                   <Badge variant="secondary">{lastUpdatedPlan.timeline} months</Badge>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Getting Started Guide - Only show when no plans exist */}
-      {userPlans.length === 0 && (
-        <Card className="border-2 border-dashed border-gray-300 bg-gray-50">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-              <Target className="h-6 w-6 text-blue-600" />
-            </div>
-            <CardTitle className="text-xl">Ready to Start Planning?</CardTitle>
-            <CardDescription>
-              Create your first development roadmap to begin your career journey
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
-              <div className="text-center p-4 bg-white rounded-lg">
-                <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                  1
-                </div>
-                <h4 className="font-medium text-gray-900 mb-1">Set Goals</h4>
-                <p className="text-sm text-gray-600">Define your career objectives and timeline</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg">
-                <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                  2
-                </div>
-                <h4 className="font-medium text-gray-900 mb-1">Create Milestones</h4>
-                <p className="text-sm text-gray-600">Break down your goals into actionable steps</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg">
-                <div className="w-8 h-8 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                  3
-                </div>
-                <h4 className="font-medium text-gray-900 mb-1">Track Progress</h4>
-                <p className="text-sm text-gray-600">Monitor your development and celebrate wins</p>
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <button
-                onClick={handleStartPlanning}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
-              >
-                <Target className="h-5 w-5" />
-                Start Planning
-              </button>
             </div>
           </CardContent>
         </Card>

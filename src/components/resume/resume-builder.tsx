@@ -121,62 +121,67 @@ export function ResumeBuilder({ userId, onResumeCreated, initialData }: ResumeBu
       if (parsed.personalInfo) {
         return parsed;
       }
-    } catch {
+    } catch (jsonError) {
       // If not JSON, it's uploaded text content - parse it
-      const lines = content.split('\n').map(line => line.trim()).filter(line => line);
-      
-      const parsed: ResumeFormData = {
-        title: initialData?.title || 'My Professional Resume',
-        personalInfo: {
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          location: '',
-          summary: '',
-        },
-        experience: [],
-        education: [],
-        skills: [],
-        projects: [],
-      };
+      try {
+        const lines = content.split('\n').map(line => line.trim()).filter(line => line);
+        
+        const parsed: ResumeFormData = {
+          title: initialData?.title || 'My Professional Resume',
+          personalInfo: {
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            location: '',
+            summary: '',
+          },
+          experience: [],
+          education: [],
+          skills: [],
+          projects: [],
+        };
 
-      // Extract email (common pattern)
-      const emailMatch = content.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/);
-      if (emailMatch) {
-        parsed.personalInfo.email = emailMatch[0];
-      }
+        // Extract email (common pattern)
+        const emailMatch = content.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/);
+        if (emailMatch) {
+          parsed.personalInfo.email = emailMatch[0];
+        }
 
-      // Extract phone (common patterns)
-      const phoneMatch = content.match(/(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
-      if (phoneMatch) {
-        parsed.personalInfo.phone = phoneMatch[0];
-      }
+        // Extract phone (common patterns)
+        const phoneMatch = content.match(/(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+        if (phoneMatch) {
+          parsed.personalInfo.phone = phoneMatch[0];
+        }
 
-      // Try to extract name from first few lines
-      const firstLines = lines.slice(0, 5);
-      for (const line of firstLines) {
-        if (line.length > 3 && line.length < 50 && !line.includes('@') && !line.includes('http')) {
-          const nameParts = line.split(/\s+/);
-          if (nameParts.length >= 2) {
-            parsed.personalInfo.firstName = nameParts[0];
-            parsed.personalInfo.lastName = nameParts.slice(1).join(' ');
-            break;
+        // Try to extract name from first few lines
+        const firstLines = lines.slice(0, 5);
+        for (const line of firstLines) {
+          if (line.length > 3 && line.length < 50 && !line.includes('@') && !line.includes('http')) {
+            const nameParts = line.split(/\s+/);
+            if (nameParts.length >= 2) {
+              parsed.personalInfo.firstName = nameParts[0];
+              parsed.personalInfo.lastName = nameParts.slice(1).join(' ');
+              break;
+            }
           }
         }
-      }
 
-      // Extract summary from longer text blocks
-      const summaryLines = lines.filter(line => line.length > 50);
-      if (summaryLines.length > 0) {
-        parsed.personalInfo.summary = summaryLines[0].substring(0, 200);
-      }
+        // Extract summary from longer text blocks
+        const summaryLines = lines.filter(line => line.length > 50);
+        if (summaryLines.length > 0) {
+          parsed.personalInfo.summary = summaryLines[0].substring(0, 200);
+        }
 
-      return parsed;
-    } catch (error) {
-      console.error('Failed to parse resume content:', error);
-      return null;
+        return parsed;
+      } catch (textError) {
+        console.error('Failed to parse resume text content:', textError);
+        return null;
+      }
     }
+    
+    // If we get here, JSON parsing succeeded but no personalInfo
+    return null;
   };
 
   // Initialize form data when initialData changes

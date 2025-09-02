@@ -59,7 +59,7 @@ export interface FileStorageProvider {
 
 export interface AnalysisProvider {
   analyzeResume(resume: Resume, job: Job): Promise<AnalysisResult>;
-  analyzeCareerTransition(currentRole: string, targetRole: string, experience: string): Promise<CareerAnalysis>;
+  analyzeCareerTransition(currentRole: string, targetRole: string, experience?: string): Promise<CareerAnalysis>;
   parseResumeContent(content: string): Promise<{
     personalInfo: {
       firstName: string;

@@ -89,9 +89,8 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
     };
   }
 
-  async analyzeCareerTransition(user: User, targetRole: string): Promise<CareerAnalysis> {
-    const currentRole = user.metadata?.currentRole || 'Software Engineer';
-    const yearsExperience = user.metadata?.yearsExperience || 3;
+  async analyzeCareerTransition(currentRole: string, targetRole: string, experience?: string): Promise<CareerAnalysis> {
+    const yearsExperience = experience ? this.extractYearsExperience(experience) : 3;
     
     // Define transition paths for common roles
     const transitionPaths: Record<string, string[]> = {

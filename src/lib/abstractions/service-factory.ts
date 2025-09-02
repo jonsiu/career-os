@@ -30,11 +30,15 @@ export class ServiceFactory {
   // Create analysis provider - use OpenAI for better accuracy
   createAnalysisProvider(): AnalysisProvider {
     // Check if OpenAI API key is available
+    console.log('🔍 ServiceFactory: Checking for OpenAI API key...');
+    console.log('🔍 ServiceFactory: OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
+    console.log('🔍 ServiceFactory: OPENAI_API_KEY length:', process.env.OPENAI_API_KEY?.length || 0);
+    
     if (process.env.OPENAI_API_KEY) {
-      console.log('Using OpenAI GPT-4 for resume parsing and analysis');
+      console.log('✅ ServiceFactory: Using OpenAI GPT-4 for resume parsing and analysis');
       return new OpenAIAnalysisProvider();
     } else {
-      console.log('OpenAI API key not found, falling back to rule-based analysis');
+      console.log('⚠️ ServiceFactory: OpenAI API key not found, falling back to rule-based analysis');
       return new ConvexAnalysisProvider();
     }
   }

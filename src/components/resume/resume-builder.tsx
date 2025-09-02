@@ -389,7 +389,7 @@ export function ResumeBuilder({ userId, onResumeCreated, initialData }: ResumeBu
     try {
       setIsSaving(true);
       
-      const resume = {
+      const resumeData = {
         userId,
         title: formData.title,
         content: JSON.stringify(formData),
@@ -400,21 +400,36 @@ export function ResumeBuilder({ userId, onResumeCreated, initialData }: ResumeBu
         }
       };
 
-      // TODO: Implement actual save
-      console.log('Saving resume:', resume);
-      
-      if (onResumeCreated) {
-        // For now, create a mock resume object
-        const mockResume: Resume = {
-          id: `resume_${Date.now()}`,
-          userId,
-          title: formData.title,
-          content: JSON.stringify(formData),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          metadata: resume.metadata,
-        };
-        onResumeCreated(mockResume);
+      if (initialData?.id) {
+        // Update existing resume
+        console.log('Updating existing resume:', resumeData);
+        
+        if (onResumeCreated) {
+          const updatedResume: Resume = {
+            ...initialData,
+            title: formData.title,
+            content: JSON.stringify(formData),
+            updatedAt: new Date(),
+            metadata: resumeData.metadata,
+          };
+          onResumeCreated(updatedResume);
+        }
+      } else {
+        // Create new resume
+        console.log('Creating new resume:', resumeData);
+        
+        if (onResumeCreated) {
+          const newResume: Resume = {
+            id: `resume_${Date.now()}`,
+            userId,
+            title: formData.title,
+            content: JSON.stringify(formData),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            metadata: resumeData.metadata,
+          };
+          onResumeCreated(newResume);
+        }
       }
     } catch (error) {
       console.error('Failed to save resume:', error);

@@ -138,6 +138,270 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
     return analysis.recommendations;
   }
 
+  // AI-powered resume parsing and structuring
+  async parseResumeContent(content: string): Promise<{
+    personalInfo: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      location: string;
+      summary: string;
+    };
+    experience: Array<{
+      title: string;
+      company: string;
+      location: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+      description: string;
+    }>;
+    education: Array<{
+      degree: string;
+      institution: string;
+      location: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+      gpa?: string;
+      description: string;
+    }>;
+    skills: Array<{
+      name: string;
+      level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+    }>;
+    projects: Array<{
+      name: string;
+      description: string;
+      technologies: string[];
+      url?: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+    }>;
+  }> {
+    try {
+      // For now, use intelligent rule-based parsing
+      // In production, this would call OpenAI GPT-4 or Claude for parsing
+      
+      const lines = content.split('\n').map(line => line.trim()).filter(line => line);
+      
+      const result = {
+        personalInfo: {
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          location: '',
+          summary: '',
+        },
+        experience: [],
+        education: [],
+        skills: [],
+        projects: [],
+      };
+
+      // Extract email
+      const emailMatch = content.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/);
+      if (emailMatch) {
+        result.personalInfo.email = emailMatch[0];
+      }
+
+      // Extract phone
+      const phoneMatch = content.match(/(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+      if (phoneMatch) {
+        result.personalInfo.phone = phoneMatch[0];
+      }
+
+      // Intelligent section detection
+      let currentSection = '';
+      let currentExperience: {
+        title: string;
+        company: string;
+        location: string;
+        startDate: string;
+        endDate: string;
+        current: boolean;
+        description: string;
+      } | null = null;
+      let currentEducation: {
+        degree: string;
+        institution: string;
+        location: string;
+        startDate: string;
+        endDate: string;
+        current: boolean;
+        gpa: string;
+        description: string;
+      } | null = null;
+      let currentProject: {
+        name: string;
+        description: string;
+        technologies: string[];
+        url: string;
+        startDate: string;
+        endDate: string;
+        current: boolean;
+      } | null = null;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const lowerLine = line.toLowerCase();
+
+        // Detect sections
+        if (lowerLine.includes('experience') || lowerLine.includes('work history') || lowerLine.includes('employment')) {
+          currentSection = 'experience';
+          continue;
+        } else if (lowerLine.includes('education') || lowerLine.includes('academic') || lowerLine.includes('degree')) {
+          currentSection = 'education';
+          continue;
+        } else if (lowerLine.includes('skills') || lowerLine.includes('competencies') || lowerLine.includes('technologies')) {
+          currentSection = 'skills';
+          continue;
+        } else if (lowerLine.includes('projects') || lowerLine.includes('portfolio') || lowerLine.includes('achievements')) {
+          currentSection = 'projects';
+          continue;
+        } else if (lowerLine.includes('summary') || lowerLine.includes('objective') || lowerLine.includes('profile')) {
+          currentSection = 'summary';
+          continue;
+        }
+
+        // Parse based on current section
+        switch (currentSection) {
+          case 'experience':
+            // Look for job title patterns (usually in caps or followed by company)
+            if (line.length > 3 && line.length < 100 && !line.includes('@') && !line.includes('http')) {
+              // Check if this looks like a job title + company
+              if (line.includes(' at ') || line.includes(' - ') || line.includes(' | ')) {
+                if (currentExperience) {
+                  result.experience.push(currentExperience);
+                }
+                
+                const parts = line.split(/ at | - | \| /);
+                currentExperience = {
+                  title: parts[0].trim(),
+                  company: parts[1]?.trim() || '',
+                  location: '',
+                  startDate: '',
+                  endDate: '',
+                  current: false,
+                  description: ''
+                };
+              } else if (currentExperience && line.length > 20) {
+                // This might be a description line
+                currentExperience.description += (currentExperience.description ? ' ' : '') + line;
+              }
+            }
+            break;
+
+          case 'education':
+            // Look for degree + institution patterns
+            if (line.length > 5 && line.length < 150 && !line.includes('@')) {
+              if (currentEducation) {
+                result.education.push(currentEducation);
+              }
+              
+              // Common patterns: "Bachelor of Science in Computer Science - University of California"
+              const eduParts = line.split(/ - | at | \| /);
+              currentEducation = {
+                degree: eduParts[0]?.trim() || '',
+                institution: eduParts[1]?.trim() || '',
+                location: '',
+                startDate: '',
+                endDate: '',
+                current: false,
+                gpa: '',
+                description: ''
+              };
+            }
+            break;
+
+          case 'skills':
+            // Extract skills (usually comma-separated or bullet points)
+            if (line.includes(',') || line.includes('•') || line.includes('-')) {
+              const skillItems = line.split(/[,•-]/).map(s => s.trim()).filter(s => s.length > 1);
+              skillItems.forEach(skill => {
+                if (skill.length > 2 && skill.length < 50) {
+                  result.skills.push({
+                    name: skill,
+                    level: 'intermediate' // Default level, could be enhanced with AI
+                  });
+                }
+              });
+            } else if (line.length > 2 && line.length < 50 && !line.includes('@')) {
+              // Single skill on a line
+              result.skills.push({
+                name: line,
+                level: 'intermediate'
+              });
+            }
+            break;
+
+          case 'summary':
+            if (line.length > 20 && !result.personalInfo.summary) {
+              result.personalInfo.summary = line.substring(0, 300);
+            }
+            break;
+        }
+      }
+
+      // Add any remaining items
+      if (currentExperience) {
+        result.experience.push(currentExperience);
+      }
+      if (currentEducation) {
+        result.education.push(currentEducation);
+      }
+
+      // Try to extract name from first few lines if not found
+      if (!result.personalInfo.firstName) {
+        const firstLines = lines.slice(0, 10);
+        for (const line of firstLines) {
+          if (line.length > 3 && line.length < 50 && !line.includes('@') && !line.includes('http')) {
+            const nameParts = line.split(/\s+/);
+            if (nameParts.length >= 2 && nameParts.length <= 4) {
+              result.personalInfo.firstName = nameParts[0];
+              result.personalInfo.lastName = nameParts.slice(1).join(' ');
+              break;
+            }
+          }
+        }
+      }
+
+      // Try to extract location from lines containing city/state patterns
+      if (!result.personalInfo.location) {
+        const locationPattern = /([A-Z][a-z]+(?:[\s,]+[A-Z][a-z]+)*),\s*([A-Z]{2})/;
+        for (const line of lines) {
+          const match = line.match(locationPattern);
+          if (match) {
+            result.personalInfo.location = match[0];
+            break;
+          }
+        }
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Error parsing resume content:', error);
+      // Return basic structure if parsing fails
+      return {
+        personalInfo: {
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          location: '',
+          summary: '',
+        },
+        experience: [],
+        education: [],
+        skills: [],
+        projects: [],
+      };
+    }
+  }
+
   private assessExperienceLevel(resumeContent: string): 'junior' | 'mid' | 'senior' | 'lead' | 'executive' {
     const content = resumeContent.toLowerCase();
     

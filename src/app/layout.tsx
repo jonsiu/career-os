@@ -2,11 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { ConvexProviderWithClerk } from "@/lib/convex-provider";
-import { ConvexReactClient } from "convex/react";
-import { Toaster } from "@/components/ui/toaster";
-
-const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+import { ClientProviders } from "@/components/providers/client-providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,14 +18,13 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <ConvexProviderWithClerk convex={convex}>
+      <ClientProviders>
         <html lang="en">
           <body className={inter.className}>
             {children}
-            <Toaster />
           </body>
         </html>
-      </ConvexProviderWithClerk>
+      </ClientProviders>
     </ClerkProvider>
   );
 }

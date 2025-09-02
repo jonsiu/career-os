@@ -27,9 +27,11 @@ interface ResumeListProps {
   resumes: Resume[];
   onResumeDeleted: (resumeId: string) => void;
   onResumeUpdated: (resume: Resume) => void;
+  onResumeView?: (resume: Resume) => void;
+  onResumeEdit?: (resume: Resume) => void;
 }
 
-export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated }: ResumeListProps) {
+export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResumeView, onResumeEdit }: ResumeListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (resumeId: string) => {
@@ -69,6 +71,24 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated }: Resume
     } catch (error) {
       console.error('Failed to download resume:', error);
       alert('Failed to download resume. Please try again.');
+    }
+  };
+
+  const handleView = (resume: Resume) => {
+    if (onResumeView) {
+      onResumeView(resume);
+    } else {
+      // Fallback: show resume content in a modal or alert
+      alert(`Resume: ${resume.title}\n\nContent:\n${resume.content.substring(0, 500)}...`);
+    }
+  };
+
+  const handleEdit = (resume: Resume) => {
+    if (onResumeEdit) {
+      onResumeEdit(resume);
+    } else {
+      // Fallback: show edit message
+      alert(`Edit functionality for "${resume.title}" coming soon!`);
     }
   };
 
@@ -114,11 +134,11 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated }: Resume
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleView(resume)}>
                     <Eye className="h-4 w-4 mr-2" />
                     View
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleEdit(resume)}>
                     <Edit className="h-4 w-4 mr-2" />
                     Edit
                   </DropdownMenuItem>
@@ -176,6 +196,7 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated }: Resume
                   variant="outline" 
                   size="sm" 
                   className="flex-1"
+                  onClick={() => handleView(resume)}
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   View

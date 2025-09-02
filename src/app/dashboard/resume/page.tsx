@@ -9,7 +9,7 @@ import { Resume } from "@/lib/abstractions/types";
 import { database } from "@/lib/abstractions";
 import { Button } from "@/components/ui/button";
 import { Plus, FileText, Upload, Edit3 } from "lucide-react";
-
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 
 export default function ResumePage() {
@@ -17,6 +17,8 @@ export default function ResumePage() {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'list' | 'upload' | 'builder'>('list');
+  const [viewingResume, setViewingResume] = useState<Resume | null>(null);
+  const [editingResume, setEditingResume] = useState<Resume | null>(null);
 
 
   useEffect(() => {
@@ -52,6 +54,19 @@ export default function ResumePage() {
     setResumes(prev => prev.map(resume => 
       resume.id === updatedResume.id ? updatedResume : resume
     ));
+  };
+
+  const handleResumeView = (resume: Resume) => {
+    setViewingResume(resume);
+  };
+
+  const handleCloseView = () => {
+    setViewingResume(null);
+  };
+
+  const handleResumeEdit = (resume: Resume) => {
+    setEditingResume(resume);
+    setActiveTab('builder');
   };
 
   if (!isLoaded) {
@@ -148,42 +163,74 @@ export default function ResumePage() {
 
       {/* Tab Content */}
       {activeTab === 'list' && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">Your Resumes</h2>
-          
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading resumes...</p>
-              </div>
-            </div>
-          ) : resumes.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-              <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No resumes yet</h3>
-              <p className="text-gray-600 mb-4">
-                Get started by uploading your first resume or creating one from scratch.
-              </p>
-              <div className="flex gap-3 justify-center">
-                <Button onClick={() => setActiveTab('upload')}>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Resume
-                </Button>
-                <Button onClick={() => setActiveTab('builder')}>
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  Create Resume
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <ResumeList
-              resumes={resumes}
-              onResumeDeleted={handleResumeDeleted}
-              onResumeUpdated={handleResumeUpdated}
-            />
+        <>
+          {viewingResume && (
+            <Card className="mb-6">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-blue-600" />
+                      {viewingResume.title}
+                    </CardTitle>
+                    <CardDescription>
+                      Resume Content Preview
+                    </CardDescription>
+                  </div>
+                  <Button onClick={handleCloseView} variant="outline" size="sm">
+                    Close
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="max-h-96 overflow-y-auto p-4 bg-gray-50 rounded-lg">
+                  <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono">
+                    {viewingResume.content}
+                  </pre>
+                </div>
+              </CardContent>
+            </Card>
           )}
-        </div>
+          
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-900">Your Resumes</h2>
+            
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading resumes...</p>
+                </div>
+              </div>
+            ) : resumes.length === 0 ? (
+              <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No resumes yet</h3>
+                <p className="text-gray-600 mb-4">
+                  Get started by uploading your first resume or creating one from scratch.
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <Button onClick={() => setActiveTab('upload')}>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Resume
+                  </Button>
+                  <Button onClick={() => setActiveTab('builder')}>
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    Create Resume
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <ResumeList
+                resumes={resumes}
+                onResumeDeleted={handleResumeDeleted}
+                onResumeUpdated={handleResumeUpdated}
+                onResumeView={handleResumeView}
+                onResumeEdit={handleResumeEdit}
+              />
+            )}
+          </div>
+        </>
       )}
 
       {activeTab === 'upload' && (
@@ -218,6 +265,7 @@ export default function ResumePage() {
           <ResumeBuilder
             userId={user.id}
             onResumeCreated={handleResumeCreated}
+            initialData={editingResume || undefined}
           />
         </div>
       )}

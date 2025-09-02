@@ -10,11 +10,14 @@ import { database } from "@/lib/abstractions";
 import { Button } from "@/components/ui/button";
 import { Plus, FileText, Upload, Edit3 } from "lucide-react";
 
+
+
 export default function ResumePage() {
   const { user, isLoaded } = useUser();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'list' | 'upload' | 'builder'>('list');
+
 
   useEffect(() => {
     if (user?.id && isLoaded) {

@@ -64,6 +64,31 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
     }
   }
 
+  async getUserByClerkId(clerkUserId: string): Promise<User | null> {
+    try {
+      const result = await convexClient.query(api.users.getByClerkUserId, { 
+        clerkUserId 
+      });
+      
+      if (!result) {
+        return null;
+      }
+      
+      return {
+        id: result._id,
+        email: result.email,
+        name: result.name,
+        avatar: result.avatar,
+        createdAt: new Date(result.createdAt),
+        updatedAt: new Date(result.updatedAt),
+        metadata: result.metadata,
+      };
+    } catch (error) {
+      console.error('Error getting user by Clerk ID:', error);
+      return null;
+    }
+  }
+
   async updateUser(id: string, updates: Partial<User>): Promise<User> {
     try {
       const result = await convexClient.mutation(api.users.update, {

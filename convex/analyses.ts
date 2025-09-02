@@ -84,7 +84,7 @@ export const create = mutation({
       createdAt: now,
       updatedAt: now,
     });
-    return await ctx.db.get(analysisId);
+    return analysisId; // Return just the ID, not the full object
   },
 });
 

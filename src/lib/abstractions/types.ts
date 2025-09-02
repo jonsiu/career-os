@@ -5,6 +5,7 @@ export interface DatabaseProvider {
   // User operations
   createUser(user: CreateUserInput): Promise<User>;
   getUserById(id: string): Promise<User | null>;
+  getUserByClerkId(clerkUserId: string): Promise<User | null>;
   updateUser(id: string, updates: Partial<User>): Promise<User>;
   deleteUser(id: string): Promise<void>;
 
@@ -37,7 +38,7 @@ export interface DatabaseProvider {
 }
 
 export interface FileStorageProvider {
-  uploadFile(file: File, path: string): Promise<string>;
+  uploadFile(file: File, path: string, userId: string): Promise<string>;
   downloadFile(path: string): Promise<Blob>;
   deleteFile(path: string): Promise<void>;
   getFileUrl(path: string): Promise<string>;

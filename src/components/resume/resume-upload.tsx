@@ -42,8 +42,20 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
         setResumeTitle(file.name.replace(/\.[^/.]+$/, ''));
       }
 
+      // Determine if userId is already a Convex user ID or needs to be looked up
+      let convexUserId = userId;
+      if (!userId.startsWith('js')) { // Convex IDs start with 'js', Clerk IDs are longer
+        // This is a Clerk user ID, need to look up the Convex user ID
+        const convexUser = await database.getUserByClerkId(userId);
+        if (!convexUser) {
+          throw new Error('User not found in database');
+        }
+        convexUserId = convexUser.id;
+      }
+      // If userId already starts with 'js', it's already a Convex user ID, use it directly
+
       // Upload file to storage
-      const filePath = await fileStorage.uploadFile(file, `resumes/${userId}`);
+      const filePath = await fileStorage.uploadFile(file, `resumes/${userId}`, convexUserId);
       setUploadProgress(50);
 
       // Create resume in database

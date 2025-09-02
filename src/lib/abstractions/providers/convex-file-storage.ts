@@ -2,12 +2,12 @@ import { FileStorageProvider } from '../types';
 import { convexClient, api } from '../../convex-client';
 
 export class ConvexFileStorageProvider implements FileStorageProvider {
-  async uploadFile(file: File, path: string): Promise<string> {
+  async uploadFile(file: File, path: string, userId: string): Promise<string> {
     try {
       // For now, we'll store file metadata in Convex
       // In a real implementation, you'd use Convex's file storage
       const fileId = await convexClient.mutation(api.files.create, {
-        userId: 'temp' as any, // This should come from auth context
+        userId: userId as any, // Use the passed user ID
         name: file.name,
         path: path,
         size: file.size,

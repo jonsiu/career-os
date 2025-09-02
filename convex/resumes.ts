@@ -45,7 +45,7 @@ export const create = mutation({
       createdAt: now,
       updatedAt: now,
     });
-    return await ctx.db.get(resumeId);
+    return resumeId; // Return just the ID, not the full object
   },
 });
 

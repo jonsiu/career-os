@@ -66,7 +66,7 @@ export const create = mutation({
       createdAt: now,
       updatedAt: now,
     });
-    return await ctx.db.get(planId);
+    return planId; // Return just the ID, not the full object
   },
 });
 

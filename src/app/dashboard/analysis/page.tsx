@@ -1,18 +1,50 @@
 "use client";
 
+import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart3, TrendingUp, Target, Lightbulb, Clock, CheckCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  BarChart3, 
+  TrendingUp, 
+  Target, 
+  Lightbulb, 
+  Clock, 
+  CheckCircle,
+  AlertCircle,
+  Star,
+  Calendar,
+  BookOpen,
+  Loader2,
+  RefreshCw,
+  Briefcase,
+  Users
+} from "lucide-react";
+import { ResumeJobAnalysis } from "@/components/analysis/resume-job-analysis";
+import { CareerCoachAnalysis } from "@/components/analysis/career-coach-analysis";
+import { AnalysisResult, CareerAnalysis } from "@/lib/abstractions/types";
 
 export default function AnalysisPage() {
   const { user, isLoaded } = useUser();
+  const [activeTab, setActiveTab] = useState("resume-job");
+  const [lastResumeAnalysis, setLastResumeAnalysis] = useState<AnalysisResult | null>(null);
+  const [lastCareerAnalysis, setLastCareerAnalysis] = useState<CareerAnalysis | null>(null);
+
+  const handleResumeAnalysisComplete = (result: AnalysisResult) => {
+    setLastResumeAnalysis(result);
+  };
+
+  const handleCareerAnalysisComplete = (result: CareerAnalysis) => {
+    setLastCareerAnalysis(result);
+  };
 
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-64">
         <div className="text-center">
-          <BarChart3 className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <Loader2 className="mx-auto h-12 w-12 text-gray-400 mb-4 animate-spin" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Loading...</h3>
         </div>
       </div>
@@ -39,106 +71,146 @@ export default function AnalysisPage() {
         </p>
       </div>
 
-      {/* Coming Soon Section */}
-      <Card className="border-2 border-dashed border-gray-300 bg-gray-50">
-        <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <BarChart3 className="h-6 w-6 text-blue-600" />
-          </div>
-          <CardTitle className="text-xl">Analysis Engine Coming Soon</CardTitle>
-          <CardDescription>
-            Our AI-powered career analysis tools are being developed
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <p className="text-gray-600">
-            This section will provide comprehensive career insights including skills matching, 
-            experience assessment, and personalized recommendations for your career transition.
-          </p>
-          <div className="flex justify-center">
-            <Button disabled variant="outline">
-              <Clock className="h-4 w-4 mr-2" />
-              Coming in Day 3
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Quick Stats */}
+      {(lastResumeAnalysis || lastCareerAnalysis) && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {lastResumeAnalysis && (
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <BarChart3 className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-blue-600">
+                      {lastResumeAnalysis.matchScore}%
+                    </div>
+                    <div className="text-sm text-gray-600">Resume Match</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          {lastCareerAnalysis && (
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <TrendingUp className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-green-600">
+                      {lastCareerAnalysis.timeToTarget}
+                    </div>
+                    <div className="text-sm text-gray-600">Months to Target</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-      {/* Feature Preview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-              Skills Matching
-            </CardTitle>
-            <CardDescription>
-              AI-powered skills analysis
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600">
-              Get detailed insights into how your skills align with target roles and identify areas for development.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-blue-600" />
-              Experience Assessment
-            </CardTitle>
-            <CardDescription>
-              Career progression analysis
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600">
-              Evaluate your experience level and readiness for management transitions with detailed gap analysis.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-yellow-600" />
-              Smart Recommendations
-            </CardTitle>
-            <CardDescription>
-              Personalized career guidance
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600">
-              Receive tailored recommendations for skill development, learning resources, and career planning.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Get Ready for Analysis</h2>
-        <div className="flex flex-wrap gap-3">
-          <Button variant="outline" disabled>
-            <CheckCircle className="h-4 w-4 mr-2" />
-            Upload Resume First
-          </Button>
-          <Button variant="outline" disabled>
-            <CheckCircle className="h-4 w-4 mr-2" />
-            Add Job Postings
-          </Button>
-          <Button variant="outline" disabled>
-            <CheckCircle className="h-4 w-4 mr-2" />
-            Run Analysis
-          </Button>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Target className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    {lastResumeAnalysis?.gaps.length || lastCareerAnalysis?.risks.length || 0}
+                  </div>
+                  <div className="text-sm text-gray-600">Areas to Improve</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-        <p className="text-sm text-gray-600 mt-3">
-          Complete your profile and add content to get the most out of our analysis tools.
-        </p>
-      </div>
+      )}
+
+      {/* Analysis Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="resume-job" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Resume-Job Analysis
+          </TabsTrigger>
+          <TabsTrigger value="career-coach" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Career Coach
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="resume-job" className="mt-6">
+          <ResumeJobAnalysis onAnalysisComplete={handleResumeAnalysisComplete} />
+        </TabsContent>
+
+        <TabsContent value="career-coach" className="mt-6">
+          <CareerCoachAnalysis onAnalysisComplete={handleCareerAnalysisComplete} />
+        </TabsContent>
+      </Tabs>
+
+      {/* Recent Analysis History */}
+      {(lastResumeAnalysis || lastCareerAnalysis) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-gray-600" />
+              Recent Analysis
+            </CardTitle>
+            <CardDescription>
+              Your latest analysis results and insights
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {lastResumeAnalysis && (
+                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <BarChart3 className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <div className="font-medium text-gray-900">Resume-Job Analysis</div>
+                      <div className="text-sm text-gray-600">
+                        Match Score: {lastResumeAnalysis.matchScore}% • 
+                        {lastResumeAnalysis.gaps.length} skills gaps identified
+                      </div>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setActiveTab("resume-job")}
+                  >
+                    View Details
+                  </Button>
+                </div>
+              )}
+
+              {lastCareerAnalysis && (
+                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <TrendingUp className="h-5 w-5 text-green-600" />
+                    <div>
+                      <div className="font-medium text-gray-900">Career Transition Analysis</div>
+                      <div className="text-sm text-gray-600">
+                        {lastCareerAnalysis.currentLevel} → {lastCareerAnalysis.targetLevel} • 
+                        {lastCareerAnalysis.timeToTarget} months timeline
+                      </div>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setActiveTab("career-coach")}
+                  >
+                    View Details
+                  </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -29,6 +29,8 @@ import {
 } from "lucide-react";
 import { database } from "@/lib/abstractions";
 import { Plan, Milestone } from "@/lib/abstractions/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 interface DevelopmentRoadmapProps {
   onPlanCreated?: (plan: Plan) => void;
@@ -53,6 +55,7 @@ interface RoadmapFormData {
 
 export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: DevelopmentRoadmapProps) {
   const { user, isLoaded } = useUser();
+  const { toast } = useToast();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -150,7 +153,11 @@ export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: Development
 
   const handleSave = async () => {
     if (!formData.title.trim()) {
-      alert('Please enter a plan title');
+      toast({
+        title: 'Plan title missing',
+        description: 'Please enter a plan title.',
+        variant: 'destructive',
+      });
       return;
     }
 
@@ -163,7 +170,7 @@ export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: Development
         timeline: formData.timeline,
         milestones: formData.milestones.map(milestone => ({
           ...milestone,
-          targetDate: milestone.targetDate.toISOString()
+          targetDate: milestone.targetDate instanceof Date ? milestone.targetDate : new Date(milestone.targetDate)
         })),
         status: 'draft' as const,
         metadata: {
@@ -177,18 +184,30 @@ export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: Development
         const updatedPlan = await database.updatePlan(activePlan.id, planData);
         setActivePlan(updatedPlan);
         if (onPlanUpdated) onPlanUpdated(updatedPlan);
+        toast({
+          title: 'Plan updated',
+          description: `Plan "${updatedPlan.title}" updated successfully.`,
+        });
       } else {
         // Create new plan
         const newPlan = await database.createPlan(planData);
         setPlans(prev => [newPlan, ...prev]);
         setActivePlan(newPlan);
         if (onPlanCreated) onPlanCreated(newPlan);
+        toast({
+          title: 'Plan created',
+          description: `Plan "${newPlan.title}" created successfully.`,
+        });
       }
 
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to save plan:', error);
-      alert('Failed to save plan. Please try again.');
+      toast({
+        title: 'Failed to save plan',
+        description: 'Could not save plan. Please try again.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -621,6 +640,15 @@ export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: Development
             </Button>
           </CardContent>
         </Card>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="space-y-4">
+          <Skeleton className="h-32" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-40" />
+        </div>
       )}
 
       {/* Start Editing State */}

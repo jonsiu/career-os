@@ -29,6 +29,8 @@ import {
 } from "lucide-react";
 import { database } from "@/lib/abstractions";
 import { Skill, SkillResource } from "@/lib/abstractions/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 interface SkillsTrackingProps {
   onSkillUpdated?: (skill: Skill) => void;
@@ -51,6 +53,7 @@ const skillLevels = ['beginner', 'intermediate', 'advanced', 'expert'];
 
 export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
   const { user, isLoaded } = useUser();
+  const { toast } = useToast();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingSkill, setIsAddingSkill] = useState(false);
@@ -72,6 +75,11 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
       setSkills(userSkills);
     } catch (error) {
       console.error('Failed to load skills:', error);
+      toast({
+        title: 'Failed to load skills',
+        description: 'Could not load your skills. Please try again later.',
+        variant: 'destructive',
+      });
       // If database fails, start with empty skills array
       setSkills([]);
     } finally {
@@ -100,7 +108,11 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
 
   const saveSkill = async () => {
     if (!editingSkill?.name.trim()) {
-      alert('Please enter a skill name');
+      toast({
+        title: 'Skill name missing',
+        description: 'Please enter a skill name.',
+        variant: 'destructive',
+      });
       return;
     }
 
@@ -123,6 +135,10 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
         });
         
         setSkills(prev => [newSkill, ...prev]);
+        toast({
+          title: 'Skill added',
+          description: `Skill "${newSkill.name}" added.`,
+        });
         if (onSkillUpdated) onSkillUpdated(newSkill);
       } else {
         // Update existing skill in database
@@ -143,6 +159,10 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
         setSkills(prev => prev.map(skill => 
           skill.id === editingSkill.id ? updatedSkill : skill
         ));
+        toast({
+          title: 'Skill updated',
+          description: `Skill "${updatedSkill.name}" updated.`,
+        });
         if (onSkillUpdated) onSkillUpdated(updatedSkill);
       }
 
@@ -150,7 +170,11 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
       setIsAddingSkill(false);
     } catch (error) {
       console.error('Failed to save skill:', error);
-      alert('Failed to save skill. Please try again.');
+      toast({
+        title: 'Failed to save skill',
+        description: 'Could not save skill. Please try again.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -162,6 +186,11 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
       ));
     } catch (error) {
       console.error('Failed to update skill progress:', error);
+      toast({
+        title: 'Failed to update progress',
+        description: 'Could not update skill progress. Please try again.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -365,132 +394,150 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
 
       {/* Skills List */}
       <div className="space-y-4">
-        {filteredSkills.map((skill) => (
-          <Card key={skill.id}>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-medium text-gray-900">{skill.name}</h3>
-                    <Badge className={getLevelColor(skill.currentLevel)}>
-                      {skill.currentLevel}
-                    </Badge>
-                    <Badge className={getPriorityColor(skill.priority)}>
-                      {skill.priority} priority
-                    </Badge>
-                    <Badge className={getStatusColor(skill.status)}>
-                      {skill.status}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <span>{skill.category}</span>
-                    <span>Target: {skill.targetLevel}</span>
-                    <span>{skill.timeSpent}h spent</span>
-                    <span>{skill.estimatedTimeToTarget}h to target</span>
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setEditingSkill(skill)}
-                >
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Progress Bar */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">Progress</span>
-                  <span className="text-sm text-gray-500">{skill.progress}%</span>
-                </div>
-                <Progress value={skill.progress} className="h-3" />
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => updateSkillProgress(skill.id, skill.progress - 10)}
-                    disabled={skill.progress <= 0}
-                  >
-                    -10%
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => updateSkillProgress(skill.id, skill.progress + 10)}
-                    disabled={skill.progress >= 100}
-                  >
-                    +10%
-                  </Button>
-                </div>
-              </div>
-
-              {/* Resources */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium text-gray-900">Learning Resources</h4>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => addResource(skill.id)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Resource
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {skill.resources.map((resource, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <input
-                        type="checkbox"
-                        checked={resource.completed}
-                        onChange={(e) => updateResource(skill.id, index, 'completed', e.target.checked)}
-                        className="rounded"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{resource.name}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {resource.type}
-                          </Badge>
-                          <span className="text-sm text-gray-500">
-                            {resource.estimatedHours}h
-                          </span>
-                        </div>
-                        {resource.url && (
-                          <a
-                            href={resource.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
-                          >
-                            View Resource <ExternalLink className="h-3 w-3" />
-                          </a>
-                        )}
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => removeResource(skill.id, index)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {skill.notes && (
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <h5 className="font-medium text-gray-900 mb-1">Notes</h5>
-                  <p className="text-sm text-gray-700">{skill.notes}</p>
-                </div>
-              )}
+        {isLoading ? (
+          <Skeleton className="h-16" />
+        ) : filteredSkills.length === 0 ? (
+          <Card className="border-2 border-dashed border-gray-300 bg-gray-50">
+            <CardContent className="text-center py-12">
+              <Award className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Skills Tracked Yet</h3>
+              <p className="text-gray-600 mb-4">
+                Start tracking your skills development to monitor your progress and manage learning resources.
+              </p>
+              <Button onClick={addSkill}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add First Skill
+              </Button>
             </CardContent>
           </Card>
-        ))}
+        ) : (
+          filteredSkills.map((skill) => (
+            <Card key={skill.id}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-lg font-medium text-gray-900">{skill.name}</h3>
+                      <Badge className={getLevelColor(skill.currentLevel)}>
+                        {skill.currentLevel}
+                      </Badge>
+                      <Badge className={getPriorityColor(skill.priority)}>
+                        {skill.priority} priority
+                      </Badge>
+                      <Badge className={getStatusColor(skill.status)}>
+                        {skill.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <span>{skill.category}</span>
+                      <span>Target: {skill.targetLevel}</span>
+                      <span>{skill.timeSpent}h spent</span>
+                      <span>{skill.estimatedTimeToTarget}h to target</span>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingSkill(skill)}
+                  >
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">Progress</span>
+                    <span className="text-sm text-gray-500">{skill.progress}%</span>
+                  </div>
+                  <Progress value={skill.progress} className="h-3" />
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => updateSkillProgress(skill.id, skill.progress - 10)}
+                      disabled={skill.progress <= 0}
+                    >
+                      -10%
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => updateSkillProgress(skill.id, skill.progress + 10)}
+                      disabled={skill.progress >= 100}
+                    >
+                      +10%
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Resources */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium text-gray-900">Learning Resources</h4>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => addResource(skill.id)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Resource
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {skill.resources.map((resource, index) => (
+                      <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <input
+                          type="checkbox"
+                          checked={resource.completed}
+                          onChange={(e) => updateResource(skill.id, index, 'completed', e.target.checked)}
+                          className="rounded"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{resource.name}</span>
+                            <Badge variant="outline" className="text-xs">
+                              {resource.type}
+                            </Badge>
+                            <span className="text-sm text-gray-500">
+                              {resource.estimatedHours}h
+                            </span>
+                          </div>
+                          {resource.url && (
+                            <a
+                              href={resource.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                            >
+                              View Resource <ExternalLink className="h-3 w-3" />
+                            </a>
+                          )}
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => removeResource(skill.id, index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {skill.notes && (
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <h5 className="font-medium text-gray-900 mb-1">Notes</h5>
+                    <p className="text-sm text-gray-700">{skill.notes}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
 
       {/* Add/Edit Skill Modal */}
@@ -625,23 +672,6 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
                 Cancel
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* No Skills State */}
-      {!isLoading && skills.length === 0 && (
-        <Card className="border-2 border-dashed border-gray-300 bg-gray-50">
-          <CardContent className="text-center py-12">
-            <Award className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Skills Tracked Yet</h3>
-            <p className="text-gray-600 mb-4">
-              Start tracking your skills development to monitor your progress and manage learning resources.
-            </p>
-            <Button onClick={addSkill}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add First Skill
-            </Button>
           </CardContent>
         </Card>
       )}

@@ -1,40 +1,35 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { ConvexProviderWrapper } from "@/lib/convex-provider";
+import { ConvexProviderWithClerk } from "@/lib/convex-provider";
+import { ConvexReactClient } from "convex/react";
+import { Toaster } from "@/components/ui/toaster";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CareerOS - Your Personal Career Development Platform",
-  description: "Build your career path with AI-powered analysis, resume building, and development planning",
+  title: "CareerOS - AI-Powered Career Development Platform",
+  description: "Build your career with AI-powered resume analysis, job matching, and personalized development planning.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <ConvexProviderWrapper>
+      <ConvexProviderWithClerk convex={convex}>
+        <html lang="en">
+          <body className={inter.className}>
             {children}
-          </ConvexProviderWrapper>
-        </body>
-      </html>
+            <Toaster />
+          </body>
+        </html>
+      </ConvexProviderWithClerk>
     </ClerkProvider>
   );
 }

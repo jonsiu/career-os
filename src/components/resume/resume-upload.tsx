@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Upload, FileText, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { database, fileStorage } from "@/lib/abstractions";
 import { Resume } from "@/lib/abstractions/types";
+import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@clerk/nextjs";
 
 interface ResumeUploadProps {
   userId: string;
@@ -16,6 +18,7 @@ interface ResumeUploadProps {
 }
 
 export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
+  const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
@@ -75,6 +78,11 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
       setUploadProgress(100);
       setUploadStatus('success');
       
+      toast({
+        title: 'Resume uploaded successfully',
+        description: `Resume "${resumeTitle || file.name}" has been uploaded and parsed.`,
+      });
+      
       // Call the callback if provided
       if (onResumeCreated) {
         onResumeCreated(resume);
@@ -83,7 +91,14 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
     } catch (error) {
       console.error('Upload error:', error);
       setUploadStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : 'Upload failed');
+      const errorMsg = error instanceof Error ? error.message : 'Upload failed';
+      setErrorMessage(errorMsg);
+      
+      toast({
+        title: 'Upload failed',
+        description: errorMsg,
+        variant: 'destructive',
+      });
     } finally {
       setIsUploading(false);
     }
@@ -177,6 +192,11 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
       setUploadProgress(100);
       setUploadStatus('success');
       
+      toast({
+        title: 'Resume created successfully',
+        description: `Resume "${resumeTitle}" has been created.`,
+      });
+      
       if (onResumeCreated) {
         onResumeCreated(resume);
       }
@@ -184,7 +204,14 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
     } catch (error) {
       console.error('Creation error:', error);
       setUploadStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : 'Failed to create resume');
+      const errorMsg = error instanceof Error ? error.message : 'Failed to create resume';
+      setErrorMessage(errorMsg);
+      
+      toast({
+        title: 'Creation failed',
+        description: errorMsg,
+        variant: 'destructive',
+      });
     } finally {
       setIsUploading(false);
     }

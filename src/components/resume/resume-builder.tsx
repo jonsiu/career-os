@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import { Resume } from "@/lib/abstractions/types";
 import React from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@clerk/nextjs";
 
 interface ResumeBuilderProps {
   userId: string;
@@ -90,6 +92,8 @@ const steps = [
 ];
 
 export function ResumeBuilder({ userId, onResumeCreated, initialData }: ResumeBuilderProps) {
+  const { user } = useUser();
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { JobBookmark } from "@/components/jobs/job-bookmark";
 import { JobList } from "@/components/jobs/job-list";
@@ -15,13 +15,7 @@ export default function JobsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'list' | 'add'>('list');
 
-  useEffect(() => {
-    if (user?.id && isLoaded) {
-      loadJobs();
-    }
-  }, [user?.id, isLoaded]);
-
-  const loadJobs = async () => {
+  const loadJobs = useCallback(async () => {
     if (!user?.id) return;
     
     try {
@@ -33,7 +27,13 @@ export default function JobsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (user?.id && isLoaded) {
+      loadJobs();
+    }
+  }, [user?.id, isLoaded, loadJobs]);
 
   const handleJobCreated = (newJob: Job) => {
     setJobs(prev => [newJob, ...prev]);

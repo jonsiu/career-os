@@ -3,6 +3,20 @@ import { mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 
 // Types for skills
+export const SkillResourceObject = v.object({
+  name: v.string(),
+  type: v.union(
+    v.literal('course'),
+    v.literal('book'),
+    v.literal('video'),
+    v.literal('project'),
+    v.literal('mentorship')
+  ),
+  url: v.optional(v.string()),
+  estimatedHours: v.number(),
+  completed: v.boolean(),
+});
+
 export interface SkillResource {
   name: string;
   type: 'course' | 'book' | 'video' | 'project' | 'mentorship';
@@ -25,7 +39,7 @@ export interface Skill {
   status: 'learning' | 'practicing' | 'mastered' | 'not-started';
   resources: SkillResource[];
   notes?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   createdAt: number;
   updatedAt: number;
 }
@@ -126,9 +140,9 @@ export const createSkill = mutation({
       v.literal("mastered"),
       v.literal("not-started")
     ),
-    resources: v.array(v.any()),
+    resources: v.array(SkillResourceObject),
     notes: v.optional(v.string()),
-    metadata: v.optional(v.any()),
+    metadata: v.optional(v.object({})),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -175,9 +189,9 @@ export const updateSkill = mutation({
       v.literal("mastered"),
       v.literal("not-started")
     )),
-    resources: v.optional(v.array(v.any())),
+    resources: v.optional(v.array(SkillResourceObject)),
     notes: v.optional(v.string()),
-    metadata: v.optional(v.any()),
+    metadata: v.optional(v.object({})),
   },
   handler: async (ctx, args) => {
     const { skillId, ...updates } = args;

@@ -9,14 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { 
   Plus, 
-  Search, 
-  Filter,
   Briefcase,
-  Building,
-  MapPin,
-  DollarSign,
-  Calendar,
-  Star,
   Save
 } from "lucide-react";
 import { database } from "@/lib/abstractions";
@@ -64,7 +57,7 @@ export function JobBookmark({ userId, onJobCreated }: JobBookmarkProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requirementsInput, setRequirementsInput] = useState('');
 
-  const handleInputChange = (field: keyof JobFormData, value: any) => {
+  const handleInputChange = (field: keyof JobFormData, value: string | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value

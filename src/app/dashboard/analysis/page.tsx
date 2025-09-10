@@ -1,26 +1,14 @@
-"use client";
-
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   BarChart3, 
   TrendingUp, 
   Target, 
-  Lightbulb, 
   Clock, 
-  CheckCircle,
-  AlertCircle,
-  Star,
-  Calendar,
-  BookOpen,
   Loader2,
-  RefreshCw,
-  Briefcase,
-  Users
 } from "lucide-react";
 import { ResumeJobAnalysis } from "@/components/analysis/resume-job-analysis";
 import { CareerCoachAnalysis } from "@/components/analysis/career-coach-analysis";

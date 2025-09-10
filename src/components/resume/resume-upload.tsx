@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
@@ -10,11 +8,14 @@ import { Upload, FileText, AlertCircle, CheckCircle, Loader2 } from "lucide-reac
 import { database, fileStorage } from "@/lib/abstractions";
 import { Resume } from "@/lib/abstractions/types";
 import { useToast } from "@/hooks/use-toast";
-import { useUser } from "@clerk/nextjs";
 
 interface ResumeUploadProps {
   userId: string;
   onResumeCreated?: (resume: Resume) => void;
+}
+
+interface PdfTextItem {
+  str: string;
 }
 
 export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
@@ -26,6 +27,16 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
   const [resumeTitle, setResumeTitle] = useState('');
   const [parsedContent, setParsedContent] = useState('');
 
+  const parseFile = useCallback(async (file: File): Promise<string> => {
+    if (file.type === 'application/pdf') {
+      return await parsePDF(file);
+    } else if (file.type.includes('word') || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+      return await parseWord(file);
+    } else {
+      throw new Error('Unsupported file type');
+    }
+  }, []);
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
 
@@ -36,32 +47,25 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
     setErrorMessage('');
 
     try {
-      // Parse the file content
       const content = await parseFile(file);
       setParsedContent(content);
 
-      // Generate a default title if none provided
       if (!resumeTitle) {
         setResumeTitle(file.name.replace(/\.[^/.]+$/, ''));
       }
 
-      // Determine if userId is already a Convex user ID or needs to be looked up
       let convexUserId = userId;
-      if (!userId.startsWith('js')) { // Convex IDs start with 'js', Clerk IDs are longer
-        // This is a Clerk user ID, need to look up the Convex user ID
+      if (!userId.startsWith('js')) {
         const convexUser = await database.getUserByClerkId(userId);
         if (!convexUser) {
           throw new Error('User not found in database');
         }
         convexUserId = convexUser.id;
       }
-      // If userId already starts with 'js', it's already a Convex user ID, use it directly
 
-      // Upload file to storage
       const filePath = await fileStorage.uploadFile(file, `resumes/${userId}`, convexUserId);
       setUploadProgress(50);
 
-      // Create resume in database
       const resume = await database.createResume({
         userId,
         title: resumeTitle || file.name,
@@ -83,7 +87,6 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
         description: `Resume "${resumeTitle || file.name}" has been uploaded and parsed.`,
       });
       
-      // Call the callback if provided
       if (onResumeCreated) {
         onResumeCreated(resume);
       }
@@ -102,7 +105,7 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
     } finally {
       setIsUploading(false);
     }
-  }, [userId, resumeTitle, onResumeCreated]);
+  }, [userId, resumeTitle, onResumeCreated, parseFile, toast]);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDrop,
@@ -115,21 +118,10 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
     disabled: isUploading
   });
 
-  const parseFile = async (file: File): Promise<string> => {
-    if (file.type === 'application/pdf') {
-      return await parsePDF(file);
-    } else if (file.type.includes('word') || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
-      return await parseWord(file);
-    } else {
-      throw new Error('Unsupported file type');
-    }
-  };
-
   const parsePDF = async (file: File): Promise<string> => {
     try {
       const pdfjsLib = await import('pdfjs-dist');
       
-      // Set worker source to use local worker file
       pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
       
       const arrayBuffer = await file.arrayBuffer();
@@ -140,14 +132,14 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         const pageText = textContent.items
-          .map((item: any) => item.str)
+          .map((item: PdfTextItem) => item.str)
           .join(' ');
         text += pageText + '\n';
       }
       
       return text.trim();
-    } catch (error) {
-      console.error('Error parsing PDF:', error);
+    } catch (err) {
+      console.error('Error parsing PDF:', err);
       throw new Error('Failed to parse PDF file');
     }
   };
@@ -158,10 +150,11 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.extractRawText({ arrayBuffer });
       return result.value;
-    } catch (error) {
+    } catch (err) {
       throw new Error('Failed to parse Word document');
     }
   };
+
 
   const handleManualSubmit = async () => {
     if (!resumeTitle.trim()) {

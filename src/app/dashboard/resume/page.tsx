@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { ResumeUpload } from "@/components/resume/resume-upload";
 import { ResumeBuilder } from "@/components/resume/resume-builder";
@@ -8,7 +8,7 @@ import { ResumeList } from "@/components/resume/resume-list";
 import { Resume } from "@/lib/abstractions/types";
 import { database } from "@/lib/abstractions";
 import { Button } from "@/components/ui/button";
-import { Plus, FileText, Upload, Edit3 } from "lucide-react";
+import { FileText, Upload, Edit3 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 
@@ -21,13 +21,7 @@ export default function ResumePage() {
   const [editingResume, setEditingResume] = useState<Resume | null>(null);
 
 
-  useEffect(() => {
-    if (user?.id && isLoaded) {
-      loadResumes();
-    }
-  }, [user?.id, isLoaded]);
-
-  const loadResumes = async () => {
+  const loadResumes = useCallback(async () => {
     if (!user?.id) return;
     
     try {
@@ -39,7 +33,13 @@ export default function ResumePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (user?.id && isLoaded) {
+      loadResumes();
+    }
+  }, [user?.id, isLoaded, loadResumes]);
 
   const handleResumeCreated = (newResume: Resume) => {
     setResumes(prev => [newResume, ...prev]);

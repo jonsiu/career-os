@@ -12,12 +12,10 @@ import {
   MapPin, 
   Building, 
   DollarSign, 
-  Calendar,
   ExternalLink,
   Edit,
   Trash2,
   MoreVertical,
-  Star,
   Briefcase
 } from "lucide-react";
 import {

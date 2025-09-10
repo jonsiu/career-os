@@ -1,5 +1,6 @@
 import { DatabaseProvider, CreateUserInput, CreateResumeInput, CreateJobInput, CreateAnalysisInput, CreatePlanInput, User, Resume, Job, Analysis, Plan, CreateSkillInput, Skill, SkillResource } from '../types';
 import { convexClient, api } from '../../convex-client';
+import { Id } from '../../../../convex/_generated/dataModel';
 
 // Convex implementation of the DatabaseProvider interface
 export class ConvexDatabaseProvider implements DatabaseProvider {
@@ -43,7 +44,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async getUserById(id: string): Promise<User | null> {
     try {
-      const result = await convexClient.query(api.users.getById, { id: id as any });
+      const result = await convexClient.query(api.users.getById, { id: id as Id<"users"> });
       
       if (!result) {
         return null;
@@ -92,7 +93,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
   async updateUser(id: string, updates: Partial<User>): Promise<User> {
     try {
       const result = await convexClient.mutation(api.users.update, {
-        id: id as any,
+        id: id as Id<"users">,
         updates: {
           name: updates.name,
           avatar: updates.avatar,
@@ -121,7 +122,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async deleteUser(id: string): Promise<void> {
     try {
-      await convexClient.mutation(api.users.remove, { id: id as any });
+      await convexClient.mutation(api.users.remove, { id: id as Id<"users"> });
     } catch (error) {
       console.error('Error deleting user:', error);
       throw error;
@@ -153,7 +154,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
       }
 
       // Get the created resume to return full resume object
-      const createdResume = await convexClient.query(api.resumes.getById, { id: result as any });
+      const createdResume = await convexClient.query(api.resumes.getById, { id: result as Id<"resumes"> });
       
       if (!createdResume) {
         throw new Error('Failed to retrieve created resume');
@@ -177,7 +178,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async getResumeById(id: string): Promise<Resume | null> {
     try {
-      const result = await convexClient.query(api.resumes.getById, { id: id as any });
+      const result = await convexClient.query(api.resumes.getById, { id: id as Id<"resumes"> });
       
       if (!result) {
         return null;
@@ -235,7 +236,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
   async updateResume(id: string, updates: Partial<Resume>): Promise<Resume> {
     try {
       const result = await convexClient.mutation(api.resumes.update, {
-        id: id as any,
+        id: id as Id<"resumes">,
         updates: {
           title: updates.title,
           content: updates.content,
@@ -266,7 +267,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async deleteResume(id: string): Promise<void> {
     try {
-      await convexClient.mutation(api.resumes.remove, { id: id as any });
+      await convexClient.mutation(api.resumes.remove, { id: id as Id<"resumes"> });
     } catch (error) {
       console.error('Error deleting resume:', error);
       throw error;
@@ -302,7 +303,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
       }
 
       // Get the created job to return full job object
-      const createdJob = await convexClient.query(api.jobs.getById, { id: result as any });
+      const createdJob = await convexClient.query(api.jobs.getById, { id: result as Id<"jobs"> });
       
       if (!createdJob) {
         throw new Error('Failed to retrieve created job');
@@ -330,7 +331,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async getJobById(id: string): Promise<Job | null> {
     try {
-      const result = await convexClient.query(api.jobs.getById, { id: id as any });
+      const result = await convexClient.query(api.jobs.getById, { id: id as Id<"jobs"> });
       
       if (!result) {
         return null;
@@ -396,7 +397,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
   async updateJob(id: string, updates: Partial<Job>): Promise<Job> {
     try {
       const result = await convexClient.mutation(api.jobs.update, {
-        id: id as any,
+        id: id as Id<"jobs">,
         updates: {
           title: updates.title,
           company: updates.company,
@@ -435,7 +436,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async deleteJob(id: string): Promise<void> {
     try {
-      await convexClient.mutation(api.jobs.remove, { id: id as any });
+      await convexClient.mutation(api.jobs.remove, { id: id as Id<"jobs"> });
     } catch (error) {
       console.error('Error deleting job:', error);
       throw error;
@@ -456,8 +457,8 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
       const result = await convexClient.mutation(api.analyses.create, {
         userId: user._id,
-        resumeId: analysis.resumeId as any,
-        jobId: analysis.jobId as any,
+        resumeId: analysis.resumeId as Id<"resumes">,
+        jobId: analysis.jobId as Id<"jobs">,
         type: analysis.type,
         result: analysis.result,
         metadata: analysis.metadata,
@@ -468,7 +469,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
       }
 
       // Get the created analysis to return full analysis object
-      const createdAnalysis = await convexClient.query(api.analyses.getById, { id: result as any });
+      const createdAnalysis = await convexClient.query(api.analyses.getById, { id: result as Id<"analyses"> });
       
       if (!createdAnalysis) {
         throw new Error('Failed to retrieve created analysis');
@@ -493,7 +494,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async getAnalysisById(id: string): Promise<Analysis | null> {
     try {
-      const result = await convexClient.query(api.analyses.getById, { id: id as any });
+      const result = await convexClient.query(api.analyses.getById, { id: id as Id<"analyses"> });
       
       if (!result) {
         return null;
@@ -553,7 +554,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
   async updateAnalysis(id: string, updates: Partial<Analysis>): Promise<Analysis> {
     try {
       const result = await convexClient.mutation(api.analyses.update, {
-        id: id as any,
+        id: id as Id<"analyses">,
         updates: {
           result: updates.result,
           metadata: updates.metadata,
@@ -609,7 +610,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
       }
 
       // Get the created plan to return full plan object
-      const createdPlan = await convexClient.query(api.plans.getById, { id: result as any });
+      const createdPlan = await convexClient.query(api.plans.getById, { id: result as Id<"plans"> });
       
       if (!createdPlan) {
         throw new Error('Failed to retrieve created plan');
@@ -636,7 +637,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async getPlanById(id: string): Promise<Plan | null> {
     try {
-      const result = await convexClient.query(api.plans.getById, { id: id as any });
+      const result = await convexClient.query(api.plans.getById, { id: id as Id<"plans"> });
       
       if (!result) {
         return null;
@@ -700,7 +701,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
   async updatePlan(id: string, updates: Partial<Plan>): Promise<Plan> {
     try {
       const result = await convexClient.mutation(api.plans.update, {
-        id: id as any,
+        id: id as Id<"plans">,
         updates: {
           title: updates.title,
           description: updates.description,
@@ -737,7 +738,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async deletePlan(id: string): Promise<void> {
     try {
-      await convexClient.mutation(api.plans.remove, { id: id as any });
+      await convexClient.mutation(api.plans.remove, { id: id as Id<"plans"> });
     } catch (error) {
       console.error('Error deleting plan:', error);
       throw error;
@@ -809,7 +810,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async getSkillById(id: string): Promise<Skill | null> {
     try {
-      const result = await convexClient.query(api.skills.getSkill, { skillId: id as any });
+      const result = await convexClient.query(api.skills.getSkill, { skillId: id as Id<"skills"> });
       
       if (!result) {
         return null;
@@ -967,7 +968,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
   async updateSkill(id: string, updates: Partial<Skill>): Promise<Skill> {
     try {
       const result = await convexClient.mutation(api.skills.updateSkill, {
-        skillId: id as any,
+        skillId: id as Id<"skills">,
         name: updates.name,
         category: updates.category,
         currentLevel: updates.currentLevel,
@@ -1019,7 +1020,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
 
   async deleteSkill(id: string): Promise<void> {
     try {
-      await convexClient.mutation(api.skills.deleteSkill, { skillId: id as any });
+      await convexClient.mutation(api.skills.deleteSkill, { skillId: id as Id<"skills"> });
     } catch (error) {
       console.error('Error deleting skill:', error);
       throw error;
@@ -1029,7 +1030,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
   async updateSkillProgress(id: string, progress: number, timeSpent?: number, status?: Skill['status']): Promise<Skill> {
     try {
       const result = await convexClient.mutation(api.skills.updateSkillProgress, {
-        skillId: id as any,
+        skillId: id as Id<"skills">,
         progress,
         timeSpent,
         status,
@@ -1073,7 +1074,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
   async addSkillResource(id: string, resource: SkillResource): Promise<Skill> {
     try {
       const result = await convexClient.mutation(api.skills.addSkillResource, {
-        skillId: id as any,
+        skillId: id as Id<"skills">,
         resource: {
           name: resource.name,
           type: resource.type,
@@ -1121,7 +1122,7 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
   async updateResourceCompletion(id: string, resourceIndex: number, completed: boolean): Promise<Skill> {
     try {
       const result = await convexClient.mutation(api.skills.updateResourceCompletion, {
-        skillId: id as any,
+        skillId: id as Id<"skills">,
         resourceIndex,
         completed,
       });

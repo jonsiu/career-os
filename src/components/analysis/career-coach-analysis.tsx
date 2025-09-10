@@ -1,18 +1,17 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { 
   TrendingUp, 
   Target, 
   Lightbulb, 
   Clock, 
-  CheckCircle,
   AlertCircle,
   Star,
   Calendar,
@@ -21,11 +20,10 @@ import {
   RefreshCw,
   Users,
   Award,
-  BarChart3,
   ArrowRight
-} from "lucide-react";
-import { analysis } from "@/lib/abstractions";
-import { User, CareerAnalysis, SkillsGap, Recommendation } from "@/lib/abstractions/types";
+} from 'lucide-react';
+import { analysis } from '@/lib/abstractions';
+import { User, CareerAnalysis } from '@/lib/abstractions/types';
 
 interface CareerCoachAnalysisProps {
   targetRole?: string;
@@ -35,7 +33,6 @@ interface CareerCoachAnalysisProps {
 export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCoachAnalysisProps) {
   const { user, isLoaded } = useUser();
   const [targetRoleInput, setTargetRoleInput] = useState(targetRole || '');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [careerAnalysis, setCareerAnalysis] = useState<CareerAnalysis | null>(null);
   const [currentStep, setCurrentStep] = useState<'input' | 'analysis' | 'results'>('input');
 
@@ -46,7 +43,6 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
     }
 
     try {
-      setIsAnalyzing(true);
       setCurrentStep('analysis');
       
       // Mock user data for now - in real implementation, this would come from the database
@@ -76,7 +72,6 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
       alert('Analysis failed. Please try again.');
       setCurrentStep('input');
     } finally {
-      setIsAnalyzing(false);
     }
   };
 
@@ -185,7 +180,7 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
             <Loader2 className="mx-auto h-16 w-16 text-blue-600 mb-6 animate-spin" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Analyzing Your Career Path</h3>
             <p className="text-gray-600 mb-4">
-              Our AI is evaluating your current skills, experience, and the transition path to "{targetRoleInput}"
+              Our AI is evaluating your current skills, experience, and the transition path to &quot;{targetRoleInput}&quot;
             </p>
             <div className="flex justify-center space-x-2">
               <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>

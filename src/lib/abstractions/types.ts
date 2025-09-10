@@ -107,7 +107,7 @@ export interface AnalysisProvider {
 }
 
 export interface RealTimeProvider {
-  subscribeToUserData(userId: string, callback: (data: any) => void): () => void;
+  subscribeToUserData(userId: string, callback: (data: User) => void): () => void;
   subscribeToResumeUpdates(userId: string, callback: (resume: Resume) => void): () => void;
   subscribeToJobUpdates(userId: string, callback: (job: Job) => void): () => void;
   subscribeToAnalysisUpdates(userId: string, callback: (analysis: Analysis) => void): () => void;
@@ -127,7 +127,7 @@ export interface CreateUserInput {
   email: string;
   name: string;
   avatar?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface CreateResumeInput {
@@ -135,7 +135,7 @@ export interface CreateResumeInput {
   title: string;
   content: string;
   filePath?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface CreateJobInput {
@@ -147,7 +147,7 @@ export interface CreateJobInput {
   location?: string;
   salary?: string;
   status: 'saved' | 'applied' | 'interviewing' | 'offered' | 'rejected';
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface CreateAnalysisInput {
@@ -156,7 +156,7 @@ export interface CreateAnalysisInput {
   jobId?: string;
   type: 'resume' | 'career' | 'skills';
   result: AnalysisResult;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface CreatePlanInput {
@@ -167,7 +167,7 @@ export interface CreatePlanInput {
   timeline: number; // months
   milestones: Milestone[];
   status: 'draft' | 'active' | 'completed';
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Core entity types
@@ -178,7 +178,7 @@ export interface User {
   avatar?: string;
   createdAt: Date;
   updatedAt: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface Resume {
@@ -189,7 +189,7 @@ export interface Resume {
   filePath?: string;
   createdAt: Date;
   updatedAt: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface Job {
@@ -204,7 +204,7 @@ export interface Job {
   status: 'saved' | 'applied' | 'interviewing' | 'offered' | 'rejected';
   createdAt: Date;
   updatedAt: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface Analysis {
@@ -216,7 +216,7 @@ export interface Analysis {
   result: AnalysisResult;
   createdAt: Date;
   updatedAt: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface Plan {
@@ -230,7 +230,7 @@ export interface Plan {
   status: 'draft' | 'active' | 'completed';
   createdAt: Date;
   updatedAt: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Analysis result types
@@ -316,7 +316,7 @@ export interface Skill {
   status: 'learning' | 'practicing' | 'mastered' | 'not-started';
   resources: SkillResource[];
   notes?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -334,5 +334,5 @@ export interface CreateSkillInput {
   status: 'learning' | 'practicing' | 'mastered' | 'not-started';
   resources: SkillResource[];
   notes?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }

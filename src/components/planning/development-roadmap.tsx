@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,9 +20,6 @@ import {
   Loader2,
   BarChart3,
   Award,
-  Users,
-  BookOpen,
-  ArrowRight,
   CalendarDays
 } from "lucide-react";
 import { database } from "@/lib/abstractions";
@@ -90,7 +85,7 @@ export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: Development
     }
   };
 
-  const handleInputChange = (field: keyof RoadmapFormData, value: any) => {
+  const handleInputChange = (field: keyof RoadmapFormData, value: string | number | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -135,7 +130,7 @@ export function DevelopmentRoadmap({ onPlanCreated, onPlanUpdated }: Development
     }));
   };
 
-  const updateMilestone = (index: number, field: string, value: any) => {
+  const updateMilestone = (index: number, field: keyof Milestone, value: string | Date | number) => {
     setFormData(prev => ({
       ...prev,
       milestones: prev.milestones.map((milestone, i) => 

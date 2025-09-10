@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,6 @@ import {
   Target, 
   Lightbulb, 
   Clock, 
-  CheckCircle,
   AlertCircle,
   Star,
   Calendar,
@@ -22,7 +21,7 @@ import {
   Briefcase
 } from "lucide-react";
 import { database, analysis } from "@/lib/abstractions";
-import { Resume, Job, AnalysisResult, SkillsMatch, SkillsGap, Recommendation } from "@/lib/abstractions/types";
+import { Resume, Job, AnalysisResult } from "@/lib/abstractions/types";
 
 interface ResumeJobAnalysisProps {
   resumeId?: string;
@@ -40,23 +39,17 @@ export function ResumeJobAnalysis({ resumeId, jobId, onAnalysisComplete }: Resum
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (user?.id && isLoaded) {
-      loadUserData();
-    }
-  }, [user?.id, isLoaded]);
-
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async () => {
+    if (!user) return;
     try {
       setIsLoading(true);
       const [userResumes, userJobs] = await Promise.all([
-        database.getUserResumes(user!.id),
-        database.getUserJobs(user!.id)
+        database.getUserResumes(user.id),
+        database.getUserJobs(user.id)
       ]);
       setResumes(userResumes);
       setJobs(userJobs);
       
-      // Auto-select first items if available
       if (userResumes.length > 0 && !selectedResume) {
         setSelectedResume(userResumes[0].id);
       }
@@ -68,7 +61,13 @@ export function ResumeJobAnalysis({ resumeId, jobId, onAnalysisComplete }: Resum
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user, selectedResume, selectedJob]);
+
+  useEffect(() => {
+    if (user?.id && isLoaded) {
+      loadUserData();
+    }
+  }, [user?.id, isLoaded, loadUserData]);
 
   const runAnalysis = async () => {
     if (!selectedResume || !selectedJob) {
@@ -97,13 +96,6 @@ export function ResumeJobAnalysis({ resumeId, jobId, onAnalysisComplete }: Resum
     } finally {
       setIsAnalyzing(false);
     }
-  };
-
-  const getMatchColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    if (score >= 40) return 'text-orange-600';
-    return 'text-red-600';
   };
 
   const getMatchBadgeVariant = (level: string) => {

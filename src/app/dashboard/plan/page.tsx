@@ -8,16 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Target, 
   Calendar, 
-  TrendingUp, 
-  BookOpen, 
   Clock, 
-  CheckCircle,
-  AlertCircle,
-  Star,
   Award,
   BarChart3,
-  Users,
-  ArrowRight
 } from "lucide-react";
 import { DevelopmentRoadmap } from "@/components/planning/development-roadmap";
 import { SkillsTracking } from "@/components/planning/skills-tracking";

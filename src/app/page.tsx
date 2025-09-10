@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/button";
 import { 
   FileText, 
   Briefcase, 
@@ -49,7 +48,7 @@ export default function HomePage() {
               Everything you need to advance your career
             </h2>
             <p className="text-xl text-gray-600">
-              From resume building to career planning, we've got you covered
+              From resume building to career planning, we&apos;ve got you covered
             </p>
           </div>
 

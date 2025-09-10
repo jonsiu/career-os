@@ -18,7 +18,26 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "public/pdf.worker.min.js",
+      "convex/_generated/**",
     ],
+  },
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    rules: {
+      // General code quality rules
+      "prefer-const": "error",
+      "no-var": "error",
+      "no-console": "warn",
+      "eqeqeq": ["error", "always"],
+      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    },
+  },
+  {
+    files: [".ai/**/*.ts"],
+    rules: {
+      "no-console": "off",
+    },
   },
 ];
 

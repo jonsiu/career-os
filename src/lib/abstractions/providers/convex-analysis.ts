@@ -1,4 +1,4 @@
-import { AnalysisProvider, Resume, Job, User, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation } from '../types';
+import { AnalysisProvider, Resume, Job, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation, Skill, Milestone } from '../types';
 
 export class ConvexAnalysisProvider implements AnalysisProvider {
   async analyzeResume(resume: Resume, job?: Job): Promise<AnalysisResult> {
@@ -18,16 +18,13 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
       };
     }
 
-    // Extract skills from resume content (simplified parsing)
     const resumeContent = resume.content.toLowerCase();
     const jobRequirements = job.requirements.map(req => req.toLowerCase());
     
-    // Simple skills matching algorithm
-    const skillsMatch: any[] = [];
-    const gaps: any[] = [];
+    const skillsMatch: Skill[] = [];
+    const gaps: SkillsGap[] = [];
     const matchedSkills = new Set<string>();
     
-    // Common tech skills to look for
     const techSkills = [
       'javascript', 'python', 'java', 'react', 'node.js', 'sql', 'aws', 'docker',
       'kubernetes', 'typescript', 'angular', 'vue', 'mongodb', 'postgresql',
@@ -40,19 +37,11 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
       
       if (inResume && inJob) {
         skillsMatch.push({
-          skill: skill.charAt(0).toUpperCase() + skill.slice(1),
-          matchLevel: 'excellent',
-          confidence: 0.9,
-          relevance: 0.8
+          id: '',
+          name: skill.charAt(0).toUpperCase() + skill.slice(1),
+          level: 'intermediate',
         });
         matchedSkills.add(skill);
-      } else if (inResume && !inJob) {
-        skillsMatch.push({
-          skill: skill.charAt(0).toUpperCase() + skill.slice(1),
-          matchLevel: 'good',
-          confidence: 0.7,
-          relevance: 0.4
-        });
       } else if (!inResume && inJob) {
         gaps.push({
           skill: skill.charAt(0).toUpperCase() + skill.slice(1),
@@ -64,11 +53,9 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
       }
     });
 
-    // Calculate match score based on skills overlap
     const totalRequired = jobRequirements.length + gaps.length;
     const matchScore = Math.min(100, Math.round((matchedSkills.size / totalRequired) * 100));
 
-    // Experience level assessment
     const experienceMatch = {
       level: this.assessExperienceLevel(resumeContent),
       confidence: 0.8,
@@ -76,7 +63,6 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
       yearsActual: this.extractYearsExperience(resumeContent)
     };
 
-    // Generate recommendations
     const recommendations = this.generateRecommendations(gaps, skillsMatch);
 
     return {
@@ -92,7 +78,6 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
   async analyzeCareerTransition(currentRole: string, targetRole: string, experience?: string): Promise<CareerAnalysis> {
     const yearsExperience = experience ? this.extractYearsExperience(experience) : 3;
     
-    // Define transition paths for common roles
     const transitionPaths: Record<string, string[]> = {
       'engineering manager': ['Senior Developer', 'Tech Lead', 'Engineering Manager'],
       'product manager': ['Developer', 'Senior Developer', 'Product Manager'],
@@ -104,10 +89,8 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
     const path = transitionPaths[targetRole.toLowerCase()] || ['Current Role', targetRole];
     const timeToTarget = Math.max(6, Math.min(24, (path.length - 1) * 6 + Math.floor(Math.random() * 6)));
 
-    // Generate realistic milestones
     const keyMilestones = this.generateMilestones(path, timeToTarget);
 
-    // Assess risks and opportunities based on current role
     const risks = this.assessRisks(currentRole, targetRole, yearsExperience);
     const opportunities = this.assessOpportunities(currentRole, targetRole, yearsExperience);
 
@@ -137,7 +120,6 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
     return analysis.recommendations;
   }
 
-  // AI-powered resume parsing and structuring
   async parseResumeContent(content: string): Promise<{
     personalInfo: {
       firstName: string;
@@ -181,9 +163,6 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
     }>;
   }> {
     try {
-      // For now, use intelligent rule-based parsing
-      // In production, this would call OpenAI GPT-4 or Claude for parsing
-      
       const lines = content.split('\n').map(line => line.trim()).filter(line => line);
       
       const result = {
@@ -201,19 +180,16 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
         projects: [],
       };
 
-      // Extract email
       const emailMatch = content.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/);
       if (emailMatch) {
         result.personalInfo.email = emailMatch[0];
       }
 
-      // Extract phone
       const phoneMatch = content.match(/(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
       if (phoneMatch) {
         result.personalInfo.phone = phoneMatch[0];
       }
 
-      // Intelligent section detection
       let currentSection = '';
       let currentExperience: {
         title: string;
@@ -234,21 +210,11 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
         gpa: string;
         description: string;
       } | null = null;
-      let currentProject: {
-        name: string;
-        description: string;
-        technologies: string[];
-        url: string;
-        startDate: string;
-        endDate: string;
-        current: boolean;
-      } | null = null;
 
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const lowerLine = line.toLowerCase();
 
-        // Detect sections
         if (lowerLine.includes('experience') || lowerLine.includes('work history') || lowerLine.includes('employment')) {
           currentSection = 'experience';
           continue;
@@ -266,12 +232,9 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
           continue;
         }
 
-        // Parse based on current section
         switch (currentSection) {
           case 'experience':
-            // Look for job title patterns (usually in caps or followed by company)
             if (line.length > 3 && line.length < 100 && !line.includes('@') && !line.includes('http')) {
-              // Check if this looks like a job title + company
               if (line.includes(' at ') || line.includes(' - ') || line.includes(' | ')) {
                 if (currentExperience) {
                   result.experience.push(currentExperience);
@@ -288,20 +251,17 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
                   description: ''
                 };
               } else if (currentExperience && line.length > 20) {
-                // This might be a description line
                 currentExperience.description += (currentExperience.description ? ' ' : '') + line;
               }
             }
             break;
 
           case 'education':
-            // Look for degree + institution patterns
             if (line.length > 5 && line.length < 150 && !line.includes('@')) {
               if (currentEducation) {
                 result.education.push(currentEducation);
               }
               
-              // Common patterns: "Bachelor of Science in Computer Science - University of California"
               const eduParts = line.split(/ - | at | \| /);
               currentEducation = {
                 degree: eduParts[0]?.trim() || '',
@@ -317,19 +277,17 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
             break;
 
           case 'skills':
-            // Extract skills (usually comma-separated or bullet points)
             if (line.includes(',') || line.includes('•') || line.includes('-')) {
               const skillItems = line.split(/[,•-]/).map(s => s.trim()).filter(s => s.length > 1);
               skillItems.forEach(skill => {
                 if (skill.length > 2 && skill.length < 50) {
                   result.skills.push({
                     name: skill,
-                    level: 'intermediate' // Default level, could be enhanced with AI
+                    level: 'intermediate'
                   });
                 }
               });
             } else if (line.length > 2 && line.length < 50 && !line.includes('@')) {
-              // Single skill on a line
               result.skills.push({
                 name: line,
                 level: 'intermediate'
@@ -345,7 +303,6 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
         }
       }
 
-      // Add any remaining items
       if (currentExperience) {
         result.experience.push(currentExperience);
       }
@@ -353,7 +310,6 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
         result.education.push(currentEducation);
       }
 
-      // Try to extract name from first few lines if not found
       if (!result.personalInfo.firstName) {
         const firstLines = lines.slice(0, 10);
         for (const line of firstLines) {
@@ -368,7 +324,6 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
         }
       }
 
-      // Try to extract location from lines containing city/state patterns
       if (!result.personalInfo.location) {
         const locationPattern = /([A-Z][a-z]+(?:[\s,]+[A-Z][a-z]+)*),\s*([A-Z]{2})/;
         for (const line of lines) {
@@ -383,7 +338,6 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
       return result;
     } catch (error) {
       console.error('Error parsing resume content:', error);
-      // Return basic structure if parsing fails
       return {
         personalInfo: {
           firstName: '',
@@ -417,7 +371,7 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
       const match = req.match(yearPattern);
       if (match) return parseInt(match[1]);
     }
-    return 3; // Default
+    return 3;
   }
 
   private extractYearsExperience(resumeContent: string): number {
@@ -425,16 +379,15 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
     const match = resumeContent.match(yearPattern);
     if (match) return parseInt(match[1]);
     
-    // Estimate based on content
     if (resumeContent.includes('senior') || resumeContent.includes('lead')) return 5;
     if (resumeContent.includes('junior')) return 1;
-    return 3; // Default
+    return 3;
   }
 
-  private generateRecommendations(gaps: SkillsGap[], skillsMatch: any[]): Recommendation[] {
+  private generateRecommendations(gaps: SkillsGap[], skillsMatch: Skill[]): Recommendation[] {
     const recommendations: Recommendation[] = [];
     
-    gaps.forEach((gap, index) => {
+    gaps.forEach((gap) => {
       recommendations.push({
         type: 'skill',
         title: `Learn ${gap.skill}`,
@@ -445,7 +398,6 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
       });
     });
 
-    // Add general recommendations
     if (skillsMatch.length > 0) {
       recommendations.push({
         type: 'skill',
@@ -472,8 +424,8 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
     }
   }
 
-  private generateMilestones(path: string[], totalMonths: number): any[] {
-    const milestones = [];
+  private generateMilestones(path: string[], totalMonths: number): Milestone[] {
+    const milestones: Milestone[] = [];
     const monthsPerStep = Math.floor(totalMonths / (path.length - 1));
     
     for (let i = 1; i < path.length; i++) {
@@ -487,7 +439,7 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
         targetDate,
         status: 'pending',
         dependencies: i === 1 ? [] : [`milestone_${i - 1}`],
-        effort: Math.floor(Math.random() * 40) + 20 // 20-60 hours
+        effort: Math.floor(Math.random() * 40) + 20
       });
     }
     

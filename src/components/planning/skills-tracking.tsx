@@ -1,8 +1,6 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,23 +10,17 @@ import { Progress } from "@/components/ui/progress";
 import { 
   Award, 
   TrendingUp, 
-  Clock, 
-  BookOpen,
   Plus,
   Edit3,
   Trash2,
   Save,
   Loader2,
-  Star,
   Target,
-  Calendar,
   CheckCircle,
-  AlertCircle,
   ExternalLink,
-  Filter
 } from "lucide-react";
 import { database } from "@/lib/abstractions";
-import { Skill, SkillResource } from "@/lib/abstractions/types";
+import { Skill } from "@/lib/abstractions/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 
@@ -62,16 +54,11 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    if (user?.id && isLoaded) {
-      loadUserSkills();
-    }
-  }, [user?.id, isLoaded]);
-
-  const loadUserSkills = async () => {
+  const loadUserSkills = useCallback(async () => {
+    if (!user) return;
     try {
       setIsLoading(true);
-      const userSkills = await database.getUserSkills(user!.id);
+      const userSkills = await database.getUserSkills(user.id);
       setSkills(userSkills);
     } catch (error) {
       console.error('Failed to load skills:', error);
@@ -80,12 +67,17 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
         description: 'Could not load your skills. Please try again later.',
         variant: 'destructive',
       });
-      // If database fails, start with empty skills array
       setSkills([]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user, toast]);
+
+  useEffect(() => {
+    if (user?.id && isLoaded) {
+      loadUserSkills();
+    }
+  }, [user?.id, isLoaded, loadUserSkills]);
 
   const addSkill = () => {
     const newSkill: Omit<Skill, 'id' | 'createdAt' | 'updatedAt'> = {
@@ -102,7 +94,7 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
       resources: [],
       notes: ''
     };
-    setEditingSkill(newSkill as any);
+    setEditingSkill(newSkill as Skill);
     setIsAddingSkill(true);
   };
 
@@ -118,7 +110,6 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
 
     try {
       if (isAddingSkill) {
-        // Create new skill in database
         const newSkill = await database.createSkill({
           userId: user!.id,
           name: editingSkill.name,
@@ -141,7 +132,6 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
         });
         if (onSkillUpdated) onSkillUpdated(newSkill);
       } else {
-        // Update existing skill in database
         const updatedSkill = await database.updateSkill(editingSkill.id, {
           name: editingSkill.name,
           category: editingSkill.category,
@@ -210,7 +200,7 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
     ));
   };
 
-  const updateResource = (skillId: string, resourceIndex: number, field: string, value: any) => {
+  const updateResource = (skillId: string, resourceIndex: number, field: keyof Omit<Skill, "id" | "createdAt" | "updatedAt">, value: string | boolean | number) => {
     setSkills(prev => prev.map(skill => 
       skill.id === skillId 
         ? {
@@ -581,7 +571,7 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
                 <select
                   id="current-level"
                   value={editingSkill.currentLevel}
-                  onChange={(e) => setEditingSkill({...editingSkill, currentLevel: e.target.value as any})}
+                  onChange={(e) => setEditingSkill({...editingSkill, currentLevel: e.target.value as Skill['currentLevel']})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {skillLevels.map(level => (
@@ -594,7 +584,7 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
                 <select
                   id="target-level"
                   value={editingSkill.targetLevel}
-                  onChange={(e) => setEditingSkill({...editingSkill, targetLevel: e.target.value as any})}
+                  onChange={(e) => setEditingSkill({...editingSkill, targetLevel: e.target.value as Skill['targetLevel']})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {skillLevels.map(level => (
@@ -610,7 +600,7 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
                 <select
                   id="priority"
                   value={editingSkill.priority}
-                  onChange={(e) => setEditingSkill({...editingSkill, priority: e.target.value as any})}
+                  onChange={(e) => setEditingSkill({...editingSkill, priority: e.target.value as Skill['priority']})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="low">Low</option>
@@ -623,7 +613,7 @@ export function SkillsTracking({ onSkillUpdated }: SkillsTrackingProps) {
                 <select
                   id="status"
                   value={editingSkill.status}
-                  onChange={(e) => setEditingSkill({...editingSkill, status: e.target.value as any})}
+                  onChange={(e) => setEditingSkill({...editingSkill, status: e.target.value as Skill['status']})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="not-started">Not Started</option>

@@ -9,7 +9,8 @@
     "dev:full": "concurrently \"npm run dev\" \"npm run dev:convex\"",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.6",
@@ -39,6 +40,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",

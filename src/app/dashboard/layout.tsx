@@ -9,7 +9,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isSyncing, isSynced, error: syncError } = useUserSync();
+  const { isSyncing, error: syncError } = useUserSync();
 
   // Show loading state while syncing user
   if (isSyncing) {

@@ -23,11 +23,10 @@ import {
   CheckCircle,
   Loader2
 } from "lucide-react";
-import { database, analysis } from "@/lib/abstractions";
+import { analysis } from "@/lib/abstractions";
 import { Resume } from "@/lib/abstractions/types";
 import React from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useUser } from "@clerk/nextjs";
 
 interface ResumeBuilderProps {
   userId: string;
@@ -94,7 +93,6 @@ const steps = [
 ];
 
 export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initialData }: ResumeBuilderProps) {
-  const { user } = useUser();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
@@ -130,8 +128,6 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
   // Initialize form data when initialData changes
   useEffect(() => {
     if (initialData) {
-      let parsedData: ResumeFormData | null = null;
-      
       if (initialData.content) {
         parseResumeContent(initialData.content).then(data => {
           if (data) {
@@ -189,7 +185,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
     }
   };
 
-  const handleInputChange = (section: keyof ResumeFormData, field: string, value: any) => {
+  const handleInputChange = (section: keyof ResumeFormData, field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [section]: {
@@ -199,7 +195,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
     }));
   };
 
-  const handleExperienceChange = (index: number, field: string, value: any) => {
+  const handleExperienceChange = (index: number, field: string, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       experience: prev.experience.map((item, i) => 
@@ -208,7 +204,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
     }));
   };
 
-  const handleEducationChange = (index: number, field: string, value: any) => {
+  const handleEducationChange = (index: number, field: string, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       education: prev.education.map((item, i) => 
@@ -217,7 +213,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
     }));
   };
 
-  const handleSkillsChange = (index: number, field: string, value: any) => {
+  const handleSkillsChange = (index: number, field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       skills: prev.skills.map((item, i) => 
@@ -226,7 +222,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
     }));
   };
 
-  const handleProjectsChange = (index: number, field: string, value: any) => {
+  const handleProjectsChange = (index: number, field: string, value: string | boolean | string[]) => {
     setFormData(prev => ({
       ...prev,
       projects: prev.projects.map((item, i) => 
@@ -325,53 +321,6 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
       ...prev,
       projects: prev.projects.filter((_, i) => i !== index)
     }));
-  };
-
-  const getDefaultItem = (section: keyof ResumeFormData) => {
-    switch (section) {
-      case 'experience':
-        return {
-          id: Date.now().toString(),
-          title: '',
-          company: '',
-          location: '',
-          startDate: '',
-          endDate: '',
-          current: false,
-          description: '',
-        };
-      case 'education':
-        return {
-          id: Date.now().toString(),
-          degree: '',
-          institution: '',
-          location: '',
-          startDate: '',
-          endDate: '',
-          current: false,
-          gpa: '',
-          description: '',
-        };
-      case 'skills':
-        return {
-          id: Date.now().toString(),
-          name: '',
-          level: 'intermediate' as const,
-        };
-      case 'projects':
-        return {
-          id: Date.now().toString(),
-          name: '',
-          description: '',
-          technologies: [],
-          url: '',
-          startDate: '',
-          endDate: '',
-          current: false,
-        };
-      default:
-        return {};
-    }
   };
 
   const nextStep = () => {
@@ -525,7 +474,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
               <div className="text-center py-8 text-gray-500">
                 <Briefcase className="mx-auto h-12 w-12 mb-4" />
                 <p>No work experience added yet.</p>
-                <p className="text-sm">Click "Add Experience" to get started.</p>
+                <p className="text-sm">Click &quot;Add Experience&quot; to get started.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -635,7 +584,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
               <div className="text-center py-8 text-gray-500">
                 <GraduationCap className="mx-auto h-12 w-12 mb-4" />
                 <p>No education added yet.</p>
-                <p className="text-sm">Click "Add Education" to get started.</p>
+                <p className="text-sm">Click &quot;Add Education&quot; to get started.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -754,7 +703,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
               <div className="text-center py-8 text-gray-500">
                 <Award className="mx-auto h-12 w-12 mb-4" />
                 <p>No skills added yet.</p>
-                <p className="text-sm">Click "Add Skill" to get started.</p>
+                <p className="text-sm">Click &quot;Add Skill&quot; to get started.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -815,7 +764,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
               <div className="text-center py-8 text-gray-500">
                 <FileText className="mx-auto h-12 w-12 mb-4" />
                 <p>No projects added yet.</p>
-                <p className="text-sm">Click "Add Project" to get started.</p>
+                <p className="text-sm">Click &quot;Add Project&quot; to get started.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -1110,7 +1059,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
             {steps[currentStep].title}
           </CardTitle>
           <CardDescription>
-            {currentStep === 0 && "Let's start with your basic information"}
+            {currentStep === 0 && "Let&apos;s start with your basic information"}
             {currentStep === 1 && "Add your work experience and achievements"}
             {currentStep === 2 && "Include your educational background"}
             {currentStep === 3 && "List your key skills and proficiency levels"}

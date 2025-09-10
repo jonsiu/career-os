@@ -176,6 +176,62 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
     }
   }
 
+  // AI-powered resume parsing
+  async parseResumeContent(content: string): Promise<{
+    personalInfo: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+      location: string;
+      summary: string;
+    };
+    experience: Array<{
+      title: string;
+      company: string;
+      location: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+      description: string;
+    }>;
+    education: Array<{
+      degree: string;
+      institution: string;
+      location: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+      gpa?: string;
+      description: string;
+    }>;
+    skills: Array<{
+      name: string;
+      level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+    }>;
+    projects: Array<{
+      name: string;
+      description: string;
+      technologies: string[];
+      url?: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+    }>;
+  }> {
+    try {
+      console.log('🤖 ConvexDatabaseProvider: Parsing resume content with AI...');
+      const parsedData = await convexClient.action(api.resumes.parseResumeWithAI, {
+        content: content
+      });
+      console.log('✅ ConvexDatabaseProvider: AI parsing completed successfully');
+      return parsedData;
+    } catch (error) {
+      console.error('❌ ConvexDatabaseProvider: AI parsing failed:', error);
+      throw error;
+    }
+  }
+
   async getResumeById(id: string): Promise<Resume | null> {
     try {
       const result = await convexClient.query(api.resumes.getById, { id: id as Id<"resumes"> });

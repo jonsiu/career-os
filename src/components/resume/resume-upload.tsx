@@ -47,8 +47,10 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
     setErrorMessage('');
 
     try {
-      const content = await parseFile(file);
-      setParsedContent(content);
+      // Step 1: Extract raw text from PDF/DOCX
+      const rawContent = await parseFile(file);
+      setParsedContent(rawContent);
+      setUploadProgress(25);
 
       if (!resumeTitle) {
         setResumeTitle(file.name.replace(/\.[^/.]+$/, ''));
@@ -63,19 +65,29 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
         convexUserId = convexUser.id;
       }
 
+      // Step 2: Upload file to storage
       const filePath = await fileStorage.uploadFile(file, `resumes/${userId}`, convexUserId);
       setUploadProgress(50);
 
+      // Step 3: Parse content with AI to get structured data
+      console.log('🤖 ResumeUpload: Starting AI parsing...');
+      const structuredData = await database.parseResumeContent(rawContent);
+      console.log('✅ ResumeUpload: AI parsing completed', structuredData);
+      setUploadProgress(75);
+
+      // Step 4: Store both raw content and structured data
       const resume = await database.createResume({
         userId,
         title: resumeTitle || file.name,
-        content,
+        content: JSON.stringify(structuredData), // Store structured data instead of raw text
         filePath,
         metadata: {
           originalFileName: file.name,
           fileSize: file.size,
           fileType: file.type,
-          uploadedAt: new Date().toISOString()
+          uploadedAt: new Date().toISOString(),
+          rawContent: rawContent, // Keep raw content in metadata for reference
+          parsedWithAI: true
         }
       });
 
@@ -83,8 +95,8 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
       setUploadStatus('success');
       
       toast({
-        title: 'Resume uploaded successfully',
-        description: `Resume "${resumeTitle || file.name}" has been uploaded and parsed.`,
+        title: 'Resume uploaded and parsed successfully',
+        description: `Resume "${resumeTitle || file.name}" has been uploaded and parsed with AI.`,
       });
       
       if (onResumeCreated) {

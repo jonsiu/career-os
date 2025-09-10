@@ -42,4 +42,9 @@ export class ServiceFactory {
       return new ConvexAnalysisProvider();
     }
   }
+
+  // Get database provider for AI parsing (server-side)
+  getDatabaseProvider(): DatabaseProvider {
+    return new ConvexDatabaseProvider();
+  }
 }

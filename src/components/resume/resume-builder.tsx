@@ -116,7 +116,20 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
   // Parse uploaded resume content and populate form fields
   const parseResumeContent = async (content: string) => {
     try {
-      // Use AI-powered parsing from the analysis provider
+      // Check if content is already structured data (JSON)
+      try {
+        const parsedData = JSON.parse(content);
+        // If it's already structured data, return it directly
+        if (parsedData.personalInfo || parsedData.experience || parsedData.education || parsedData.skills || parsedData.projects) {
+          console.log('✅ ResumeBuilder: Content is already structured data');
+          return parsedData;
+        }
+      } catch (jsonError) {
+        // Content is not JSON, proceed with AI parsing
+        console.log('🤖 ResumeBuilder: Content is raw text, parsing with AI...');
+      }
+
+      // Use AI-powered parsing from the analysis provider for raw text
       const parsedData = await analysis.parseResumeContent(content);
       return parsedData;
     } catch (error) {
@@ -189,7 +202,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
     setFormData(prev => ({
       ...prev,
       [section]: {
-        ...prev[section],
+        ...(prev[section] as any),
         [field]: value
       }
     }));
@@ -356,9 +369,12 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
         
         if (onResumeUpdated) {
           const updatedResume: Resume = {
-            ...initialData,
+            id: initialData.id,
+            userId: initialData.userId || '',
             title: formData.title,
             content: JSON.stringify(formData),
+            filePath: initialData.filePath,
+            createdAt: initialData.createdAt || new Date(),
             updatedAt: new Date(),
             metadata: resumeData.metadata,
           };

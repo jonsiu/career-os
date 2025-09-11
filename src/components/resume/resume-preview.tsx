@@ -125,8 +125,8 @@ export function ResumePreview({ resumeData }: ResumePreviewProps) {
               <h2 className="text-xl font-semibold text-gray-900">Professional Experience</h2>
             </div>
             <div className="space-y-6">
-              {resumeData.experience.map((exp) => (
-                <div key={exp.id} className="border-l-4 border-blue-500 pl-4">
+              {resumeData.experience.map((exp, index) => (
+                <div key={exp.id || `exp-${index}`} className="border-l-4 border-blue-500 pl-4">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h3 className="font-semibold text-gray-900">{exp.title}</h3>
@@ -159,8 +159,8 @@ export function ResumePreview({ resumeData }: ResumePreviewProps) {
               <h2 className="text-xl font-semibold text-gray-900">Education</h2>
             </div>
             <div className="space-y-4">
-              {resumeData.education.map((edu) => (
-                <div key={edu.id} className="border-l-4 border-green-500 pl-4">
+              {resumeData.education.map((edu, index) => (
+                <div key={edu.id || `edu-${index}`} className="border-l-4 border-green-500 pl-4">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h3 className="font-semibold text-gray-900">{edu.degree}</h3>
@@ -196,9 +196,9 @@ export function ResumePreview({ resumeData }: ResumePreviewProps) {
               <h2 className="text-xl font-semibold text-gray-900">Skills</h2>
             </div>
             <div className="flex flex-wrap gap-2">
-              {resumeData.skills.map((skill) => (
+              {resumeData.skills.map((skill, index) => (
                 <Badge 
-                  key={skill.id} 
+                  key={skill.id || `skill-${index}`} 
                   variant="secondary" 
                   className="bg-purple-100 text-purple-800 hover:bg-purple-200"
                 >
@@ -217,8 +217,8 @@ export function ResumePreview({ resumeData }: ResumePreviewProps) {
               <h2 className="text-xl font-semibold text-gray-900">Projects</h2>
             </div>
             <div className="space-y-4">
-              {resumeData.projects.map((project) => (
-                <div key={project.id} className="border-l-4 border-orange-500 pl-4">
+              {resumeData.projects.map((project, index) => (
+                <div key={project.id || `project-${index}`} className="border-l-4 border-orange-500 pl-4">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h3 className="font-semibold text-gray-900">{project.name}</h3>

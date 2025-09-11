@@ -100,13 +100,6 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
     });
   };
 
-  const getFileTypeBadge = (resume: Resume) => {
-    if (resume.filePath) {
-      const extension = resume.filePath.split('.').pop()?.toUpperCase();
-      return <Badge variant="secondary">{extension || 'FILE'}</Badge>;
-    }
-    return <Badge variant="outline">Manual</Badge>;
-  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -118,9 +111,38 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                 <CardTitle className="text-lg font-semibold text-gray-900 truncate">
                   {resume.title}
                 </CardTitle>
-                <CardDescription className="flex items-center gap-2 mt-1">
-                  <Calendar className="h-4 w-4" />
-                  {formatDate(resume.updatedAt)}
+                <CardDescription className="mt-1">
+                  {(() => {
+                    try {
+                      const resumeData = JSON.parse(resume.content);
+                      const name = `${resumeData.personalInfo?.firstName || ''} ${resumeData.personalInfo?.lastName || ''}`.trim();
+                      const summary = resumeData.personalInfo?.summary || '';
+                      return (
+                        <div>
+                          {name && <div className="font-medium text-gray-700">{name}</div>}
+                          {summary && (
+                            <div className="text-sm text-gray-500 mt-1 line-clamp-2">
+                              {summary.length > 100 ? `${summary.substring(0, 100)}...` : summary}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                            <Calendar className="h-3 w-3" />
+                            Updated {formatDate(resume.updatedAt)}
+                          </div>
+                        </div>
+                      );
+                    } catch (error) {
+                      return (
+                        <div>
+                          <div className="text-sm text-gray-500">Raw resume content</div>
+                          <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                            <Calendar className="h-3 w-3" />
+                            Updated {formatDate(resume.updatedAt)}
+                          </div>
+                        </div>
+                      );
+                    }
+                  })()}
                 </CardDescription>
               </div>
               <DropdownMenu>
@@ -160,12 +182,18 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
             <div className="space-y-3">
               {/* File Type Badge */}
               <div className="flex items-center gap-2">
-                {getFileTypeBadge(resume)}
-                {resume.metadata?.fileSize && (
-                  <span className="text-xs text-gray-500">
-                    {(resume.metadata.fileSize / 1024).toFixed(1)} KB
-                  </span>
+                {resume.filePath ? (
+                  <Badge variant="secondary">
+                    {resume.filePath.split('.').pop()?.toUpperCase() || 'FILE'}
+                  </Badge>
+                ) : (
+                  <Badge variant="outline">Manual</Badge>
                 )}
+                {resume.metadata?.fileSize ? (
+                  <span className="text-xs text-gray-500">
+                    {(Number(resume.metadata.fileSize) / 1024).toFixed(1)} KB
+                  </span>
+                ) : null}
               </div>
 
               {/* Content Preview */}

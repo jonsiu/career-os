@@ -5,6 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { ResumeUpload } from "@/components/resume/resume-upload";
 import { ResumeBuilder } from "@/components/resume/resume-builder";
 import { ResumeList } from "@/components/resume/resume-list";
+import { ResumePreview } from "@/components/resume/resume-preview";
 import { Resume } from "@/lib/abstractions/types";
 import { database } from "@/lib/abstractions";
 import { Button } from "@/components/ui/button";
@@ -165,31 +166,57 @@ export default function ResumePage() {
       {activeTab === 'list' && (
         <>
           {viewingResume && (
-            <Card className="mb-6">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-blue-600" />
-                      {viewingResume.title}
-                    </CardTitle>
-                    <CardDescription>
-                      Resume Content Preview
-                    </CardDescription>
-                  </div>
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-blue-600" />
+                    {viewingResume.title}
+                  </h2>
+                  <p className="text-gray-600">Resume Preview</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => handleResumeEdit(viewingResume)} 
+                    variant="outline" 
+                    size="sm"
+                  >
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    Edit Resume
+                  </Button>
                   <Button onClick={handleCloseView} variant="outline" size="sm">
                     Close
                   </Button>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="max-h-96 overflow-y-auto p-4 bg-gray-50 rounded-lg">
-                  <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono">
-                    {viewingResume.content}
-                  </pre>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+              
+              <div className="bg-gray-50 p-4 rounded-lg">
+                {(() => {
+                  try {
+                    const resumeData = JSON.parse(viewingResume.content);
+                    return <ResumePreview resumeData={resumeData} />;
+                  } catch (error) {
+                    // Fallback for raw text content
+                    return (
+                      <Card>
+                        <CardContent className="p-6">
+                          <div className="text-center text-gray-500">
+                            <FileText className="mx-auto h-12 w-12 mb-4" />
+                            <h3 className="text-lg font-medium mb-2">Raw Resume Content</h3>
+                            <p className="text-sm mb-4">This resume contains raw text that hasn't been parsed yet.</p>
+                            <div className="max-h-96 overflow-y-auto p-4 bg-white rounded border">
+                              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono">
+                                {viewingResume.content}
+                              </pre>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  }
+                })()}
+              </div>
+            </div>
           )}
           
           <div className="space-y-4">

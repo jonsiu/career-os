@@ -108,7 +108,7 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-lg font-semibold text-gray-900 truncate">
+                <CardTitle className="text-xl font-bold text-gray-900 truncate">
                   {resume.title}
                 </CardTitle>
                 <CardDescription className="mt-1">
@@ -116,15 +116,14 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                     try {
                       const resumeData = JSON.parse(resume.content);
                       const name = `${resumeData.personalInfo?.firstName || ''} ${resumeData.personalInfo?.lastName || ''}`.trim();
-                      const summary = resumeData.personalInfo?.summary || '';
                       return (
                         <div>
                           {name && (
-                            <div className="font-medium text-gray-700 text-base mb-1">
+                            <div className="font-medium text-gray-600 text-sm mb-2">
                               👤 {name}
                             </div>
                           )}
-                          <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                          <div className="flex items-center gap-2 text-xs text-gray-400">
                             <Calendar className="h-3 w-3" />
                             Updated {formatDate(resume.updatedAt)}
                           </div>
@@ -187,7 +186,7 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                 <div className="flex items-center gap-2">
                   {resume.filePath ? (
                     <Badge variant="secondary" className="text-xs">
-                      📄 {resume.filePath.split('.').pop()?.toUpperCase() || 'FILE'}
+                      📄 {typeof resume.metadata?.originalFileName === 'string' ? resume.metadata.originalFileName.split('.').pop()?.toUpperCase() || 'FILE' : 'FILE'}
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="text-xs">
@@ -200,47 +199,16 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                     </span>
                   ) : null}
                 </div>
-                {(() => {
-                  try {
-                    const resumeData = JSON.parse(resume.content);
-                    const isComplete = resumeData.personalInfo?.firstName && 
-                                     resumeData.personalInfo?.email && 
-                                     (resumeData.experience?.length > 0 || resumeData.education?.length > 0);
-                    return isComplete ? (
-                      <Badge variant="default" className="text-xs bg-green-100 text-green-800">
-                        ✅ Complete
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-xs text-orange-600 border-orange-200">
-                        ⚠️ Incomplete
-                      </Badge>
-                    );
-                  } catch (error) {
-                    return (
-                      <Badge variant="outline" className="text-xs text-gray-500">
-                        📝 Raw Text
-                      </Badge>
-                    );
-                  }
-                })()}
               </div>
 
-              {/* Simple Resume Info */}
+              {/* Resume Summary */}
               <div className="text-sm text-gray-600">
                 {(() => {
                   try {
                     const resumeData = JSON.parse(resume.content);
-                    const name = `${resumeData.personalInfo?.firstName || ''} ${resumeData.personalInfo?.lastName || ''}`.trim();
                     return (
-                      <div className="space-y-1">
-                        {name && (
-                          <div className="text-gray-700 font-medium">
-                            👤 {name}
-                          </div>
-                        )}
-                        <div className="text-xs text-gray-500">
-                          {resumeData.experience?.length || 0} experiences • {resumeData.education?.length || 0} education • {resumeData.skills?.length || 0} skills
-                        </div>
+                      <div className="text-xs text-gray-500">
+                        {resumeData.experience?.length || 0} position{(resumeData.experience?.length || 0) !== 1 ? 's' : ''} • {resumeData.education?.length || 0} degree{(resumeData.education?.length || 0) !== 1 ? 's' : ''} • {resumeData.skills?.length || 0} skill{(resumeData.skills?.length || 0) !== 1 ? 's' : ''}
                       </div>
                     );
                   } catch (error) {
@@ -251,8 +219,18 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                       </div>
                     );
                   }
-                })()}
+                })() as React.ReactNode}
               </div>
+
+              {/* File Metadata */}
+              {resume.metadata?.originalFileName ? (
+                <div className="text-xs text-gray-400 border-t pt-2">
+                  <div className="flex items-center gap-1">
+                    <FileText className="h-3 w-3" />
+                    <span>Original file: {String(resume.metadata.originalFileName)}</span>
+                  </div>
+                </div>
+              ) : null}
 
               {/* Quick Actions */}
               <div className="flex gap-2 pt-2">

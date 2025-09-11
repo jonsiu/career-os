@@ -163,7 +163,10 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
       if (initialData.content) {
         parseResumeContent(initialData.content).then(data => {
           if (data) {
-            setFormData(data);
+            setFormData({
+              ...data,
+              title: initialData.title || data.title || 'My Professional Resume'
+            });
             toast({
               title: 'Resume loaded',
               description: 'Resume content has been parsed and loaded into the form.',
@@ -428,6 +431,23 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
       case 0: // Personal Info
         return (
           <div className="space-y-6">
+            {/* Resume Title */}
+            <div className="space-y-2">
+              <Label htmlFor="resumeTitle" className="text-base font-medium">
+                Resume Title *
+              </Label>
+              <Input
+                id="resumeTitle"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="e.g., Senior Software Engineer - Tech Lead, Marketing Manager Resume 2024"
+                className="text-base"
+              />
+              <p className="text-sm text-gray-500">
+                Give your resume a meaningful name to help you identify it later
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name *</Label>

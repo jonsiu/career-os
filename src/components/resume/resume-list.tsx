@@ -124,11 +124,6 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                               👤 {name}
                             </div>
                           )}
-                          {summary && (
-                            <div className="text-sm text-gray-500 mt-1 line-clamp-2 bg-gray-50 p-2 rounded">
-                              {summary.length > 120 ? `${summary.substring(0, 120)}...` : summary}
-                            </div>
-                          )}
                           <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
                             <Calendar className="h-3 w-3" />
                             Updated {formatDate(resume.updatedAt)}
@@ -230,75 +225,29 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                 })()}
               </div>
 
-              {/* Resume Preview */}
+              {/* Simple Resume Info */}
               <div className="text-sm text-gray-600">
                 {(() => {
                   try {
                     const resumeData = JSON.parse(resume.content);
+                    const name = `${resumeData.personalInfo?.firstName || ''} ${resumeData.personalInfo?.lastName || ''}`.trim();
                     return (
-                      <div className="space-y-2">
-                        {/* Contact Info */}
-                        <div className="flex items-center gap-2 text-xs">
-                          {resumeData.personalInfo?.email && (
-                            <span className="text-blue-600">📧 {resumeData.personalInfo.email}</span>
-                          )}
-                          {resumeData.personalInfo?.phone && (
-                            <span className="text-green-600">📞 {resumeData.personalInfo.phone}</span>
-                          )}
+                      <div className="space-y-1">
+                        {name && (
+                          <div className="text-gray-700 font-medium">
+                            👤 {name}
+                          </div>
+                        )}
+                        <div className="text-xs text-gray-500">
+                          {resumeData.experience?.length || 0} experiences • {resumeData.education?.length || 0} education • {resumeData.skills?.length || 0} skills
                         </div>
-                        
-                        {/* Experience Preview */}
-                        {resumeData.experience && resumeData.experience.length > 0 && (
-                          <div className="text-xs">
-                            <span className="font-medium text-gray-700">💼 {resumeData.experience.length} Experience{resumeData.experience.length !== 1 ? 's' : ''}</span>
-                            {resumeData.experience[0] && (
-                              <div className="text-gray-500 mt-1">
-                                {resumeData.experience[0].title} at {resumeData.experience[0].company}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        
-                        {/* Education Preview */}
-                        {resumeData.education && resumeData.education.length > 0 && (
-                          <div className="text-xs">
-                            <span className="font-medium text-gray-700">🎓 {resumeData.education.length} Education{resumeData.education.length !== 1 ? 's' : ''}</span>
-                            {resumeData.education[0] && (
-                              <div className="text-gray-500 mt-1">
-                                {resumeData.education[0].degree} from {resumeData.education[0].institution}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        
-                        {/* Skills Preview */}
-                        {resumeData.skills && resumeData.skills.length > 0 && (
-                          <div className="text-xs">
-                            <span className="font-medium text-gray-700">🛠️ {resumeData.skills.length} Skill{resumeData.skills.length !== 1 ? 's' : ''}</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {resumeData.skills.slice(0, 3).map((skill: any, index: number) => (
-                                <span key={index} className="bg-gray-100 text-gray-600 px-1 py-0.5 rounded text-xs">
-                                  {skill.name}
-                                </span>
-                              ))}
-                              {resumeData.skills.length > 3 && (
-                                <span className="text-gray-400 text-xs">+{resumeData.skills.length - 3} more</span>
-                              )}
-                            </div>
-                          </div>
-                        )}
                       </div>
                     );
                   } catch (error) {
                     return (
-                      <div className="text-xs text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <FileText className="h-3 w-3" />
-                          <span>Raw resume content</span>
-                        </div>
-                        <div className="mt-1 text-gray-400">
-                          {resume.content.length} characters
-                        </div>
+                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                        <FileText className="h-3 w-3" />
+                        <span>Raw resume content</span>
                       </div>
                     );
                   }

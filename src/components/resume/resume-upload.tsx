@@ -52,8 +52,10 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
       setParsedContent(rawContent);
       setUploadProgress(25);
 
-      if (!resumeTitle) {
-        setResumeTitle(file.name.replace(/\.[^/.]+$/, ''));
+      // Auto-suggest title from filename if not already set
+      if (!resumeTitle.trim()) {
+        const suggestedTitle = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
+        setResumeTitle(suggestedTitle);
       }
 
       let convexUserId = userId;
@@ -71,7 +73,7 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
 
       // Step 3: Parse content with AI to get structured data
       console.log('🤖 ResumeUpload: Starting AI parsing...');
-      const structuredData = await database.parseResumeContent(rawContent);
+      const structuredData = await (database as any).parseResumeContent(rawContent);
       console.log('✅ ResumeUpload: AI parsing completed', structuredData);
       setUploadProgress(75);
 
@@ -144,7 +146,7 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         const pageText = textContent.items
-          .map((item: PdfTextItem) => item.str)
+          .map((item: any) => item.str || '')
           .join(' ');
         text += pageText + '\n';
       }
@@ -310,14 +312,20 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
 
         {/* Resume Title Input */}
         <div className="space-y-2">
-          <Label htmlFor="resume-title">Resume Title</Label>
+          <Label htmlFor="resume-title" className="text-base font-medium">
+            Resume Title *
+          </Label>
           <Input
             id="resume-title"
             value={resumeTitle}
             onChange={(e) => setResumeTitle(e.target.value)}
-            placeholder="e.g., Software Engineer Resume 2024"
+            placeholder="e.g., Senior Software Engineer - Tech Lead, Marketing Manager Resume 2024, Data Scientist - ML Focus"
             disabled={isUploading}
+            className="text-base"
           />
+          <p className="text-sm text-gray-500 mt-1">
+            Give your resume a meaningful name to help you identify it later
+          </p>
         </div>
 
         {/* Parsed Content Preview */}

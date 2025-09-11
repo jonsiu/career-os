@@ -119,10 +119,29 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
       // Check if content is already structured data (JSON)
       try {
         const parsedData = JSON.parse(content);
-        // If it's already structured data, return it directly
+        // If it's already structured data, return it directly with IDs added
         if (parsedData.personalInfo || parsedData.experience || parsedData.education || parsedData.skills || parsedData.projects) {
           console.log('✅ ResumeBuilder: Content is already structured data');
-          return parsedData;
+          // Ensure all items have IDs
+          return {
+            ...parsedData,
+            experience: parsedData.experience?.map((exp: any, index: number) => ({
+              ...exp,
+              id: exp.id || `exp-${Date.now()}-${index}`
+            })) || [],
+            education: parsedData.education?.map((edu: any, index: number) => ({
+              ...edu,
+              id: edu.id || `edu-${Date.now()}-${index}`
+            })) || [],
+            skills: parsedData.skills?.map((skill: any, index: number) => ({
+              ...skill,
+              id: skill.id || `skill-${Date.now()}-${index}`
+            })) || [],
+            projects: parsedData.projects?.map((project: any, index: number) => ({
+              ...project,
+              id: project.id || `project-${Date.now()}-${index}`
+            })) || []
+          };
         }
       } catch (jsonError) {
         // Content is not JSON, proceed with AI parsing
@@ -495,7 +514,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
             ) : (
               <div className="space-y-4">
                 {formData.experience.map((exp, index) => (
-                  <Card key={exp.id}>
+                  <Card key={exp.id || `exp-${index}`}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">Experience #{index + 1}</h4>
@@ -513,7 +532,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <div className="space-y-2">
                           <Label>Job Title *</Label>
                           <Input
-                            value={exp.title}
+                            value={exp.title || ''}
                             onChange={(e) => handleExperienceChange(index, 'title', e.target.value)}
                             placeholder="Software Engineer"
                           />
@@ -521,7 +540,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <div className="space-y-2">
                           <Label>Company *</Label>
                           <Input
-                            value={exp.company}
+                            value={exp.company || ''}
                             onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
                             placeholder="Tech Corp"
                           />
@@ -532,7 +551,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <div className="space-y-2">
                           <Label>Location</Label>
                           <Input
-                            value={exp.location}
+                            value={exp.location || ''}
                             onChange={(e) => handleExperienceChange(index, 'location', e.target.value)}
                             placeholder="San Francisco, CA"
                           />
@@ -541,7 +560,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                           <Label>Start Date *</Label>
                           <Input
                             type="date"
-                            value={exp.startDate}
+                            value={exp.startDate || ''}
                             onChange={(e) => handleExperienceChange(index, 'startDate', e.target.value)}
                           />
                         </div>
@@ -552,7 +571,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                           <Label>End Date</Label>
                           <Input
                             type="date"
-                            value={exp.endDate}
+                            value={exp.endDate || ''}
                             onChange={(e) => handleExperienceChange(index, 'endDate', e.target.value)}
                             disabled={exp.current}
                           />
@@ -571,7 +590,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                       <div className="space-y-2">
                         <Label>Description *</Label>
                         <Textarea
-                          value={exp.description}
+                          value={exp.description || ''}
                           onChange={(e) => handleExperienceChange(index, 'description', e.target.value)}
                           placeholder="Describe your responsibilities, achievements, and key contributions..."
                           rows={3}
@@ -605,7 +624,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
             ) : (
               <div className="space-y-4">
                 {formData.education.map((edu, index) => (
-                  <Card key={edu.id}>
+                  <Card key={edu.id || `edu-${index}`}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">Education #{index + 1}</h4>
@@ -623,7 +642,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <div className="space-y-2">
                           <Label>Degree *</Label>
                           <Input
-                            value={edu.degree}
+                            value={edu.degree || ''}
                             onChange={(e) => handleEducationChange(index, 'degree', e.target.value)}
                             placeholder="Bachelor of Science in Computer Science"
                           />
@@ -631,7 +650,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <div className="space-y-2">
                           <Label>Institution *</Label>
                           <Input
-                            value={edu.institution}
+                            value={edu.institution || ''}
                             onChange={(e) => handleEducationChange(index, 'institution', e.target.value)}
                             placeholder="University of California"
                           />
@@ -642,7 +661,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <div className="space-y-2">
                           <Label>Location</Label>
                           <Input
-                            value={edu.location}
+                            value={edu.location || ''}
                             onChange={(e) => handleEducationChange(index, 'location', e.target.value)}
                             placeholder="Berkeley, CA"
                           />
@@ -650,7 +669,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <div className="space-y-2">
                           <Label>GPA</Label>
                           <Input
-                            value={edu.gpa}
+                            value={edu.gpa || ''}
                             onChange={(e) => handleEducationChange(index, 'gpa', e.target.value)}
                             placeholder="3.8"
                           />
@@ -662,7 +681,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                           <Label>Start Date *</Label>
                           <Input
                             type="date"
-                            value={edu.startDate}
+                            value={edu.startDate || ''}
                             onChange={(e) => handleEducationChange(index, 'startDate', e.target.value)}
                           />
                         </div>
@@ -670,7 +689,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                           <Label>End Date</Label>
                           <Input
                             type="date"
-                            value={edu.endDate}
+                            value={edu.endDate || ''}
                             onChange={(e) => handleEducationChange(index, 'endDate', e.target.value)}
                             disabled={edu.current}
                           />
@@ -690,7 +709,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                       <div className="space-y-2">
                         <Label>Description</Label>
                         <Textarea
-                          value={edu.description}
+                          value={edu.description || ''}
                           onChange={(e) => handleEducationChange(index, 'description', e.target.value)}
                           placeholder="Relevant coursework, honors, activities..."
                           rows={3}
@@ -724,13 +743,13 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
             ) : (
               <div className="space-y-4">
                 {formData.skills.map((skill, index) => (
-                  <Card key={skill.id}>
+                  <Card key={skill.id || `skill-${index}`}>
                     <CardContent className="pt-6">
                       <div className="flex items-center gap-4">
                         <div className="flex-1 space-y-2">
                           <Label>Skill Name *</Label>
                           <Input
-                            value={skill.name}
+                            value={skill.name || ''}
                             onChange={(e) => handleSkillsChange(index, 'name', e.target.value)}
                             placeholder="JavaScript"
                           />
@@ -738,7 +757,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <div className="space-y-2">
                           <Label>Level</Label>
                           <select
-                            value={skill.level}
+                            value={skill.level || 'beginner'}
                             onChange={(e) => handleSkillsChange(index, 'level', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
@@ -785,7 +804,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
             ) : (
               <div className="space-y-4">
                 {formData.projects.map((project, index) => (
-                  <Card key={project.id}>
+                  <Card key={project.id || `project-${index}`}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">Project #{index + 1}</h4>
@@ -803,7 +822,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <div className="space-y-2">
                           <Label>Project Name *</Label>
                           <Input
-                            value={project.name}
+                            value={project.name || ''}
                             onChange={(e) => handleProjectsChange(index, 'name', e.target.value)}
                             placeholder="E-commerce Platform"
                           />
@@ -811,7 +830,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <div className="space-y-2">
                           <Label>URL</Label>
                           <Input
-                            value={project.url}
+                            value={project.url || ''}
                             onChange={(e) => handleProjectsChange(index, 'url', e.target.value)}
                             placeholder="https://github.com/username/project"
                           />
@@ -823,7 +842,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                           <Label>Start Date</Label>
                           <Input
                             type="date"
-                            value={project.startDate}
+                            value={project.startDate || ''}
                             onChange={(e) => handleProjectsChange(index, 'startDate', e.target.value)}
                           />
                         </div>
@@ -831,7 +850,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                           <Label>End Date</Label>
                           <Input
                             type="date"
-                            value={project.endDate}
+                            value={project.endDate || ''}
                             onChange={(e) => handleProjectsChange(index, 'endDate', e.target.value)}
                             disabled={project.current}
                           />
@@ -851,7 +870,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                       <div className="space-y-2">
                         <Label>Technologies</Label>
                         <Input
-                          value={project.technologies.join(', ')}
+                          value={project.technologies?.join(', ') || ''}
                           onChange={(e) => handleProjectsChange(index, 'technologies', e.target.value.split(',').map(t => t.trim()).filter(Boolean))}
                           placeholder="React, Node.js, MongoDB (comma-separated)"
                         />
@@ -860,7 +879,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                       <div className="space-y-2">
                         <Label>Description *</Label>
                         <Textarea
-                          value={project.description}
+                          value={project.description || ''}
                           onChange={(e) => handleProjectsChange(index, 'description', e.target.value)}
                           placeholder="Describe the project, your role, technologies used, and outcomes..."
                           rows={3}
@@ -920,7 +939,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <h2 className="text-lg font-semibold text-gray-900 mb-3">Experience</h2>
                         <div className="space-y-4">
                           {formData.experience.map((exp, index) => (
-                            <div key={exp.id} className="border-l-4 border-blue-500 pl-4">
+                            <div key={exp.id || `exp-${index}`} className="border-l-4 border-blue-500 pl-4">
                               <h3 className="font-semibold text-gray-900">{exp.title}</h3>
                               <p className="text-gray-600">{exp.company}</p>
                               <p className="text-sm text-gray-500">
@@ -939,7 +958,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <h2 className="text-lg font-semibold text-gray-900 mb-3">Education</h2>
                         <div className="space-y-4">
                           {formData.education.map((edu, index) => (
-                            <div key={edu.id} className="border-l-4 border-green-500 pl-4">
+                            <div key={edu.id || `edu-${index}`} className="border-l-4 border-green-500 pl-4">
                               <h3 className="font-semibold text-gray-900">{edu.degree}</h3>
                               <p className="text-gray-600">{edu.institution}</p>
                               <p className="text-sm text-gray-500">
@@ -960,8 +979,8 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                       <div>
                         <h2 className="text-lg font-semibold text-gray-900 mb-3">Skills</h2>
                         <div className="flex flex-wrap gap-2">
-                          {formData.skills.map((skill) => (
-                            <Badge key={skill.id} variant="secondary">
+                          {formData.skills.map((skill, index) => (
+                            <Badge key={skill.id || `skill-${index}`} variant="secondary">
                               {skill.name} ({skill.level})
                             </Badge>
                           ))}
@@ -975,7 +994,7 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                         <h2 className="text-lg font-semibold text-gray-900 mb-3">Projects</h2>
                         <div className="space-y-4">
                           {formData.projects.map((project, index) => (
-                            <div key={project.id} className="border-l-4 border-purple-500 pl-4">
+                            <div key={project.id || `project-${index}`} className="border-l-4 border-purple-500 pl-4">
                               <h3 className="font-semibold text-gray-900">{project.name}</h3>
                               {project.url && (
                                 <a href={project.url} className="text-blue-600 hover:underline text-sm">

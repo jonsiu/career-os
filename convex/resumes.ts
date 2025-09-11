@@ -25,7 +25,8 @@ export const list = query({
   handler: async (ctx) => {
     return await ctx.db
       .query("resumes")
-      .withIndex("by_created_at", (q) => q.desc())
+      .withIndex("by_created_at", (q) => q.gte("createdAt", 0))
+      .order("desc")
       .collect();
   },
 });
@@ -201,7 +202,7 @@ export const parseResumeWithAI = action({
         throw new Error(`All Claude models failed. Last error: ${lastError}`);
       }
 
-      const jsonResponse = response.content[0]?.text || '';
+      const jsonResponse = response.content[0]?.type === 'text' ? response.content[0].text : '';
       console.log('✅ Convex: Received response from Claude');
       console.log('📄 Convex: Raw AI response length:', jsonResponse.length);
       
@@ -217,7 +218,7 @@ export const parseResumeWithAI = action({
       const parsedData = JSON.parse(jsonMatch[0]);
       console.log('✅ Convex: JSON parsed successfully');
       
-      // Validate and clean the data
+      // Validate and clean the data, ensuring all items have IDs
       return {
         personalInfo: {
           firstName: parsedData.personalInfo?.firstName || '',
@@ -227,10 +228,22 @@ export const parseResumeWithAI = action({
           location: parsedData.personalInfo?.location || '',
           summary: parsedData.personalInfo?.summary || '',
         },
-        experience: parsedData.experience || [],
-        education: parsedData.education || [],
-        skills: parsedData.skills || [],
-        projects: parsedData.projects || [],
+        experience: (parsedData.experience || []).map((exp: any, index: number) => ({
+          ...exp,
+          id: exp.id || `exp-${Date.now()}-${index}`
+        })),
+        education: (parsedData.education || []).map((edu: any, index: number) => ({
+          ...edu,
+          id: edu.id || `edu-${Date.now()}-${index}`
+        })),
+        skills: (parsedData.skills || []).map((skill: any, index: number) => ({
+          ...skill,
+          id: skill.id || `skill-${Date.now()}-${index}`
+        })),
+        projects: (parsedData.projects || []).map((project: any, index: number) => ({
+          ...project,
+          id: project.id || `project-${Date.now()}-${index}`
+        })),
       };
     } catch (error) {
       console.error('Claude resume parsing failed:', error);

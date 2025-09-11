@@ -104,7 +104,7 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {resumes.map((resume) => (
-        <Card key={resume.id} className="hover:shadow-lg transition-shadow">
+        <Card key={resume.id} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
@@ -119,10 +119,14 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                       const summary = resumeData.personalInfo?.summary || '';
                       return (
                         <div>
-                          {name && <div className="font-medium text-gray-700">{name}</div>}
+                          {name && (
+                            <div className="font-medium text-gray-700 text-base mb-1">
+                              👤 {name}
+                            </div>
+                          )}
                           {summary && (
-                            <div className="text-sm text-gray-500 mt-1 line-clamp-2">
-                              {summary.length > 100 ? `${summary.substring(0, 100)}...` : summary}
+                            <div className="text-sm text-gray-500 mt-1 line-clamp-2 bg-gray-50 p-2 rounded">
+                              {summary.length > 120 ? `${summary.substring(0, 120)}...` : summary}
                             </div>
                           )}
                           <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
@@ -134,7 +138,10 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                     } catch (error) {
                       return (
                         <div>
-                          <div className="text-sm text-gray-500">Raw resume content</div>
+                          <div className="text-sm text-gray-500 flex items-center gap-1">
+                            <FileText className="h-4 w-4" />
+                            Raw resume content
+                          </div>
                           <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
                             <Calendar className="h-3 w-3" />
                             Updated {formatDate(resume.updatedAt)}
@@ -181,32 +188,121 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
           <CardContent className="pt-0">
             <div className="space-y-3">
               {/* File Type Badge */}
-              <div className="flex items-center gap-2">
-                {resume.filePath ? (
-                  <Badge variant="secondary">
-                    {resume.filePath.split('.').pop()?.toUpperCase() || 'FILE'}
-                  </Badge>
-                ) : (
-                  <Badge variant="outline">Manual</Badge>
-                )}
-                {resume.metadata?.fileSize ? (
-                  <span className="text-xs text-gray-500">
-                    {(Number(resume.metadata.fileSize) / 1024).toFixed(1)} KB
-                  </span>
-                ) : null}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {resume.filePath ? (
+                    <Badge variant="secondary" className="text-xs">
+                      📄 {resume.filePath.split('.').pop()?.toUpperCase() || 'FILE'}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-xs">
+                      ✏️ Manual
+                    </Badge>
+                  )}
+                  {resume.metadata?.fileSize ? (
+                    <span className="text-xs text-gray-500">
+                      {(Number(resume.metadata.fileSize) / 1024).toFixed(1)} KB
+                    </span>
+                  ) : null}
+                </div>
+                {(() => {
+                  try {
+                    const resumeData = JSON.parse(resume.content);
+                    const isComplete = resumeData.personalInfo?.firstName && 
+                                     resumeData.personalInfo?.email && 
+                                     (resumeData.experience?.length > 0 || resumeData.education?.length > 0);
+                    return isComplete ? (
+                      <Badge variant="default" className="text-xs bg-green-100 text-green-800">
+                        ✅ Complete
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-xs text-orange-600 border-orange-200">
+                        ⚠️ Incomplete
+                      </Badge>
+                    );
+                  } catch (error) {
+                    return (
+                      <Badge variant="outline" className="text-xs text-gray-500">
+                        📝 Raw Text
+                      </Badge>
+                    );
+                  }
+                })()}
               </div>
 
-              {/* Content Preview */}
+              {/* Resume Preview */}
               <div className="text-sm text-gray-600">
-                <p className="line-clamp-3">
-                  {resume.content.length > 150 
-                    ? `${resume.content.substring(0, 150)}...` 
-                    : resume.content
+                {(() => {
+                  try {
+                    const resumeData = JSON.parse(resume.content);
+                    return (
+                      <div className="space-y-2">
+                        {/* Contact Info */}
+                        <div className="flex items-center gap-2 text-xs">
+                          {resumeData.personalInfo?.email && (
+                            <span className="text-blue-600">📧 {resumeData.personalInfo.email}</span>
+                          )}
+                          {resumeData.personalInfo?.phone && (
+                            <span className="text-green-600">📞 {resumeData.personalInfo.phone}</span>
+                          )}
+                        </div>
+                        
+                        {/* Experience Preview */}
+                        {resumeData.experience && resumeData.experience.length > 0 && (
+                          <div className="text-xs">
+                            <span className="font-medium text-gray-700">💼 {resumeData.experience.length} Experience{resumeData.experience.length !== 1 ? 's' : ''}</span>
+                            {resumeData.experience[0] && (
+                              <div className="text-gray-500 mt-1">
+                                {resumeData.experience[0].title} at {resumeData.experience[0].company}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Education Preview */}
+                        {resumeData.education && resumeData.education.length > 0 && (
+                          <div className="text-xs">
+                            <span className="font-medium text-gray-700">🎓 {resumeData.education.length} Education{resumeData.education.length !== 1 ? 's' : ''}</span>
+                            {resumeData.education[0] && (
+                              <div className="text-gray-500 mt-1">
+                                {resumeData.education[0].degree} from {resumeData.education[0].institution}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Skills Preview */}
+                        {resumeData.skills && resumeData.skills.length > 0 && (
+                          <div className="text-xs">
+                            <span className="font-medium text-gray-700">🛠️ {resumeData.skills.length} Skill{resumeData.skills.length !== 1 ? 's' : ''}</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {resumeData.skills.slice(0, 3).map((skill: any, index: number) => (
+                                <span key={index} className="bg-gray-100 text-gray-600 px-1 py-0.5 rounded text-xs">
+                                  {skill.name}
+                                </span>
+                              ))}
+                              {resumeData.skills.length > 3 && (
+                                <span className="text-gray-400 text-xs">+{resumeData.skills.length - 3} more</span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  } catch (error) {
+                    return (
+                      <div className="text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <FileText className="h-3 w-3" />
+                          <span>Raw resume content</span>
+                        </div>
+                        <div className="mt-1 text-gray-400">
+                          {resume.content.length} characters
+                        </div>
+                      </div>
+                    );
                   }
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {resume.content.length} characters
-                </p>
+                })()}
               </div>
 
               {/* Quick Actions */}

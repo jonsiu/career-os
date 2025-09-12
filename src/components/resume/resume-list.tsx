@@ -53,21 +53,221 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
 
   const handleDownload = async (resume: Resume) => {
     try {
-      if (resume.filePath) {
-        // TODO: Implement actual file download
-        alert('Download functionality coming soon!');
-      } else {
-        // For manually created resumes, create a text file
+      let resumeData;
+      let fileName = resume.title;
+      
+      // Parse the resume content
+      try {
+        resumeData = JSON.parse(resume.content);
+      } catch (error) {
+        // If content is not JSON, it's raw text
         const blob = new Blob([resume.content], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${resume.title}.txt`;
+        a.download = `${fileName}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        return;
       }
+
+      // For structured resumes, open in new window with print functionality
+      // This reuses the existing ResumePreview component styling
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>${fileName}</title>
+            <style>
+              body { 
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                line-height: 1.6; 
+                color: #333; 
+                max-width: 800px; 
+                margin: 0 auto; 
+                padding: 20px; 
+                background: white; 
+              }
+              .header { 
+                text-align: center; 
+                border-bottom: 2px solid #2563eb; 
+                padding-bottom: 20px; 
+                margin-bottom: 30px; 
+              }
+              .name { 
+                font-size: 2.5em; 
+                font-weight: bold; 
+                color: #1e40af; 
+                margin: 0; 
+              }
+              .contact { 
+                font-size: 1.1em; 
+                color: #6b7280; 
+                margin: 10px 0; 
+              }
+              .section { 
+                margin-bottom: 30px; 
+              }
+              .section-title { 
+                font-size: 1.5em; 
+                font-weight: bold; 
+                color: #1e40af; 
+                border-bottom: 1px solid #e5e7eb; 
+                padding-bottom: 5px; 
+                margin-bottom: 15px; 
+              }
+              .experience-item, .education-item, .project-item { 
+                margin-bottom: 20px; 
+                padding-left: 20px; 
+                border-left: 3px solid #2563eb; 
+              }
+              .item-header { 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: flex-start; 
+                margin-bottom: 5px; 
+              }
+              .item-title { 
+                font-weight: bold; 
+                font-size: 1.1em; 
+                color: #1f2937; 
+              }
+              .item-company { 
+                color: #2563eb; 
+                font-weight: 600; 
+              }
+              .item-date { 
+                color: #6b7280; 
+                font-size: 0.9em; 
+              }
+              .item-description { 
+                color: #4b5563; 
+                margin-top: 5px; 
+              }
+              .skills-grid { 
+                display: grid; 
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+                gap: 10px; 
+              }
+              .skill-item { 
+                background: #f3f4f6; 
+                padding: 8px 12px; 
+                border-radius: 6px; 
+                font-size: 0.9em; 
+              }
+              .summary { 
+                font-style: italic; 
+                color: #4b5563; 
+                background: #f9fafb; 
+                padding: 15px; 
+                border-radius: 8px; 
+                border-left: 4px solid #2563eb; 
+              }
+              @media print { 
+                body { margin: 0; padding: 15px; } 
+                .section { page-break-inside: avoid; } 
+              }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1 class="name">${resumeData.personalInfo.firstName} ${resumeData.personalInfo.lastName}</h1>
+              <div class="contact">
+                ${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone || ''} | ${resumeData.personalInfo.location || ''}
+              </div>
+            </div>
+            
+            ${resumeData.personalInfo.summary ? `
+            <div class="section">
+              <h2 class="section-title">Professional Summary</h2>
+              <div class="summary">${resumeData.personalInfo.summary}</div>
+            </div>
+            ` : ''}
+            
+            ${resumeData.experience && resumeData.experience.length > 0 ? `
+            <div class="section">
+              <h2 class="section-title">Professional Experience</h2>
+              ${resumeData.experience.map((exp: any) => `
+                <div class="experience-item">
+                  <div class="item-header">
+                    <div>
+                      <div class="item-title">${exp.title}</div>
+                      <div class="item-company">${exp.company}</div>
+                    </div>
+                    <div class="item-date">${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}</div>
+                  </div>
+                  ${exp.description ? `<div class="item-description">${exp.description}</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+            ` : ''}
+            
+            ${resumeData.education && resumeData.education.length > 0 ? `
+            <div class="section">
+              <h2 class="section-title">Education</h2>
+              ${resumeData.education.map((edu: any) => `
+                <div class="education-item">
+                  <div class="item-header">
+                    <div>
+                      <div class="item-title">${edu.degree}</div>
+                      <div class="item-company">${edu.institution}</div>
+                    </div>
+                    <div class="item-date">${edu.startDate} - ${edu.current ? 'Present' : edu.endDate}</div>
+                  </div>
+                  ${edu.gpa ? `<div class="item-description">GPA: ${edu.gpa}</div>` : ''}
+                  ${edu.description ? `<div class="item-description">${edu.description}</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+            ` : ''}
+            
+            ${resumeData.skills && resumeData.skills.length > 0 ? `
+            <div class="section">
+              <h2 class="section-title">Skills</h2>
+              <div class="skills-grid">
+                ${resumeData.skills.map((skill: any) => `
+                  <div class="skill-item">${skill.name}</div>
+                `).join('')}
+              </div>
+            </div>
+            ` : ''}
+            
+            ${resumeData.projects && resumeData.projects.length > 0 ? `
+            <div class="section">
+              <h2 class="section-title">Projects</h2>
+              ${resumeData.projects.map((project: any) => `
+                <div class="project-item">
+                  <div class="item-header">
+                    <div>
+                      <div class="item-title">${project.name}</div>
+                    </div>
+                    <div class="item-date">${project.startDate} - ${project.current ? 'Present' : project.endDate}</div>
+                  </div>
+                  ${project.description ? `<div class="item-description">${project.description}</div>` : ''}
+                  ${project.technologies && project.technologies.length > 0 ? `
+                    <div class="item-description">
+                      <strong>Technologies:</strong> ${project.technologies.join(', ')}
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+            ` : ''}
+          </body>
+          </html>
+        `);
+        printWindow.document.close();
+        
+        // Auto-print after a short delay
+        setTimeout(() => {
+          printWindow.print();
+        }, 500);
+      }
+      
     } catch (error) {
       console.error('Failed to download resume:', error);
       alert('Failed to download resume. Please try again.');

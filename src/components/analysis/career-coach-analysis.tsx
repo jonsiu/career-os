@@ -60,7 +60,7 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
         }
       };
 
-      const result = await analysis.analyzeCareerTransition(mockUser, targetRoleInput);
+      const result = await analysis.analyzeCareerTransition(mockUser.metadata?.currentRole as string || 'Software Engineer', targetRoleInput);
       setCareerAnalysis(result);
       setCurrentStep('results');
       

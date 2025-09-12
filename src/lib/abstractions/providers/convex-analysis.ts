@@ -449,16 +449,20 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
   private assessRisks(currentRole: string, targetRole: string, yearsExperience: number): string[] {
     const risks = [];
     
-    if (targetRole.toLowerCase().includes('manager') && !currentRole.toLowerCase().includes('lead')) {
+    // Ensure parameters are strings
+    const currentRoleStr = String(currentRole || '');
+    const targetRoleStr = String(targetRole || '');
+    
+    if (targetRoleStr.toLowerCase().includes('manager') && !currentRoleStr.toLowerCase().includes('lead')) {
       risks.push('Lack of management experience');
       risks.push('Limited team leadership exposure');
     }
     
-    if (yearsExperience < 5 && targetRole.toLowerCase().includes('senior')) {
+    if (yearsExperience < 5 && targetRoleStr.toLowerCase().includes('senior')) {
       risks.push('Insufficient years of experience');
     }
     
-    if (targetRole.toLowerCase().includes('architect') && yearsExperience < 7) {
+    if (targetRoleStr.toLowerCase().includes('architect') && yearsExperience < 7) {
       risks.push('Limited system design experience');
     }
     
@@ -468,7 +472,11 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
   private assessOpportunities(currentRole: string, targetRole: string, yearsExperience: number): string[] {
     const opportunities = [];
     
-    if (currentRole.toLowerCase().includes('senior')) {
+    // Ensure parameters are strings
+    const currentRoleStr = String(currentRole || '');
+    const targetRoleStr = String(targetRole || '');
+    
+    if (currentRoleStr.toLowerCase().includes('senior')) {
       opportunities.push('Strong technical foundation');
     }
     
@@ -476,7 +484,7 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
       opportunities.push('Solid industry experience');
     }
     
-    if (currentRole.toLowerCase().includes('lead')) {
+    if (currentRoleStr.toLowerCase().includes('lead')) {
       opportunities.push('Existing leadership experience');
     }
     

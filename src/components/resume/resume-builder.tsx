@@ -916,18 +916,12 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
       case 5: // Preview
         return (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="text-center mb-6">
               <h3 className="text-lg font-semibold">Resume Preview</h3>
-              <Button
-                variant="outline"
-                onClick={() => setShowPreview(!showPreview)}
-              >
-                {showPreview ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
-                {showPreview ? 'Hide Preview' : 'Show Preview'}
-              </Button>
+              <p className="text-sm text-gray-600 mt-1">Review your resume before saving</p>
             </div>
 
-            {showPreview && (
+            <div>
               <Card className="border-2">
                 <CardContent className="p-6">
                   <div className="space-y-6">
@@ -1042,22 +1036,6 @@ export function ResumeBuilder({ userId, onResumeCreated, onResumeUpdated, initia
                   </div>
                 </CardContent>
               </Card>
-            )}
-
-            <div className="text-center">
-              <Button onClick={handleSave} disabled={isSaving} size="lg">
-                {isSaving ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Resume
-                  </>
-                )}
-              </Button>
             </div>
           </div>
         );

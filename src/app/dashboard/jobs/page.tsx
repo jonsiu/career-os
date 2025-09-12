@@ -14,6 +14,7 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'list' | 'add'>('list');
+  const [editingJob, setEditingJob] = useState<Job | null>(null);
 
   const loadJobs = useCallback(async () => {
     if (!user?.id) return;
@@ -48,6 +49,18 @@ export default function JobsPage() {
     setJobs(prev => prev.map(job => 
       job.id === updatedJob.id ? updatedJob : job
     ));
+    setEditingJob(null);
+    setActiveTab('list');
+  };
+
+  const handleEditJob = (job: Job) => {
+    setEditingJob(job);
+    setActiveTab('add');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingJob(null);
+    setActiveTab('list');
   };
 
   if (!isLoaded) {
@@ -157,6 +170,7 @@ export default function JobsPage() {
               jobs={jobs}
               onJobDeleted={handleJobDeleted}
               onJobUpdated={handleJobUpdated}
+              onEditJob={handleEditJob}
             />
           )}
         </div>
@@ -165,7 +179,9 @@ export default function JobsPage() {
       {activeTab === 'add' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Bookmark New Job</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              {editingJob ? 'Edit Job' : 'Bookmark New Job'}
+            </h2>
             <Button 
               variant="outline" 
               onClick={() => setActiveTab('list')}
@@ -176,6 +192,9 @@ export default function JobsPage() {
           <JobBookmark
             userId={user.id}
             onJobCreated={handleJobCreated}
+            onJobUpdated={handleJobUpdated}
+            editingJob={editingJob}
+            onCancelEdit={handleCancelEdit}
           />
         </div>
       )}

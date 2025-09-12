@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Plus, 
   Briefcase,
-  Save
+  Save,
+  Edit
 } from "lucide-react";
 import { database } from "@/lib/abstractions";
 import { Job } from "@/lib/abstractions/types";
@@ -18,6 +19,9 @@ import { Job } from "@/lib/abstractions/types";
 interface JobBookmarkProps {
   userId: string;
   onJobCreated?: (job: Job) => void;
+  onJobUpdated?: (job: Job) => void;
+  editingJob?: Job | null;
+  onCancelEdit?: () => void;
 }
 
 interface JobFormData {
@@ -41,7 +45,7 @@ const statusOptions = [
   { value: 'rejected', label: 'Rejected', color: 'bg-red-100 text-red-800' },
 ];
 
-export function JobBookmark({ userId, onJobCreated }: JobBookmarkProps) {
+export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, onCancelEdit }: JobBookmarkProps) {
   const [formData, setFormData] = useState<JobFormData>({
     title: '',
     company: '',
@@ -56,6 +60,40 @@ export function JobBookmark({ userId, onJobCreated }: JobBookmarkProps) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requirementsInput, setRequirementsInput] = useState('');
+
+  const isEditing = !!editingJob;
+
+  // Populate form when editing
+  useEffect(() => {
+    if (editingJob) {
+      setFormData({
+        title: editingJob.title || '',
+        company: editingJob.company || '',
+        description: editingJob.description || '',
+        requirements: editingJob.requirements || [],
+        location: editingJob.location || '',
+        salary: editingJob.salary || '',
+        status: editingJob.status || 'saved',
+        notes: (editingJob.metadata?.notes as string) || '',
+        url: (editingJob.metadata?.url as string) || '',
+        postedDate: (editingJob.metadata?.postedDate as string) || '',
+      });
+    } else {
+      // Reset form when not editing
+      setFormData({
+        title: '',
+        company: '',
+        description: '',
+        requirements: [],
+        location: '',
+        salary: '',
+        status: 'saved',
+        notes: '',
+        url: '',
+        postedDate: '',
+      });
+    }
+  }, [editingJob]);
 
   const handleInputChange = (field: keyof JobFormData, value: string | string[]) => {
     setFormData(prev => ({
@@ -92,22 +130,50 @@ export function JobBookmark({ userId, onJobCreated }: JobBookmarkProps) {
     try {
       setIsSubmitting(true);
       
-      const job = await database.createJob({
-        userId,
-        title: formData.title,
-        company: formData.company,
-        description: formData.description,
-        requirements: formData.requirements,
-        location: formData.location,
-        salary: formData.salary,
-        status: formData.status,
-        metadata: {
-          notes: formData.notes,
-          url: formData.url,
-          postedDate: formData.postedDate,
-          bookmarkedAt: new Date().toISOString(),
+      if (isEditing && editingJob) {
+        // Update existing job
+        const updatedJob = await database.updateJob(editingJob.id, {
+          title: formData.title,
+          company: formData.company,
+          description: formData.description,
+          requirements: formData.requirements,
+          location: formData.location,
+          salary: formData.salary,
+          status: formData.status,
+          metadata: {
+            ...editingJob.metadata,
+            notes: formData.notes,
+            url: formData.url,
+            postedDate: formData.postedDate,
+          }
+        });
+
+        if (onJobUpdated) {
+          onJobUpdated(updatedJob);
         }
-      });
+      } else {
+        // Create new job
+        const job = await database.createJob({
+          userId,
+          title: formData.title,
+          company: formData.company,
+          description: formData.description,
+          requirements: formData.requirements,
+          location: formData.location,
+          salary: formData.salary,
+          status: formData.status,
+          metadata: {
+            notes: formData.notes,
+            url: formData.url,
+            postedDate: formData.postedDate,
+            bookmarkedAt: new Date().toISOString(),
+          }
+        });
+
+        if (onJobCreated) {
+          onJobCreated(job);
+        }
+      }
 
       // Reset form
       setFormData({
@@ -123,13 +189,9 @@ export function JobBookmark({ userId, onJobCreated }: JobBookmarkProps) {
         postedDate: '',
       });
 
-      if (onJobCreated) {
-        onJobCreated(job);
-      }
-
     } catch (error) {
-      console.error('Failed to create job:', error);
-      alert('Failed to save job. Please try again.');
+      console.error(`Failed to ${isEditing ? 'update' : 'create'} job:`, error);
+      alert(`Failed to ${isEditing ? 'update' : 'save'} job. Please try again.`);
     } finally {
       setIsSubmitting(false);
     }
@@ -146,11 +208,15 @@ export function JobBookmark({ userId, onJobCreated }: JobBookmarkProps) {
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Briefcase className="h-5 w-5 text-green-600" />
-          Bookmark Job
+          {isEditing ? (
+            <Edit className="h-5 w-5 text-blue-600" />
+          ) : (
+            <Briefcase className="h-5 w-5 text-green-600" />
+          )}
+          {isEditing ? 'Edit Job' : 'Bookmark Job'}
         </CardTitle>
         <CardDescription>
-          Save job opportunities and track your applications
+          {isEditing ? 'Update job details and application status' : 'Save job opportunities and track your applications'}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -325,7 +391,17 @@ export function JobBookmark({ userId, onJobCreated }: JobBookmarkProps) {
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-3">
+            {isEditing && onCancelEdit && (
+              <Button 
+                type="button"
+                variant="outline"
+                onClick={onCancelEdit}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            )}
             <Button 
               type="submit" 
               disabled={isSubmitting}
@@ -334,12 +410,12 @@ export function JobBookmark({ userId, onJobCreated }: JobBookmarkProps) {
               {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Saving...
+                  {isEditing ? 'Updating...' : 'Saving...'}
                 </>
               ) : (
                 <>
                   <Save className="h-4 w-4" />
-                  Save Job
+                  {isEditing ? 'Update Job' : 'Save Job'}
                 </>
               )}
             </Button>

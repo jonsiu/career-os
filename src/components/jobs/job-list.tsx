@@ -31,6 +31,7 @@ interface JobListProps {
   jobs: Job[];
   onJobDeleted: (jobId: string) => void;
   onJobUpdated: (job: Job) => void;
+  onEditJob?: (job: Job) => void;
 }
 
 const statusConfig = {
@@ -41,7 +42,7 @@ const statusConfig = {
   rejected: { label: 'Rejected', color: 'bg-red-100 text-red-800' },
 };
 
-export function JobList({ jobs, onJobDeleted, onJobUpdated }: JobListProps) {
+export function JobList({ jobs, onJobDeleted, onJobUpdated, onEditJob }: JobListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [locationFilter, setLocationFilter] = useState('');
@@ -237,7 +238,7 @@ export function JobList({ jobs, onJobDeleted, onJobUpdated }: JobListProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => alert('Edit functionality coming soon!')}>
+                      <DropdownMenuItem onClick={() => onEditJob?.(job)}>
                         <Edit className="h-4 w-4 mr-2" />
                         Edit
                       </DropdownMenuItem>

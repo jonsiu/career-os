@@ -237,14 +237,23 @@ export function JobList({ jobs, onJobDeleted, onJobUpdated }: JobListProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => alert('Edit functionality coming soon!')}>
                         <Edit className="h-4 w-4 mr-2" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        View Original
-                      </DropdownMenuItem>
+                      {job.metadata?.url ? (
+                        <DropdownMenuItem asChild>
+                          <a
+                            href={String(job.metadata.url)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center w-full"
+                          >
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            View Original
+                          </a>
+                        </DropdownMenuItem>
+                      ) : null}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
                         onClick={() => handleDelete(job.id)}
@@ -288,7 +297,7 @@ export function JobList({ jobs, onJobDeleted, onJobUpdated }: JobListProps) {
                   </div>
 
                   {/* Requirements Preview */}
-                  {job.requirements.length > 0 && (
+                  {job.requirements.length > 0 ? (
                     <div className="space-y-2">
                       <span className="text-xs font-medium text-gray-700">Requirements:</span>
                       <div className="flex flex-wrap gap-1">
@@ -304,7 +313,7 @@ export function JobList({ jobs, onJobDeleted, onJobUpdated }: JobListProps) {
                         )}
                       </div>
                     </div>
-                  )}
+                  ) : null}
 
                   {/* Description Preview */}
                   {job.description && (
@@ -341,10 +350,10 @@ export function JobList({ jobs, onJobDeleted, onJobUpdated }: JobListProps) {
                   </div>
 
                   {/* External Link */}
-                  {job.metadata?.url && (
+                  {job.metadata?.url ? (
                     <div className="pt-2 border-t">
                       <a
-                        href={job.metadata.url}
+                        href={String(job.metadata.url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline"
@@ -353,7 +362,7 @@ export function JobList({ jobs, onJobDeleted, onJobUpdated }: JobListProps) {
                         View Original Posting
                       </a>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </CardContent>
             </Card>

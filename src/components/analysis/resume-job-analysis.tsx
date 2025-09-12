@@ -387,11 +387,21 @@ export function ResumeJobAnalysis({ resumeId, jobId, onAnalysisComplete }: Resum
 
           {/* Action Buttons */}
           <div className="flex gap-3">
-            <Button onClick={runAnalysis} variant="outline">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Re-run Analysis
+            <Button 
+              onClick={() => {
+                console.log('🔄 Re-run analysis clicked');
+                runAnalysis();
+              }} 
+              variant="outline"
+              disabled={isAnalyzing}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isAnalyzing ? 'animate-spin' : ''}`} />
+              {isAnalyzing ? 'Analyzing...' : 'Re-run Analysis'}
             </Button>
-            <Button>
+            <Button onClick={() => {
+              // For now, just show an alert. In the future, this could open a detailed modal or new page
+              alert('Detailed report feature coming soon! This will show a comprehensive breakdown of the analysis.');
+            }}>
               <BookOpen className="h-4 w-4 mr-2" />
               View Detailed Report
             </Button>

@@ -62,6 +62,11 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
     }
   };
 
+  const cleanFileName = (fileName: string) => {
+    // Remove any existing file extensions
+    return fileName.replace(/\.[^/.]+$/, '');
+  };
+
   const handleDownload = async (resume: Resume) => {
     try {
       if (!isStructuredResume(resume)) {
@@ -70,7 +75,7 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${resume.title}.txt`;
+        a.download = `${cleanFileName(resume.title)}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -169,7 +174,7 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                   {isStructuredResume(resume) ? (
                     <PDFDownloadLink
                       document={<ResumePDFDocument resumeData={JSON.parse(resume.content)} title={resume.title} />}
-                      fileName={`${resume.title}.pdf`}
+                      fileName={`${cleanFileName(resume.title)}.pdf`}
                     >
                       {({ blob, url, loading, error }) => (
                         <DropdownMenuItem disabled={loading}>
@@ -264,7 +269,7 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                 {isStructuredResume(resume) ? (
                   <PDFDownloadLink
                     document={<ResumePDFDocument resumeData={JSON.parse(resume.content)} title={resume.title} />}
-                    fileName={`${resume.title}.pdf`}
+                    fileName={`${cleanFileName(resume.title)}.pdf`}
                     className="flex-1"
                   >
                     {({ blob, url, loading, error }) => (

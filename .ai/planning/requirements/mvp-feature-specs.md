@@ -4,7 +4,7 @@
 
 ### Resume Upload & Parsing
 **Priority**: P0 (Must Have)
-**User Story**: As a tech professional, I want to upload my existing resume so I can analyze it against job postings.
+**User Story**: As a tech professional, I want to upload my existing resume so I can get an instant quality score and improvement recommendations.
 
 **Requirements**:
 - Support PDF and DOCX file formats
@@ -12,6 +12,8 @@
 - Parse into structured data (experience, skills, education)
 - Handle common resume formats gracefully
 - Provide feedback on parsing success/failures
+- **NEW**: Generate instant quality score (1-100)
+- **NEW**: Identify specific areas for improvement
 
 **Technical Implementation**:
 - Use `react-dropzone` for file uploads
@@ -27,6 +29,9 @@
 - [ ] User can manually correct parsing errors
 - [ ] Progress indicator shows during upload/parsing
 - [ ] **NEW**: File storage works with multiple vendors (Convex, AWS S3, etc.)
+- [ ] **NEW**: Resume receives instant quality score (1-100)
+- [ ] **NEW**: Specific improvement areas are identified and highlighted
+- [ ] **NEW**: User is prompted to engage with virtual HR coach if score is below threshold
 
 ### Resume Builder Interface
 **Priority**: P0 (Must Have)
@@ -55,7 +60,355 @@
 - [ ] Form validation prevents incomplete submissions
 - [ ] **NEW**: Data persistence works with multiple database vendors
 
-## Feature 2: Job Posting Management
+## Feature 2: Resume Scoring & Virtual HR Coach
+
+### Resume Quality Scoring System
+**Priority**: P0 (Must Have)
+**User Story**: As a tech professional, I want to know how good my resume is so I can understand what needs improvement.
+
+**Requirements**:
+- Generate comprehensive quality score (1-100) based on multiple criteria
+- Assess content quality, structure, keywords, and formatting
+- Identify specific strengths and weaknesses
+- Provide actionable improvement recommendations
+- Compare against industry standards and best practices
+- **NEW**: Score-based coaching recommendations
+
+**Technical Implementation**:
+- Multi-criteria scoring algorithm
+- Industry-specific scoring models
+- Keyword optimization analysis
+- Structure and formatting assessment
+- Content quality evaluation
+- **NEW**: Abstract analysis engine for multiple AI providers
+
+**Acceptance Criteria**:
+- [ ] Resume receives comprehensive quality score (1-100)
+- [ ] Specific strengths and weaknesses are identified
+- [ ] Actionable improvement recommendations are provided
+- [ ] Score is compared against industry standards
+- [ ] **NEW**: Analysis works with multiple AI providers (OpenAI, Anthropic, etc.)
+- [ ] **NEW**: User is prompted for coaching if score is below threshold (e.g., < 70)
+
+### Virtual HR Coach System
+**Priority**: P0 (Must Have)
+**User Story**: As a tech professional, I want to work with a virtual HR coach to improve my resume so I can create a compelling, job-winning document.
+
+**Requirements**:
+- Interactive coaching session with predetermined question templates
+- Industry-specific and role-specific question sets
+- Progressive questioning based on user responses
+- AI analysis of user responses to identify improvement opportunities
+- Resume rewriting suggestions based on coaching session
+- User validation and accuracy checking of AI-generated content
+- **NEW**: General resume optimization coaching
+- **NEW**: Job-specific optimization coaching based on job descriptions
+- **NEW**: Option to choose between general or job-specific coaching
+
+**Technical Implementation**:
+- Template-based question system
+- Dynamic question flow based on responses
+- AI analysis of user responses
+- Resume content generation and rewriting
+- User feedback and validation system
+- **NEW**: Vendor-agnostic coaching implementation
+
+**Acceptance Criteria**:
+- [ ] User can engage in interactive coaching session
+- [ ] Questions are tailored to user's industry and role
+- [ ] AI analyzes responses and identifies improvement opportunities
+- [ ] Resume rewriting suggestions are generated based on responses
+- [ ] User can validate and refine AI-generated content
+- [ ] **NEW**: Coaching system works with multiple AI providers seamlessly
+- [ ] **NEW**: User can choose between general or job-specific coaching
+- [ ] **NEW**: Job-specific coaching is tailored to specific job requirements
+- [ ] **NEW**: User can input job descriptions for targeted optimization
+
+### Template-Based Question System
+**Priority**: P0 (Must Have)
+**User Story**: As a tech professional, I want to answer structured questions about my experience so the AI can better understand and improve my resume.
+
+**Requirements**:
+- Predetermined question templates for different industries and roles
+- Progressive questioning that builds on previous responses
+- Experience extraction and quantification questions
+- Achievement and impact identification questions
+- Skills and competency assessment questions
+- Career narrative and storytelling questions
+
+**Technical Implementation**:
+- Question template database
+- Dynamic question flow engine
+- Response analysis and scoring
+- Experience extraction algorithms
+- Achievement quantification tools
+- **NEW**: Real-time updates with abstraction layer
+
+**Acceptance Criteria**:
+- [ ] Question templates cover major industries and roles
+- [ ] Questions progress logically based on user responses
+- [ ] System extracts and quantifies user experience effectively
+- [ ] Achievements and impacts are properly identified
+- [ ] Career narrative is coherent and compelling
+- [ ] **NEW**: Real-time updates work with multiple providers
+
+## Feature 3: AI-Driven Resume Improvement
+
+### Resume Rewriting Engine
+**Priority**: P0 (Must Have)
+**User Story**: As a tech professional, I want AI to rewrite my resume based on my coaching responses so I can have a more compelling and accurate document.
+
+**Requirements**:
+- AI analysis of coaching session responses
+- Intelligent resume content generation
+- Industry-specific language and terminology
+- Quantified achievement enhancement
+- Skills and experience optimization
+- User validation and editing capabilities
+
+**Technical Implementation**:
+- AI content generation with coaching context
+- Industry-specific language models
+- Achievement quantification algorithms
+- Skills optimization engines
+- User feedback integration
+- **NEW**: Vendor-agnostic content generation
+
+**Acceptance Criteria**:
+- [ ] AI generates improved resume content based on coaching responses
+- [ ] Content uses industry-appropriate language and terminology
+- [ ] Achievements are properly quantified and impactful
+- [ ] Skills and experience are optimized for target roles
+- [ ] User can validate, edit, and refine AI-generated content
+- [ ] **NEW**: Content generation works with multiple AI providers
+
+### Resume Validation & Accuracy Checking
+**Priority**: P1 (Should Have)
+**User Story**: As a tech professional, I want to ensure my AI-improved resume is accurate so I can confidently use it for job applications.
+
+**Requirements**:
+- Accuracy validation of AI-generated content
+- User confirmation of facts and achievements
+- Plausibility checking for generated content
+- Consistency validation across resume sections
+- Final review and approval workflow
+- Version control and change tracking
+
+**Technical Implementation**:
+- Content validation algorithms
+- User confirmation workflows
+- Plausibility checking systems
+- Consistency validation engines
+- Version control and history tracking
+- **NEW**: Real-time validation with abstraction layer
+
+**Acceptance Criteria**:
+- [ ] AI-generated content is validated for accuracy
+- [ ] User can confirm or correct factual information
+- [ ] Generated content passes plausibility checks
+- [ ] Resume sections are consistent and coherent
+- [ ] User can approve final version with confidence
+- [ ] **NEW**: Real-time validation works with multiple providers
+
+## Feature 4: Job Description Integration & Job-Specific Optimization
+
+### Job Description Input & Analysis
+**Priority**: P0 (Must Have)
+**User Story**: As a tech professional, I want to input job descriptions so I can optimize my resume for specific roles I'm applying to.
+
+**Requirements**:
+- Job description URL input and parsing
+- Manual job description text input
+- Multiple job description support
+- Job requirement extraction and analysis
+- Role-specific optimization criteria identification
+- **NEW**: Job description parsing and requirement extraction
+
+**Technical Implementation**:
+- URL parsing and content extraction
+- Job description text analysis
+- Requirement extraction algorithms
+- Role-specific criteria identification
+- Batch job processing capabilities
+- **NEW**: Abstract job analysis engine for multiple providers
+
+**Acceptance Criteria**:
+- [ ] User can input job description URLs or text
+- [ ] System extracts key requirements and criteria
+- [ ] Multiple job descriptions can be processed
+- [ ] Role-specific optimization criteria are identified
+- [ ] **NEW**: Job analysis works with multiple AI providers
+- [ ] **NEW**: User can compare resume against multiple job requirements
+
+### Job-Specific Coaching Session
+**Priority**: P0 (Must Have)
+**User Story**: As a tech professional, I want to work with a virtual HR coach specifically for a job I'm applying to so I can optimize my resume for that role.
+
+**Requirements**:
+- Job-specific question generation based on requirements
+- Role-relevant experience extraction
+- Skills gap analysis against job requirements
+- Achievement alignment with job criteria
+- Company culture and values alignment
+- **NEW**: Dynamic question generation based on job analysis
+
+**Technical Implementation**:
+- Job requirement analysis engine
+- Dynamic question generation system
+- Skills gap analysis algorithms
+- Achievement alignment scoring
+- Company culture assessment tools
+- **NEW**: Vendor-agnostic job analysis implementation
+
+**Acceptance Criteria**:
+- [ ] Questions are generated based on specific job requirements
+- [ ] User experience is aligned with job criteria
+- [ ] Skills gaps are identified against job requirements
+- [ ] Achievements are positioned for job relevance
+- [ ] **NEW**: Job analysis works with multiple AI providers seamlessly
+
+### Job-Targeted Resume Rewriting
+**Priority**: P0 (Must Have)
+**User Story**: As a tech professional, I want AI to rewrite my resume specifically for a job I'm applying to so I can maximize my chances of getting an interview.
+
+**Requirements**:
+- Job requirement alignment optimization
+- Keyword optimization for specific roles
+- Experience positioning for job relevance
+- Skills highlighting based on job needs
+- Achievement reframing for job context
+- **NEW**: Job-specific content generation
+
+**Technical Implementation**:
+- Job requirement matching algorithms
+- Keyword optimization engines
+- Experience relevance scoring
+- Skills highlighting systems
+- Achievement reframing tools
+- **NEW**: Vendor-agnostic job-specific content generation
+
+**Acceptance Criteria**:
+- [ ] Resume content is optimized for specific job requirements
+- [ ] Keywords are aligned with job description
+- [ ] Experience is positioned for maximum relevance
+- [ ] Skills are highlighted based on job needs
+- [ ] **NEW**: Job-specific content generation works with multiple AI providers
+
+## Feature 5: Skill Development & Learning Pathway System
+
+### Skill Gap Analysis & Learning Recommendations
+**Priority**: P1 (Should Have)
+**User Story**: As a tech professional, I want to identify skills I need to develop for my target role so I can create a learning plan and improve my qualifications.
+
+**Requirements**:
+- Current skills extraction from resume and coaching responses
+- Target role skills analysis from job descriptions
+- Skills gap identification and prioritization
+- Skill level assessment (beginner, intermediate, advanced)
+- Learning pathway recommendations
+- **NEW**: Comprehensive skills taxonomy and mapping
+
+**Technical Implementation**:
+- Skills extraction algorithms from resume content
+- Job requirement skills analysis
+- Skills gap calculation and scoring
+- Skill level assessment algorithms
+- Learning pathway generation
+- **NEW**: Abstract skills analysis engine for multiple providers
+
+**Acceptance Criteria**:
+- [ ] Current skills are accurately extracted from resume
+- [ ] Target role skills are identified from job descriptions
+- [ ] Skills gaps are clearly identified and prioritized
+- [ ] Skill levels are assessed accurately
+- [ ] **NEW**: Skills analysis works with multiple AI providers
+- [ ] **NEW**: Learning pathways are personalized and actionable
+
+### Course Recommendations & Affiliate Integration
+**Priority**: P1 (Should Have)
+**User Story**: As a tech professional, I want to find relevant courses to develop my skills so I can improve my qualifications and advance my career.
+
+**Requirements**:
+- Curated course database with affiliate links
+- Course recommendation engine based on skill gaps
+- Course quality and relevance scoring
+- Learning platform integration (Coursera, Udemy, LinkedIn Learning, etc.)
+- Affiliate link tracking and commission management
+- **NEW**: Course recommendation system with affiliate marketing
+
+**Technical Implementation**:
+- Course database with metadata and affiliate links
+- Recommendation algorithms based on skill gaps
+- Course quality scoring and validation
+- Affiliate link management system
+- Commission tracking and reporting
+- **NEW**: Vendor-agnostic course recommendation system
+
+**Acceptance Criteria**:
+- [ ] Course recommendations are relevant to skill gaps
+- [ ] Affiliate links are properly tracked and managed
+- [ ] Course quality is validated and scored
+- [ ] Multiple learning platforms are supported
+- [ ] **NEW**: Course recommendations work with multiple providers
+- [ ] **NEW**: Affiliate commissions are properly tracked
+
+### Progress Tracking & Skill Validation
+**Priority**: P1 (Should Have)
+**User Story**: As a tech professional, I want to track my learning progress and validate my new skills so I can demonstrate my capabilities to employers.
+
+**Requirements**:
+- Course completion tracking and verification
+- Skill development progress monitoring
+- Project recommendation system for skill demonstration
+- Skill validation through project outcomes
+- Resume updates based on new skills and projects
+- **NEW**: Comprehensive progress tracking system
+
+**Technical Implementation**:
+- Course completion verification system
+- Progress tracking database and analytics
+- Project recommendation algorithms
+- Skill validation scoring system
+- Resume update automation
+- **NEW**: Real-time progress updates with abstraction layer
+
+**Acceptance Criteria**:
+- [ ] Course completion is accurately tracked
+- [ ] Skill development progress is monitored
+- [ ] Project recommendations are relevant and achievable
+- [ ] Skills are validated through project outcomes
+- [ ] **NEW**: Progress tracking works with multiple providers
+- [ ] **NEW**: Resume updates reflect new skills and projects
+
+### Personal Project Recommendations
+**Priority**: P2 (Could Have)
+**User Story**: As a tech professional, I want to work on personal projects that demonstrate my new skills so I can build a portfolio and validate my capabilities.
+
+**Requirements**:
+- Project recommendation engine based on skill gaps
+- Project difficulty and time estimation
+- Project outcome tracking and validation
+- Portfolio integration for project showcase
+- Skill demonstration through project results
+- **NEW**: AI-driven project recommendation system
+
+**Technical Implementation**:
+- Project database with skill mappings
+- Recommendation algorithms based on skill gaps
+- Project difficulty assessment
+- Outcome tracking and validation
+- Portfolio integration system
+- **NEW**: Vendor-agnostic project recommendation system
+
+**Acceptance Criteria**:
+- [ ] Project recommendations align with skill gaps
+- [ ] Project difficulty and time are accurately estimated
+- [ ] Project outcomes are tracked and validated
+- [ ] Projects can be showcased in portfolio
+- [ ] **NEW**: Project recommendations work with multiple AI providers
+- [ ] **NEW**: Skills are demonstrated through project results
+
+## Feature 6: Job Posting Management
 
 ### Job Bookmarking System
 **Priority**: P0 (Must Have)

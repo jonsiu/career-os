@@ -1,8 +1,8 @@
 # 🗺️ CareerOS MVP Roadmap
 
-## Phase 1: Foundation & Resume Management (Weeks 1-2)
+## Phase 1: Foundation & Resume Scoring (Weeks 1-2)
 
-### Week 1: Project Setup
+### Week 1: Project Setup & Resume Upload
 - [ ] Initialize Next.js 15 project with App Router
 - [ ] Set up Tailwind CSS and shadcn/ui
 - [ ] Configure Clerk authentication
@@ -10,71 +10,105 @@
 - [ ] **NEW**: Implement vendor abstraction interfaces
 - [ ] **NEW**: Create service factory for vendor management
 - [ ] Create basic layout and navigation
-
-### Week 2: Resume Core Features
 - [ ] Resume upload component (PDF/DOCX support)
 - [ ] Resume parsing and data extraction
+
+### Week 2: Resume Scoring System
+- [ ] **NEW**: Resume quality scoring algorithm (1-100)
+- [ ] **NEW**: Multi-criteria scoring implementation
+- [ ] **NEW**: Industry-specific scoring models
+- [ ] **NEW**: Improvement recommendation engine
+- [ ] **NEW**: Score-based coaching prompts
 - [ ] Resume builder interface
 - [ ] Resume preview and editing
 - [ ] Convex database integration for resume data
 - [ ] **NEW**: Abstract file storage for vendor flexibility
-- [ ] **NEW**: Implement resume file storage abstraction
-- [ ] Basic resume templates (tech-focused)
 
-## Phase 2: Job Posting System (Weeks 3-4)
+## Phase 2: Virtual HR Coach System (Weeks 3-4)
 
-### Week 3: Job Management
-- [ ] Job posting bookmarking system
-- [ ] Job description storage and parsing
-- [ ] Company information display
-- [ ] Job categorization (Engineering Manager, Product Manager, etc.)
-- [ ] Job search and filtering
+### Week 3: Coaching Interface & Templates
+- [ ] **NEW**: Virtual HR coach interface
+- [ ] **NEW**: Question template database
+- [ ] **NEW**: Industry-specific question sets
+- [ ] **NEW**: Role-specific question templates
+- [ ] **NEW**: Interactive coaching session flow
+- [ ] **NEW**: Dynamic question progression
+- [ ] **NEW**: Response collection and storage
+- [ ] **NEW**: General vs. job-specific coaching options
 - [ ] **NEW**: Abstract database operations for vendor switching
 
-### Week 4: Analysis Engine Foundation
-- [ ] Basic resume-to-job matching algorithm
-- [ ] Skills extraction and comparison
-- [ ] Experience level assessment
-- [ ] Requirements gap identification
-- [ ] Match percentage calculation
+### Week 4: Coaching Analysis & Job Description Integration
+- [ ] **NEW**: Response analysis engine
+- [ ] **NEW**: Experience extraction algorithms
+- [ ] **NEW**: Achievement quantification tools
+- [ ] **NEW**: Skills identification system
+- [ ] **NEW**: Career narrative development
+- [ ] **NEW**: Job description input and parsing
+- [ ] **NEW**: Job requirement extraction and analysis
+- [ ] **NEW**: Job-specific question generation
 - [ ] **NEW**: Implement analysis engine abstraction
 - [ ] **NEW**: Support multiple AI providers (OpenAI, Anthropic)
 
-## Phase 3: Career Coach Persona (Weeks 5-6)
+## Phase 3: AI-Driven Resume Improvement (Weeks 5-6)
 
-### Week 5: Career Coach Analysis
-- [ ] Career progression analysis
-- [ ] Management readiness evaluation
-- [ ] Skills gap analysis with priorities
-- [ ] Experience relevance scoring
-- [ ] Career narrative assessment
-- [ ] **NEW**: Vendor-agnostic analysis implementation
+### Week 5: Resume Rewriting Engine
+- [ ] **NEW**: AI content generation system
+- [ ] **NEW**: Resume rewriting based on coaching responses
+- [ ] **NEW**: Industry-specific language optimization
+- [ ] **NEW**: Achievement quantification enhancement
+- [ ] **NEW**: Skills and experience optimization
+- [ ] **NEW**: Job-specific content optimization
+- [ ] **NEW**: Keyword alignment with job requirements
+- [ ] **NEW**: Experience positioning for job relevance
+- [ ] **NEW**: Vendor-agnostic content generation
 
-### Week 6: Development Planning
-- [ ] Personalized development roadmap
-- [ ] Skill development priorities
-- [ ] Project and experience recommendations
-- [ ] Timeline planning and milestones
-- [ ] Progress tracking system
+### Week 6: Validation & Accuracy System
+- [ ] **NEW**: Content validation and accuracy checking
+- [ ] **NEW**: User review and approval interface
+- [ ] **NEW**: Side-by-side comparison view
+- [ ] **NEW**: Change tracking and version control
+- [ ] **NEW**: Plausibility checking system
 - [ ] **NEW**: Real-time updates with abstraction layer
 
-## Phase 4: Polish & Launch (Weeks 7-8)
+## Phase 4: Skill Development System (Weeks 7-8)
 
-### Week 7: User Experience
+### Week 7: Skill Gap Analysis & Course Integration
+- [ ] **NEW**: Skill gap analysis engine
+- [ ] **NEW**: Current skills extraction from resume
+- [ ] **NEW**: Target role skills analysis
+- [ ] **NEW**: Course recommendation system
+- [ ] **NEW**: Affiliate link integration and tracking
+- [ ] **NEW**: Learning platform partnerships (Coursera, Udemy, LinkedIn Learning)
+- [ ] **NEW**: Course quality scoring and validation
+
+### Week 8: Progress Tracking & Project Recommendations
+- [ ] **NEW**: Course completion tracking system
+- [ ] **NEW**: Skill development progress monitoring
+- [ ] **NEW**: Personal project recommendation engine
+- [ ] **NEW**: Project outcome tracking and validation
+- [ ] **NEW**: Resume update automation based on new skills
+- [ ] **NEW**: Portfolio integration for project showcase
+- [ ] **NEW**: Skill validation through project results
+
+## Phase 5: Polish & Launch (Weeks 9-10)
+
+### Week 9: User Experience & Revenue Integration
 - [ ] UI/UX improvements and animations
 - [ ] Responsive design optimization
 - [ ] Error handling and validation
 - [ ] Loading states and feedback
 - [ ] Accessibility improvements
+- [ ] **NEW**: Affiliate commission tracking and reporting
 - [ ] **NEW**: Vendor health monitoring and fallbacks
 
-### Week 8: Testing & Deployment
+### Week 10: Testing & Deployment
 - [ ] User testing and feedback collection
 - [ ] Bug fixes and performance optimization
 - [ ] Vercel deployment
 - [ ] Documentation and setup guides
 - [ ] **NEW**: Multi-vendor testing and validation
 - [ ] **NEW**: Vendor cost optimization analysis
+- [ ] **NEW**: Affiliate marketing system testing
 - [ ] MVP launch and monitoring
 
 ## Technical Milestones

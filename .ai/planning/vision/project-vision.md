@@ -9,7 +9,7 @@ To become the go-to platform for professionals seeking career advancement, provi
 ## Core Value Proposition
 **"From Professional to Leader: Your AI-powered career coach for the management transition"**
 
-CareerOS analyzes your resume against target job postings from the perspective of a Career Coach, providing personalized insights and development roadmaps to help you systematically work toward your next management role.
+CareerOS transforms your resume from good to exceptional through intelligent scoring, personalized coaching, and AI-driven rewriting. Upload your resume, get an instant quality score, and work with our virtual HR coach to create a compelling, job-winning resume that gets you noticed by hiring managers. Then, identify skill gaps and follow personalized learning pathways to develop the skills you need for your target role.
 
 ## Target User Personas
 
@@ -55,20 +55,49 @@ CareerOS analyzes your resume against target job postings from the perspective o
 
 ## Competitive Advantages
 
-### 1. **Multi-Persona Analysis**
-Unlike traditional resume builders, CareerOS provides insights from multiple stakeholder perspectives, starting with the Career Coach persona.
+### 1. **Comprehensive Resume Improvement**
+Unlike traditional resume builders, CareerOS provides intelligent scoring, virtual HR coaching, and AI-driven rewriting for exceptional results.
 
-### 2. **Multi-Industry Focus**
+### 2. **Job-Specific Optimization**
+Tailors resume optimization to specific job descriptions and requirements for maximum relevance and impact.
+
+### 3. **Skill Development Integration**
+Identifies skill gaps and provides personalized learning pathways with curated course recommendations and project suggestions.
+
+### 4. **Affiliate Marketing Revenue Model**
+Generates revenue through affiliate commissions from course recommendations while providing genuine value to users.
+
+### 5. **Multi-Industry Focus**
 Built to support multiple industries with understanding of various professional roles, skills, and career progression patterns.
 
-### 3. **Data-Driven Insights**
-Leverages real job market data and career progression patterns to provide actionable recommendations.
-
-### 4. **Personalized Development Planning**
-Goes beyond resume optimization to provide structured development roadmaps with timelines and milestones.
-
-### 5. **Real-Time Market Intelligence**
+### 6. **Real-Time Market Intelligence**
 Continuously updated with current job market trends and requirements.
+
+## Revenue Model
+
+### Primary Revenue Streams
+
+#### 1. **Affiliate Marketing (Primary)**
+- **Course Recommendations**: Commission from course sales (Coursera, Udemy, LinkedIn Learning, etc.)
+- **Learning Platform Partnerships**: Revenue sharing with educational platforms
+- **Skill Development Tools**: Affiliate commissions from recommended tools and resources
+- **Target Revenue**: 60-70% of total revenue
+
+#### 2. **Freemium Model (Secondary)**
+- **Free Tier**: Basic resume scoring and general optimization
+- **Premium Tier**: Job-specific optimization, advanced coaching, skill development pathways
+- **Enterprise Tier**: Team features, advanced analytics, custom integrations
+- **Target Revenue**: 20-30% of total revenue
+
+#### 3. **Data & Analytics (Future)**
+- **Market Insights**: Aggregated, anonymized career development data
+- **Industry Reports**: Career progression and skill demand analytics
+- **Target Revenue**: 10-20% of total revenue
+
+### Revenue Projections
+- **Year 1**: $50K-100K (affiliate commissions from course recommendations)
+- **Year 2**: $200K-500K (premium subscriptions + increased affiliate revenue)
+- **Year 3**: $1M+ (enterprise features + data analytics)
 
 ## Market Opportunity
 
@@ -77,6 +106,7 @@ Continuously updated with current job market trends and requirements.
 - **Management Aspirants**: ~40% of professionals seek management roles
 - **Career Development Market**: $15+ billion annually
 - **Resume Services Market**: $2+ billion annually
+- **Online Learning Market**: $350+ billion annually (affiliate opportunity)
 
 ### Market Trends
 - **Remote Work**: Increased demand for digital career development tools

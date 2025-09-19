@@ -7,7 +7,7 @@
 The MVP will focus exclusively on the **Career Coach persona** for **management roles across industries**, providing personalized guidance to help users transition into leadership positions.
 
 ## Core Value Proposition
-Help professionals understand what they need to work on to land their next management role by analyzing their resume against target job postings and providing actionable development plans.
+Transform your resume from good to exceptional through intelligent scoring and personalized coaching. Upload your resume, get an instant quality assessment, and work with our virtual HR coach to create a compelling, job-winning resume that gets you noticed by hiring managers.
 
 ## Target User
 - **Primary**: Professionals (developers, engineers, designers, marketers, sales, etc.) looking to move into management
@@ -22,18 +22,27 @@ Help professionals understand what they need to work on to land their next manag
 
 ## MVP Scope Boundaries
 ### ✅ **In Scope**
-- Resume upload and management with Convex storage
-- Job posting bookmarking and analysis
-- Career Coach persona analysis
-- Development planning and tracking
-- Multi-industry resume templates
+- Resume upload and parsing with intelligent scoring
+- Resume quality assessment and improvement recommendations
+- Virtual HR coach with template-based questioning (general optimization)
+- Job description input and analysis for targeted optimization
+- Job-specific virtual HR coach sessions
+- AI-driven resume rewriting based on user responses
+- Job-targeted resume optimization and rewriting
+- Resume validation and accuracy checking
+- Skill gap analysis and learning pathway recommendations
+- Course recommendations with affiliate marketing integration
+- Progress tracking and skill validation
+- Personal project recommendations for skill development
+- Multi-industry resume templates and coaching
 - Real-time data synchronization
 
 ### ❌ **Out of Scope (Future Phases)**
 - Other personas (HR Recruiter, Talent Manager, Hiring Manager)
 - Multi-tenant architecture
 - Subscription management
-- Advanced AI analysis
+- Job posting bookmarking and analysis
+- Development planning and tracking
 - Interview preparation tools
 - Networking features
 
@@ -54,9 +63,15 @@ Help professionals understand what they need to work on to land their next manag
 - **Week 9-10**: Polish, testing, and deployment
 
 ## Success Criteria
-1. Users can upload and manage their resume with persistent storage
-2. Users can bookmark and analyze job postings with real-time updates
-3. Users receive actionable development plans from Career Coach analysis
-4. Users can track their progress toward management roles
-5. The application provides genuine value for career advancement
-6. Real-time data synchronization works seamlessly across devices
+1. Users can upload their resume and receive an instant quality score
+2. Users can engage with virtual HR coach for general resume optimization
+3. Users can input job descriptions for targeted optimization
+4. Users can engage with job-specific virtual HR coach sessions
+5. Users receive AI-generated resume improvements based on their responses
+6. Users can validate and refine AI-generated content for accuracy
+7. Users can identify skill gaps and receive personalized learning pathways
+8. Users can access course recommendations with affiliate marketing integration
+9. Users can track learning progress and validate skill development
+10. Users can receive project recommendations to demonstrate new skills
+11. The application significantly improves resume quality and job prospects
+12. Real-time data synchronization works seamlessly across devices

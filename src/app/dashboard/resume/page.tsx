@@ -20,6 +20,7 @@ export default function ResumePage() {
   const [activeTab, setActiveTab] = useState<'list' | 'upload' | 'builder'>('list');
   const [viewingResume, setViewingResume] = useState<Resume | null>(null);
   const [editingResume, setEditingResume] = useState<Resume | null>(null);
+  const [showCoachingPrompt, setShowCoachingPrompt] = useState(false);
 
 
   const loadResumes = useCallback(async () => {
@@ -68,6 +69,13 @@ export default function ResumePage() {
   const handleResumeEdit = (resume: Resume) => {
     setEditingResume(resume);
     setActiveTab('builder');
+  };
+
+  const handleCoachingPrompt = () => {
+    setShowCoachingPrompt(true);
+    // Navigate to analysis page or show coaching modal
+    // For now, we'll just show a placeholder
+    console.log('Coaching prompt triggered - would navigate to coaching session');
   };
 
   if (!isLoaded) {
@@ -274,6 +282,7 @@ export default function ResumePage() {
           <ResumeUpload 
             userId={user.id} 
             onResumeCreated={handleResumeCreated}
+            onCoachingPrompt={handleCoachingPrompt}
           />
         </div>
       )}

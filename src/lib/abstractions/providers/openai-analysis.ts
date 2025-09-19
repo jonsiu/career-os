@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { AnalysisProvider, Resume, Job, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation } from '../types';
+import { AnalysisProvider, Resume, Job, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation, ResumeQualityScore } from '../types';
 
 export class OpenAIAnalysisProvider implements AnalysisProvider {
   private openai: OpenAI;
@@ -289,5 +289,176 @@ export class OpenAIAnalysisProvider implements AnalysisProvider {
         effort: 'medium'
       }
     ];
+  }
+
+  async scoreResumeQuality(resume: Resume): Promise<ResumeQualityScore> {
+    try {
+      const prompt = `
+        Analyze this resume and provide a comprehensive quality score (1-100) based on the following criteria:
+        
+        RESUME CONTENT:
+        ${resume.content}
+        
+        SCORING CRITERIA (Total: 100 points):
+        
+        1. CONTENT QUALITY (25 points max):
+           - Achievement quantification (10 points): Are achievements quantified with numbers, percentages, or metrics?
+           - Impact statements (8 points): Do bullet points show clear impact and results?
+           - Action verbs usage (4 points): Are strong action verbs used consistently?
+           - Industry-specific terminology (3 points): Is appropriate industry language used?
+        
+        2. STRUCTURE & FORMAT (20 points max):
+           - Logical flow and organization (8 points): Is information organized logically?
+           - Consistent formatting (5 points): Are fonts, spacing, and styles consistent?
+           - Appropriate length (3 points): Is the resume 1-2 pages for most roles?
+           - Visual appeal and readability (4 points): Is it easy to scan and read?
+        
+        3. KEYWORDS & OPTIMIZATION (20 points max):
+           - Industry-relevant keywords (8 points): Are relevant industry keywords present?
+           - ATS compatibility (6 points): Is it formatted for ATS systems?
+           - Skills alignment (4 points): Are skills clearly listed and relevant?
+           - Job-specific optimization (2 points): Is it tailored for specific roles?
+        
+        4. EXPERIENCE & SKILLS (20 points max):
+           - Relevant experience depth (8 points): Is experience relevant and detailed?
+           - Skills progression (6 points): Do skills show growth and advancement?
+           - Leadership examples (4 points): Are leadership experiences highlighted?
+           - Technical competency (2 points): Are technical skills clearly demonstrated?
+        
+        5. CAREER NARRATIVE (15 points max):
+           - Career progression logic (6 points): Does the career path make sense?
+           - Story coherence (5 points): Is there a clear professional story?
+           - Goal alignment (4 points): Do experiences align with stated goals?
+        
+        Please return ONLY a valid JSON object in this exact format:
+        {
+          "overallScore": number (1-100),
+          "scoreBreakdown": {
+            "contentQuality": number (0-25),
+            "structureFormat": number (0-20),
+            "keywordsOptimization": number (0-20),
+            "experienceSkills": number (0-20),
+            "careerNarrative": number (0-15)
+          },
+          "strengths": ["string1", "string2", "string3"],
+          "weaknesses": ["string1", "string2", "string3"],
+          "improvementAreas": {
+            "content": ["specific improvement 1", "specific improvement 2"],
+            "structure": ["specific improvement 1", "specific improvement 2"],
+            "keywords": ["specific improvement 1", "specific improvement 2"],
+            "experience": ["specific improvement 1", "specific improvement 2"],
+            "narrative": ["specific improvement 1", "specific improvement 2"]
+          },
+          "recommendations": [
+            {
+              "priority": "high|medium|low",
+              "category": "content|structure|keywords|experience|narrative",
+              "title": "Recommendation title",
+              "description": "Detailed description of the recommendation",
+              "impact": "high|medium|low"
+            }
+          ],
+          "coachingPrompt": boolean,
+          "industryBenchmark": {
+            "average": number (industry average score),
+            "percentile": number (user's percentile 0-100)
+          }
+        }
+        
+        IMPORTANT: 
+        - Be critical but fair in scoring
+        - Provide specific, actionable feedback
+        - Set coachingPrompt to true if overallScore < 70
+        - Base industryBenchmark on typical resume quality (average ~65-70)
+        - Return ONLY the JSON, no other text
+      `;
+
+      const response = await this.openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert HR professional and resume coach with 15+ years of experience. Analyze resumes with precision and provide detailed, actionable feedback. Always return valid JSON."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.2, // Low temperature for consistent scoring
+        max_tokens: 2000
+      });
+
+      const jsonResponse = response.choices[0]?.message?.content || '';
+      
+      // Extract JSON from response (in case there's extra text)
+      const jsonMatch = jsonResponse.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No valid JSON found in AI response');
+      }
+
+      const scoreData = JSON.parse(jsonMatch[0]);
+      
+      // Validate and ensure all required fields are present
+      return {
+        overallScore: Math.max(1, Math.min(100, scoreData.overallScore || 0)),
+        scoreBreakdown: {
+          contentQuality: Math.max(0, Math.min(25, scoreData.scoreBreakdown?.contentQuality || 0)),
+          structureFormat: Math.max(0, Math.min(20, scoreData.scoreBreakdown?.structureFormat || 0)),
+          keywordsOptimization: Math.max(0, Math.min(20, scoreData.scoreBreakdown?.keywordsOptimization || 0)),
+          experienceSkills: Math.max(0, Math.min(20, scoreData.scoreBreakdown?.experienceSkills || 0)),
+          careerNarrative: Math.max(0, Math.min(15, scoreData.scoreBreakdown?.careerNarrative || 0)),
+        },
+        strengths: Array.isArray(scoreData.strengths) ? scoreData.strengths : [],
+        weaknesses: Array.isArray(scoreData.weaknesses) ? scoreData.weaknesses : [],
+        improvementAreas: {
+          content: Array.isArray(scoreData.improvementAreas?.content) ? scoreData.improvementAreas.content : [],
+          structure: Array.isArray(scoreData.improvementAreas?.structure) ? scoreData.improvementAreas.structure : [],
+          keywords: Array.isArray(scoreData.improvementAreas?.keywords) ? scoreData.improvementAreas.keywords : [],
+          experience: Array.isArray(scoreData.improvementAreas?.experience) ? scoreData.improvementAreas.experience : [],
+          narrative: Array.isArray(scoreData.improvementAreas?.narrative) ? scoreData.improvementAreas.narrative : [],
+        },
+        recommendations: Array.isArray(scoreData.recommendations) ? scoreData.recommendations : [],
+        coachingPrompt: Boolean(scoreData.coachingPrompt),
+        industryBenchmark: {
+          average: Math.max(50, Math.min(90, scoreData.industryBenchmark?.average || 68)),
+          percentile: Math.max(0, Math.min(100, scoreData.industryBenchmark?.percentile || 50)),
+        }
+      };
+    } catch (error) {
+      console.error('OpenAI resume scoring failed:', error);
+      // Return a fallback score if AI fails
+      return {
+        overallScore: 50,
+        scoreBreakdown: {
+          contentQuality: 12,
+          structureFormat: 10,
+          keywordsOptimization: 10,
+          experienceSkills: 10,
+          careerNarrative: 8,
+        },
+        strengths: ['Resume uploaded successfully'],
+        weaknesses: ['Unable to analyze content', 'Please try again'],
+        improvementAreas: {
+          content: ['Unable to analyze - please try again'],
+          structure: ['Unable to analyze - please try again'],
+          keywords: ['Unable to analyze - please try again'],
+          experience: ['Unable to analyze - please try again'],
+          narrative: ['Unable to analyze - please try again'],
+        },
+        recommendations: [{
+          priority: 'high',
+          category: 'content',
+          title: 'Retry Analysis',
+          description: 'The resume analysis failed. Please try uploading again.',
+          impact: 'high'
+        }],
+        coachingPrompt: true,
+        industryBenchmark: {
+          average: 68,
+          percentile: 25,
+        }
+      };
+    }
   }
 }

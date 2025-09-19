@@ -104,6 +104,7 @@ export interface AnalysisProvider {
   }>;
   generateSkillsGap(resume: Resume, job: Job): Promise<SkillsGap>;
   provideRecommendations(analysis: AnalysisResult): Promise<Recommendation[]>;
+  scoreResumeQuality(resume: Resume): Promise<ResumeQualityScore>;
 }
 
 export interface RealTimeProvider {
@@ -335,4 +336,36 @@ export interface CreateSkillInput {
   resources: SkillResource[];
   notes?: string;
   metadata?: Record<string, unknown>;
+}
+
+export interface ResumeQualityScore {
+  overallScore: number; // 1-100
+  scoreBreakdown: {
+    contentQuality: number; // 25 points max
+    structureFormat: number; // 20 points max
+    keywordsOptimization: number; // 20 points max
+    experienceSkills: number; // 20 points max
+    careerNarrative: number; // 15 points max
+  };
+  strengths: string[];
+  weaknesses: string[];
+  improvementAreas: {
+    content: string[];
+    structure: string[];
+    keywords: string[];
+    experience: string[];
+    narrative: string[];
+  };
+  recommendations: {
+    priority: 'high' | 'medium' | 'low';
+    category: 'content' | 'structure' | 'keywords' | 'experience' | 'narrative';
+    title: string;
+    description: string;
+    impact: 'high' | 'medium' | 'low';
+  }[];
+  coachingPrompt: boolean; // Whether to suggest coaching session
+  industryBenchmark: {
+    average: number;
+    percentile: number; // User's percentile vs industry average
+  };
 }

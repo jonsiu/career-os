@@ -4,21 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, FileText, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
-import { database, fileStorage } from "@/lib/abstractions";
-import { Resume } from "@/lib/abstractions/types";
+import { Upload, FileText, AlertCircle, CheckCircle, Loader2, BarChart3 } from "lucide-react";
+import { database, fileStorage, analysis } from "@/lib/abstractions";
+import { Resume, ResumeQualityScore } from "@/lib/abstractions/types";
 import { useToast } from "@/hooks/use-toast";
+import { ResumeQualityScoreComponent } from "@/components/analysis";
 
 interface ResumeUploadProps {
   userId: string;
   onResumeCreated?: (resume: Resume) => void;
+  onCoachingPrompt?: () => void;
 }
 
 interface PdfTextItem {
   str: string;
 }
 
-export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
+export function ResumeUpload({ userId, onResumeCreated, onCoachingPrompt }: ResumeUploadProps) {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -26,6 +28,8 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
   const [errorMessage, setErrorMessage] = useState('');
   const [resumeTitle, setResumeTitle] = useState('');
   const [parsedContent, setParsedContent] = useState('');
+  const [uploadedResume, setUploadedResume] = useState<Resume | null>(null);
+  const [showQualityScore, setShowQualityScore] = useState(false);
 
   const parseFile = useCallback(async (file: File): Promise<string> => {
     if (file.type === 'application/pdf') {
@@ -95,10 +99,12 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
 
       setUploadProgress(100);
       setUploadStatus('success');
+      setUploadedResume(resume);
+      setShowQualityScore(true);
       
       toast({
         title: 'Resume uploaded and parsed successfully',
-        description: `Resume "${resumeTitle || file.name}" has been uploaded and parsed with AI.`,
+        description: `Resume "${resumeTitle || file.name}" has been uploaded and parsed with AI. Quality analysis is ready.`,
       });
       
       if (onResumeCreated) {
@@ -233,6 +239,7 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
   };
 
   return (
+    <div>
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
@@ -371,5 +378,16 @@ export function ResumeUpload({ userId, onResumeCreated }: ResumeUploadProps) {
         </div>
       </CardContent>
     </Card>
+
+    {/* Quality Score Display */}
+    {showQualityScore && uploadedResume && (
+      <div className="mt-6">
+        <ResumeQualityScoreComponent 
+          resumeId={uploadedResume.id} 
+          onCoachingPrompt={onCoachingPrompt}
+        />
+      </div>
+    )}
+  </div>
   );
 }

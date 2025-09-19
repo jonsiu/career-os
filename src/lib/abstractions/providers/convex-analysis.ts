@@ -1,4 +1,4 @@
-import { AnalysisProvider, Resume, Job, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation, Skill, Milestone, SkillsMatch } from '../types';
+import { AnalysisProvider, Resume, Job, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation, Skill, Milestone, SkillsMatch, ResumeQualityScore } from '../types';
 
 export class ConvexAnalysisProvider implements AnalysisProvider {
   async analyzeResume(resume: Resume, job?: Job): Promise<AnalysisResult> {
@@ -735,5 +735,342 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
     } else {
       return `Limited match. Focus on developing the ${gapsCount} missing skills to improve your candidacy.`;
     }
+  }
+
+  async scoreResumeQuality(resume: Resume): Promise<ResumeQualityScore> {
+    try {
+      // Parse structured resume data if available
+      let resumeData;
+      try {
+        resumeData = JSON.parse(resume.content);
+      } catch {
+        resumeData = null;
+      }
+
+      const resumeContent = resume.content.toLowerCase();
+      
+      // Calculate scores based on different criteria
+      const contentQuality = this.scoreContentQuality(resumeContent, resumeData);
+      const structureFormat = this.scoreStructureFormat(resumeContent, resumeData);
+      const keywordsOptimization = this.scoreKeywordsOptimization(resumeContent, resumeData);
+      const experienceSkills = this.scoreExperienceSkills(resumeContent, resumeData);
+      const careerNarrative = this.scoreCareerNarrative(resumeContent, resumeData);
+      
+      const overallScore = contentQuality + structureFormat + keywordsOptimization + experienceSkills + careerNarrative;
+      
+      // Generate strengths and weaknesses
+      const strengths = this.generateStrengths(resumeContent, resumeData, overallScore);
+      const weaknesses = this.generateWeaknesses(resumeContent, resumeData, overallScore);
+      
+      // Generate improvement areas
+      const improvementAreas = this.generateImprovementAreas(resumeContent, resumeData, {
+        contentQuality, structureFormat, keywordsOptimization, experienceSkills, careerNarrative
+      });
+      
+      // Generate recommendations
+      const recommendations = this.generateQualityRecommendations(improvementAreas, overallScore);
+      
+      return {
+        overallScore: Math.max(1, Math.min(100, overallScore)),
+        scoreBreakdown: {
+          contentQuality: Math.max(0, Math.min(25, contentQuality)),
+          structureFormat: Math.max(0, Math.min(20, structureFormat)),
+          keywordsOptimization: Math.max(0, Math.min(20, keywordsOptimization)),
+          experienceSkills: Math.max(0, Math.min(20, experienceSkills)),
+          careerNarrative: Math.max(0, Math.min(15, careerNarrative)),
+        },
+        strengths,
+        weaknesses,
+        improvementAreas,
+        recommendations,
+        coachingPrompt: overallScore < 70,
+        industryBenchmark: {
+          average: 68,
+          percentile: Math.min(95, Math.max(5, overallScore))
+        }
+      };
+    } catch (error) {
+      console.error('Resume quality scoring failed:', error);
+      return {
+        overallScore: 50,
+        scoreBreakdown: {
+          contentQuality: 12,
+          structureFormat: 10,
+          keywordsOptimization: 10,
+          experienceSkills: 10,
+          careerNarrative: 8,
+        },
+        strengths: ['Resume uploaded successfully'],
+        weaknesses: ['Unable to analyze content', 'Please try again'],
+        improvementAreas: {
+          content: ['Unable to analyze - please try again'],
+          structure: ['Unable to analyze - please try again'],
+          keywords: ['Unable to analyze - please try again'],
+          experience: ['Unable to analyze - please try again'],
+          narrative: ['Unable to analyze - please try again'],
+        },
+        recommendations: [{
+          priority: 'high',
+          category: 'content',
+          title: 'Retry Analysis',
+          description: 'The resume analysis failed. Please try uploading again.',
+          impact: 'high'
+        }],
+        coachingPrompt: true,
+        industryBenchmark: {
+          average: 68,
+          percentile: 25,
+        }
+      };
+    }
+  }
+
+  private scoreContentQuality(content: string, resumeData?: any): number {
+    let score = 0;
+    
+    // Achievement quantification (10 points)
+    const hasNumbers = /\d+%|\d+\+|\d+[km]|\$\d+/.test(content);
+    const hasMetrics = /increased|decreased|improved|reduced|saved|generated|achieved/.test(content);
+    if (hasNumbers && hasMetrics) score += 10;
+    else if (hasNumbers || hasMetrics) score += 5;
+    
+    // Impact statements (8 points)
+    const actionVerbs = /led|managed|developed|created|implemented|designed|built|launched|improved|optimized/.test(content);
+    const impactWords = /result|impact|outcome|success|achievement|growth|increase|decrease/.test(content);
+    if (actionVerbs && impactWords) score += 8;
+    else if (actionVerbs || impactWords) score += 4;
+    
+    // Action verbs usage (4 points)
+    const strongVerbs = /achieved|accomplished|delivered|executed|facilitated|initiated|orchestrated|spearheaded|transformed|streamlined/.test(content);
+    if (strongVerbs) score += 4;
+    else if (actionVerbs) score += 2;
+    
+    // Industry terminology (3 points)
+    const techTerms = /api|database|framework|algorithm|architecture|infrastructure|deployment|scalability|performance|optimization/.test(content);
+    const businessTerms = /strategy|stakeholder|budget|roi|kpi|metrics|analytics|process|workflow|collaboration/.test(content);
+    if (techTerms || businessTerms) score += 3;
+    
+    return Math.min(25, score);
+  }
+
+  private scoreStructureFormat(content: string, resumeData?: any): number {
+    let score = 0;
+    
+    // Logical flow and organization (8 points)
+    const hasSections = /experience|education|skills|projects|summary|objective/.test(content);
+    const hasContactInfo = /@|phone|email|linkedin|github/.test(content);
+    if (hasSections && hasContactInfo) score += 8;
+    else if (hasSections || hasContactInfo) score += 4;
+    
+    // Consistent formatting (5 points) - hard to detect from text, give baseline
+    score += 3;
+    
+    // Appropriate length (3 points)
+    const wordCount = content.split(/\s+/).length;
+    if (wordCount >= 200 && wordCount <= 800) score += 3;
+    else if (wordCount >= 100 && wordCount <= 1200) score += 2;
+    else score += 1;
+    
+    // Visual appeal and readability (4 points)
+    const hasBullets = /•|\*|-|\d+\./.test(content);
+    const hasDates = /\d{4}|\d{2}\/\d{2}|\d{2}-\d{2}/.test(content);
+    if (hasBullets && hasDates) score += 4;
+    else if (hasBullets || hasDates) score += 2;
+    
+    return Math.min(20, score);
+  }
+
+  private scoreKeywordsOptimization(content: string, resumeData?: any): number {
+    let score = 0;
+    
+    // Industry-relevant keywords (8 points)
+    const techKeywords = /javascript|python|java|react|node|sql|aws|docker|kubernetes|typescript|angular|vue|mongodb|postgresql|machine learning|ai|data science|agile|scrum|git/.test(content);
+    const businessKeywords = /leadership|management|mentoring|team building|project management|strategy|analytics|budget|stakeholder|collaboration/.test(content);
+    if (techKeywords && businessKeywords) score += 8;
+    else if (techKeywords || businessKeywords) score += 4;
+    
+    // ATS compatibility (6 points) - assume good if structured
+    if (resumeData) score += 6;
+    else score += 3;
+    
+    // Skills alignment (4 points)
+    const skillsSection = /skills|competencies|technologies|expertise/.test(content);
+    if (skillsSection) score += 4;
+    else score += 2;
+    
+    // Job-specific optimization (2 points) - hard to detect without job description
+    score += 1;
+    
+    return Math.min(20, score);
+  }
+
+  private scoreExperienceSkills(content: string, resumeData?: any): number {
+    let score = 0;
+    
+    // Relevant experience depth (8 points)
+    const experienceCount = resumeData?.experience?.length || 0;
+    if (experienceCount >= 3) score += 8;
+    else if (experienceCount >= 2) score += 5;
+    else if (experienceCount >= 1) score += 3;
+    
+    // Skills progression (6 points)
+    const hasProgression = /senior|lead|principal|manager|director|architect/.test(content);
+    if (hasProgression) score += 6;
+    else score += 3;
+    
+    // Leadership examples (4 points)
+    const leadershipWords = /led|managed|mentored|supervised|directed|coordinated|facilitated|guided/.test(content);
+    if (leadershipWords) score += 4;
+    else score += 2;
+    
+    // Technical competency (2 points)
+    const technicalWords = /developed|programmed|coded|designed|architected|implemented|debugged|optimized/.test(content);
+    if (technicalWords) score += 2;
+    
+    return Math.min(20, score);
+  }
+
+  private scoreCareerNarrative(content: string, resumeData?: any): number {
+    let score = 0;
+    
+    // Career progression logic (6 points)
+    const hasProgression = /junior|mid|senior|lead|principal|manager|director|architect|cto/.test(content);
+    if (hasProgression) score += 6;
+    else score += 3;
+    
+    // Story coherence (5 points)
+    const hasSummary = /summary|objective|profile|about/.test(content);
+    if (hasSummary) score += 5;
+    else score += 2;
+    
+    // Goal alignment (4 points) - hard to detect without explicit goals
+    score += 2;
+    
+    return Math.min(15, score);
+  }
+
+  private generateStrengths(content: string, resumeData?: any, overallScore: number): string[] {
+    const strengths = [];
+    
+    if (overallScore >= 80) {
+      strengths.push('Strong overall resume quality');
+    }
+    
+    if (/\d+%|\d+\+|\d+[km]|\$\d+/.test(content)) {
+      strengths.push('Quantified achievements with metrics');
+    }
+    
+    if (/led|managed|developed|created|implemented/.test(content)) {
+      strengths.push('Strong action verbs and impact statements');
+    }
+    
+    if (resumeData?.experience?.length >= 3) {
+      strengths.push('Comprehensive work experience');
+    }
+    
+    if (/senior|lead|principal|manager/.test(content)) {
+      strengths.push('Clear career progression');
+    }
+    
+    return strengths.length > 0 ? strengths : ['Resume uploaded successfully'];
+  }
+
+  private generateWeaknesses(content: string, resumeData?: any, overallScore: number): string[] {
+    const weaknesses = [];
+    
+    if (overallScore < 60) {
+      weaknesses.push('Overall resume quality needs improvement');
+    }
+    
+    if (!/\d+%|\d+\+|\d+[km]|\$\d+/.test(content)) {
+      weaknesses.push('Missing quantified achievements');
+    }
+    
+    if (!/led|managed|developed|created|implemented/.test(content)) {
+      weaknesses.push('Weak action verbs and impact statements');
+    }
+    
+    if (!resumeData?.experience || resumeData.experience.length < 2) {
+      weaknesses.push('Limited work experience');
+    }
+    
+    if (!/senior|lead|principal|manager/.test(content)) {
+      weaknesses.push('Unclear career progression');
+    }
+    
+    return weaknesses.length > 0 ? weaknesses : ['Consider adding more detail'];
+  }
+
+  private generateImprovementAreas(content: string, resumeData?: any, scores: any): any {
+    const improvementAreas = {
+      content: [],
+      structure: [],
+      keywords: [],
+      experience: [],
+      narrative: []
+    };
+    
+    if (scores.contentQuality < 15) {
+      improvementAreas.content.push('Add quantified achievements with numbers and percentages');
+      improvementAreas.content.push('Use stronger action verbs and impact statements');
+    }
+    
+    if (scores.structureFormat < 12) {
+      improvementAreas.structure.push('Improve section organization and formatting');
+      improvementAreas.structure.push('Add consistent bullet points and date formatting');
+    }
+    
+    if (scores.keywordsOptimization < 12) {
+      improvementAreas.keywords.push('Include more industry-relevant keywords');
+      improvementAreas.keywords.push('Add a dedicated skills section');
+    }
+    
+    if (scores.experienceSkills < 12) {
+      improvementAreas.experience.push('Expand work experience descriptions');
+      improvementAreas.experience.push('Highlight leadership and technical achievements');
+    }
+    
+    if (scores.careerNarrative < 8) {
+      improvementAreas.narrative.push('Add a professional summary or objective');
+      improvementAreas.narrative.push('Show clear career progression and growth');
+    }
+    
+    return improvementAreas;
+  }
+
+  private generateQualityRecommendations(improvementAreas: any, overallScore: number): any[] {
+    const recommendations = [];
+    
+    if (overallScore < 70) {
+      recommendations.push({
+        priority: 'high',
+        category: 'content',
+        title: 'Engage with Virtual HR Coach',
+        description: 'Work with our virtual HR coach to improve your resume content and structure.',
+        impact: 'high'
+      });
+    }
+    
+    if (improvementAreas.content.length > 0) {
+      recommendations.push({
+        priority: 'high',
+        category: 'content',
+        title: 'Improve Content Quality',
+        description: 'Add quantified achievements and stronger action verbs to make your resume more compelling.',
+        impact: 'high'
+      });
+    }
+    
+    if (improvementAreas.structure.length > 0) {
+      recommendations.push({
+        priority: 'medium',
+        category: 'structure',
+        title: 'Enhance Structure',
+        description: 'Improve formatting and organization to make your resume more readable and professional.',
+        impact: 'medium'
+      });
+    }
+    
+    return recommendations;
   }
 }

@@ -105,6 +105,8 @@ export interface AnalysisProvider {
   generateSkillsGap(resume: Resume, job: Job): Promise<SkillsGap>;
   provideRecommendations(analysis: AnalysisResult): Promise<Recommendation[]>;
   scoreResumeQuality(resume: Resume): Promise<ResumeQualityScore>;
+  getResumeById(resumeId: string): Promise<Resume | null>;
+  performAdvancedResumeAnalysis(resume: Resume): Promise<any>;
 }
 
 export interface RealTimeProvider {

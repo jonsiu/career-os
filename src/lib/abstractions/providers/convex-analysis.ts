@@ -1,6 +1,8 @@
 import { AnalysisProvider, Resume, Job, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation, Skill, Milestone, SkillsMatch, ResumeQualityScore } from '../types';
+import { AdvancedResumeAnalyzer, AdvancedResumeAnalysis } from './advanced-resume-analysis';
 
 export class ConvexAnalysisProvider implements AnalysisProvider {
+  private advancedAnalyzer = new AdvancedResumeAnalyzer();
   async analyzeResume(resume: Resume, job?: Job): Promise<AnalysisResult> {
     if (!job) {
       return {
@@ -735,6 +737,17 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
     } else {
       return `Limited match. Focus on developing the ${gapsCount} missing skills to improve your candidacy.`;
     }
+  }
+
+  async getResumeById(resumeId: string): Promise<Resume | null> {
+    // Delegate to database provider since analysis provider doesn't have direct database access
+    const { ConvexDatabaseProvider } = await import('./convex-database');
+    const dbProvider = new ConvexDatabaseProvider();
+    return await dbProvider.getResumeById(resumeId);
+  }
+
+  async performAdvancedResumeAnalysis(resume: Resume): Promise<AdvancedResumeAnalysis> {
+    return await this.advancedAnalyzer.analyzeResume(resume);
   }
 
   async scoreResumeQuality(resume: Resume): Promise<ResumeQualityScore> {

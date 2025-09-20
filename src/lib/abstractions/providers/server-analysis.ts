@@ -185,7 +185,7 @@ export class ServerAnalysisProvider implements AnalysisProvider {
   }
 
   // Caching and persistence methods - use server-side Convex calls
-  async getCachedAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced'): Promise<any> {
+  async getCachedAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered'): Promise<any> {
     try {
       const result = await convexClient.query(api.analysisResults.getLatestAnalysisResult, {
         resumeId: resumeId as any,
@@ -198,7 +198,7 @@ export class ServerAnalysisProvider implements AnalysisProvider {
     }
   }
 
-  async checkAnalysisCache(resumeId: string, analysisType: 'basic' | 'advanced', contentHash: string): Promise<{ exists: boolean; analysis: any }> {
+  async checkAnalysisCache(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered', contentHash: string): Promise<{ exists: boolean; analysis: any }> {
     try {
       const result = await convexClient.query(api.analysisResults.checkAnalysisExists, {
         resumeId: resumeId as any,
@@ -212,7 +212,7 @@ export class ServerAnalysisProvider implements AnalysisProvider {
     }
   }
 
-  async saveAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced', analysisResult: any, contentHash: string): Promise<void> {
+  async saveAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered', analysisResult: any, contentHash: string): Promise<void> {
     try {
       await convexClient.mutation(api.analysisResults.createAnalysisResult, {
         resumeId: resumeId as any,
@@ -237,7 +237,7 @@ export class ServerAnalysisProvider implements AnalysisProvider {
     }
   }
 
-  async getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced'): Promise<any[]> {
+  async getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced' | 'ai-powered'): Promise<any[]> {
     try {
       const result = await convexClient.query(api.analysisResults.getAnalysisHistory, {
         resumeId: resumeId as any,

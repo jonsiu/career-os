@@ -44,6 +44,8 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
   const [loadingScores, setLoadingScores] = useState<Set<string>>(new Set());
   const [advancedAnalyses, setAdvancedAnalyses] = useState<Record<string, AdvancedResumeAnalysis>>({});
   const [loadingAdvanced, setLoadingAdvanced] = useState<Set<string>>(new Set());
+  const [aiAnalyses, setAiAnalyses] = useState<Record<string, any>>({});
+  const [loadingAI, setLoadingAI] = useState<Set<string>>(new Set());
   const [showReportCard, setShowReportCard] = useState<string | null>(null);
 
   const loadQualityScore = async (resumeId: string) => {
@@ -89,20 +91,20 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
   };
 
   const loadAIPoweredAnalysis = async (resumeId: string) => {
-    if (advancedAnalyses[resumeId] || loadingAdvanced.has(resumeId)) return;
+    if (aiAnalyses[resumeId] || loadingAI.has(resumeId)) return;
     
     try {
-      setLoadingAdvanced(prev => new Set(prev).add(resumeId));
+      setLoadingAI(prev => new Set(prev).add(resumeId));
       const resume = await analysis.getResumeById(resumeId);
       if (resume) {
         // Use the new AI-powered analysis method
         const aiAnalysis = await (analysis as any).performAIPoweredAnalysis(resume);
-        setAdvancedAnalyses(prev => ({ ...prev, [resumeId]: aiAnalysis }));
+        setAiAnalyses(prev => ({ ...prev, [resumeId]: aiAnalysis }));
       }
     } catch (error) {
       console.error('Failed to load AI-powered analysis:', error);
     } finally {
-      setLoadingAdvanced(prev => {
+      setLoadingAI(prev => {
         const newSet = new Set(prev);
         newSet.delete(resumeId);
         return newSet;
@@ -418,7 +420,6 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
                       <>
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-gray-500">Advanced Analysis</span>
-                          <Badge variant="outline" className="text-xs">Premium</Badge>
                         </div>
                         <Button
                           size="sm"
@@ -442,26 +443,52 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
 
                   {/* AI-Powered Analysis */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">AI-Powered Analysis</span>
-                      <Badge variant="default" className="text-xs bg-purple-600">Enterprise</Badge>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => loadAIPoweredAnalysis(resume.id)}
-                      disabled={loadingAdvanced.has(resume.id)}
-                      className="text-xs h-6 px-2 border-purple-200 text-purple-700 hover:bg-purple-50"
-                    >
-                      {loadingAdvanced.has(resume.id) ? (
-                        <>
-                          <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                          AI Analyzing...
-                        </>
-                      ) : (
-                        'AI Analysis'
-                      )}
-                    </Button>
+                    {aiAnalyses[resume.id] ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <div className={`text-sm font-bold ${
+                            aiAnalyses[resume.id].overallScore >= 80 ? 'text-green-600' :
+                            aiAnalyses[resume.id].overallScore >= 70 ? 'text-blue-600' :
+                            aiAnalyses[resume.id].overallScore >= 60 ? 'text-yellow-600' :
+                            'text-red-600'
+                          }`}>
+                            {aiAnalyses[resume.id].overallScore}/100
+                          </div>
+                          <span className="text-xs text-gray-500">AI Score</span>
+                          <Badge variant="default" className="text-xs bg-purple-600">AI-Powered</Badge>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => loadAIPoweredAnalysis(resume.id)}
+                          className="text-xs h-6 px-2"
+                        >
+                          Refresh
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">AI-Powered Analysis</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => loadAIPoweredAnalysis(resume.id)}
+                          disabled={loadingAI.has(resume.id)}
+                          className="text-xs h-6 px-2 border-purple-200 text-purple-700 hover:bg-purple-50"
+                        >
+                          {loadingAI.has(resume.id) ? (
+                            <>
+                              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                              AI Analyzing...
+                            </>
+                          ) : (
+                            'AI Analysis'
+                          )}
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

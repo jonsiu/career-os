@@ -6,7 +6,7 @@ import { Id } from "./_generated/dataModel";
 export const createAnalysisResult = mutation({
   args: {
     resumeId: v.id("resumes"),
-    analysisType: v.union(v.literal("basic"), v.literal("advanced")),
+    analysisType: v.union(v.literal("basic"), v.literal("advanced"), v.literal("ai-powered")),
     overallScore: v.number(),
     categoryScores: v.any(), // JSON object with category breakdowns
     detailedInsights: v.any(), // JSON object with insights
@@ -76,7 +76,7 @@ export const createAnalysisResult = mutation({
 export const getLatestAnalysisResult = query({
   args: {
     resumeId: v.id("resumes"),
-    analysisType: v.union(v.literal("basic"), v.literal("advanced")),
+    analysisType: v.union(v.literal("basic"), v.literal("advanced"), v.literal("ai-powered")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -159,7 +159,7 @@ export const getAnalysisHistory = query({
 export const checkAnalysisExists = query({
   args: {
     resumeId: v.id("resumes"),
-    analysisType: v.union(v.literal("basic"), v.literal("advanced")),
+    analysisType: v.union(v.literal("basic"), v.literal("advanced"), v.literal("ai-powered")),
     contentHash: v.string(),
   },
   handler: async (ctx, args) => {

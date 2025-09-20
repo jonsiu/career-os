@@ -147,7 +147,7 @@ export default defineSchema({
 
   analysisResults: defineTable({
     resumeId: v.id("resumes"),
-    analysisType: v.union(v.literal("basic"), v.literal("advanced")),
+    analysisType: v.union(v.literal("basic"), v.literal("advanced"), v.literal("ai-powered")),
     overallScore: v.number(),
     categoryScores: v.any(), // JSON object with category breakdowns
     detailedInsights: v.any(), // JSON object with insights

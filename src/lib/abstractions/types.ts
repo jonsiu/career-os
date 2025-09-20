@@ -109,10 +109,10 @@ export interface AnalysisProvider {
   performAdvancedResumeAnalysis(resume: Resume): Promise<any>;
   
   // Caching and persistence methods
-  getCachedAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced'): Promise<any>;
-  checkAnalysisCache(resumeId: string, analysisType: 'basic' | 'advanced', contentHash: string): Promise<{ exists: boolean; analysis: any }>;
-  saveAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced', analysisResult: any, contentHash: string): Promise<void>;
-  getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced'): Promise<any[]>;
+  getCachedAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered'): Promise<any>;
+  checkAnalysisCache(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered', contentHash: string): Promise<{ exists: boolean; analysis: any }>;
+  saveAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered', analysisResult: any, contentHash: string): Promise<void>;
+  getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced' | 'ai-powered'): Promise<any[]>;
   getAnalysisStats(resumeId: string): Promise<any>;
 }
 

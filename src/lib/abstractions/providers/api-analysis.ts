@@ -209,7 +209,7 @@ export class APIAnalysisProvider implements AnalysisProvider {
   }
 
   // Caching methods
-  async getCachedAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced'): Promise<any> {
+  async getCachedAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered'): Promise<any> {
     try {
       const result = await this.makeAPIGetCall('cache', { 
         resumeId, 
@@ -222,7 +222,7 @@ export class APIAnalysisProvider implements AnalysisProvider {
     }
   }
 
-  async checkAnalysisCache(resumeId: string, analysisType: 'basic' | 'advanced', contentHash: string): Promise<{ exists: boolean; analysis: any }> {
+  async checkAnalysisCache(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered', contentHash: string): Promise<{ exists: boolean; analysis: any }> {
     try {
       const result = await this.makeAPICall('cache', {
         resumeId,
@@ -236,7 +236,7 @@ export class APIAnalysisProvider implements AnalysisProvider {
     }
   }
 
-  async saveAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced', analysisResult: any, contentHash: string): Promise<void> {
+  async saveAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered', analysisResult: any, contentHash: string): Promise<void> {
     try {
       await this.makeAPICall('save', {
         resumeId,
@@ -250,7 +250,7 @@ export class APIAnalysisProvider implements AnalysisProvider {
     }
   }
 
-  async getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced'): Promise<any[]> {
+  async getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced' | 'ai-powered'): Promise<any[]> {
     try {
       const params: Record<string, string> = { resumeId };
       if (analysisType) {

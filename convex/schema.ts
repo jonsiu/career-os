@@ -144,4 +144,22 @@ export default defineSchema({
     .index("by_user_id", ["userId"])
     .index("by_path", ["path"])
     .index("by_created_at", ["createdAt"]),
+
+  analysisResults: defineTable({
+    resumeId: v.id("resumes"),
+    analysisType: v.union(v.literal("basic"), v.literal("advanced")),
+    overallScore: v.number(),
+    categoryScores: v.any(), // JSON object with category breakdowns
+    detailedInsights: v.any(), // JSON object with insights
+    recommendations: v.any(), // JSON array of recommendations
+    contentHash: v.string(), // SHA-256 hash of resume content
+    metadata: v.optional(v.any()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_resume_id", ["resumeId"])
+    .index("by_analysis_type", ["analysisType"])
+    .index("by_content_hash", ["contentHash"])
+    .index("by_created_at", ["createdAt"])
+    .index("by_resume_and_type", ["resumeId", "analysisType"]),
 });

@@ -107,6 +107,13 @@ export interface AnalysisProvider {
   scoreResumeQuality(resume: Resume): Promise<ResumeQualityScore>;
   getResumeById(resumeId: string): Promise<Resume | null>;
   performAdvancedResumeAnalysis(resume: Resume): Promise<any>;
+  
+  // Caching and persistence methods
+  getCachedAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced'): Promise<any>;
+  checkAnalysisCache(resumeId: string, analysisType: 'basic' | 'advanced', contentHash: string): Promise<{ exists: boolean; analysis: any }>;
+  saveAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced', analysisResult: any, contentHash: string): Promise<void>;
+  getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced'): Promise<any[]>;
+  getAnalysisStats(resumeId: string): Promise<any>;
 }
 
 export interface RealTimeProvider {

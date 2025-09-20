@@ -1,8 +1,7 @@
 import { DatabaseProvider, FileStorageProvider, AnalysisProvider } from './types';
 import { ConvexDatabaseProvider } from './providers/convex-database';
 import { ConvexFileStorageProvider } from './providers/convex-file-storage';
-import { ConvexAnalysisProvider } from './providers/convex-analysis';
-import { OpenAIAnalysisProvider } from './providers/openai-analysis';
+import { APIAnalysisProvider } from './providers/api-analysis';
 
 // Service factory for creating provider instances
 export class ServiceFactory {
@@ -27,20 +26,10 @@ export class ServiceFactory {
     return new ConvexFileStorageProvider();
   }
 
-  // Create analysis provider - use OpenAI for better accuracy
+  // Create analysis provider - use API-based provider for server-side processing
   createAnalysisProvider(): AnalysisProvider {
-    // Check if OpenAI API key is available
-    console.log('🔍 ServiceFactory: Checking for OpenAI API key...');
-    console.log('🔍 ServiceFactory: OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
-    console.log('🔍 ServiceFactory: OPENAI_API_KEY length:', process.env.OPENAI_API_KEY?.length || 0);
-    
-    if (process.env.OPENAI_API_KEY) {
-      console.log('✅ ServiceFactory: Using OpenAI GPT-4 for resume parsing and analysis');
-      return new OpenAIAnalysisProvider();
-    } else {
-      console.log('⚠️ ServiceFactory: OpenAI API key not found, falling back to rule-based analysis');
-      return new ConvexAnalysisProvider();
-    }
+    console.log('✅ ServiceFactory: Using API-based analysis provider (server-side processing)');
+    return new APIAnalysisProvider();
   }
 
   // Get database provider for AI parsing (server-side)

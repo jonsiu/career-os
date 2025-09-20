@@ -1,5 +1,7 @@
 import { AnalysisProvider, Resume, Job, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation, Skill, Milestone, SkillsMatch, ResumeQualityScore } from '../types';
 import { AdvancedResumeAnalyzer, AdvancedResumeAnalysis } from './advanced-resume-analysis';
+import { generateContentHash } from '../../utils/content-hash';
+import { convexClient, api } from '../../convex-client';
 
 export class ConvexAnalysisProvider implements AnalysisProvider {
   private advancedAnalyzer = new AdvancedResumeAnalyzer();
@@ -747,11 +749,137 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
   }
 
   async performAdvancedResumeAnalysis(resume: Resume): Promise<AdvancedResumeAnalysis> {
-    return await this.advancedAnalyzer.analyzeResume(resume);
+    // Generate content hash for caching
+    const contentHash = await generateContentHash(resume);
+    
+    // Check if we have a cached result for this content
+    const cacheCheck = await this.checkAnalysisCache(resume.id, 'advanced', contentHash);
+    if (cacheCheck.exists && cacheCheck.analysis) {
+      console.log('📋 Using cached advanced analysis result');
+      return cacheCheck.analysis.detailedInsights;
+    }
+
+    console.log('🔄 Generating new advanced analysis result');
+    
+    // Perform the analysis
+    const analysisResult = await this.advancedAnalyzer.analyzeResume(resume);
+    
+    // Save the result to cache
+    try {
+      await this.saveAnalysisResult(resume.id, 'advanced', analysisResult, contentHash);
+      console.log('💾 Saved advanced analysis result to cache');
+    } catch (error) {
+      console.error('Failed to save advanced analysis result:', error);
+      // Don't throw here, just log the error and return the result
+    }
+
+    return analysisResult;
+  }
+
+  async getCachedAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced'): Promise<any> {
+    try {
+      const result = await convexClient.query(api.analysisResults.getLatestAnalysisResult, {
+        resumeId: resumeId as any,
+        analysisType
+      });
+      return result;
+    } catch (error) {
+      console.error('Failed to get cached analysis result:', error);
+      return null;
+    }
+  }
+
+  async checkAnalysisCache(resumeId: string, analysisType: 'basic' | 'advanced', contentHash: string): Promise<{ exists: boolean; analysis: any }> {
+    try {
+      const result = await convexClient.query(api.analysisResults.checkAnalysisExists, {
+        resumeId: resumeId as any,
+        analysisType,
+        contentHash
+      });
+      return result;
+    } catch (error) {
+      console.error('Failed to check analysis cache:', error);
+      return { exists: false, analysis: null };
+    }
+  }
+
+  async saveAnalysisResult(
+    resumeId: string,
+    analysisType: 'basic' | 'advanced',
+    analysisResult: any,
+    contentHash: string
+  ): Promise<void> {
+    try {
+      await convexClient.mutation(api.analysisResults.createAnalysisResult, {
+        resumeId: resumeId as any,
+        analysisType,
+        overallScore: analysisResult.overallScore || 0,
+        categoryScores: analysisResult.categoryScores || {},
+        detailedInsights: analysisResult.detailedInsights || {},
+        recommendations: analysisResult.recommendations || [],
+        contentHash,
+        metadata: {
+          analysisVersion: '1.0',
+          generatedAt: new Date().toISOString()
+        }
+      });
+    } catch (error) {
+      console.error('Failed to save analysis result:', error);
+      throw error;
+    }
+  }
+
+  async getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced'): Promise<any[]> {
+    try {
+      const result = await convexClient.query(api.analysisResults.getAnalysisHistory, {
+        resumeId: resumeId as any,
+        analysisType
+      });
+      return result;
+    } catch (error) {
+      console.error('Failed to get analysis history:', error);
+      return [];
+    }
+  }
+
+  async getAnalysisStats(resumeId: string): Promise<any> {
+    try {
+      const result = await convexClient.query(api.analysisResults.getAnalysisStats, {
+        resumeId: resumeId as any
+      });
+      return result;
+    } catch (error) {
+      console.error('Failed to get analysis stats:', error);
+      return null;
+    }
   }
 
   async scoreResumeQuality(resume: Resume): Promise<ResumeQualityScore> {
     try {
+      // Generate content hash for caching
+      const contentHash = await generateContentHash(resume);
+      
+      // Check if we have a cached result for this content
+      const cacheCheck = await this.checkAnalysisCache(resume.id, 'basic', contentHash);
+      if (cacheCheck.exists && cacheCheck.analysis) {
+        console.log('📋 Using cached basic analysis result');
+        return {
+          overallScore: cacheCheck.analysis.overallScore,
+          scoreBreakdown: cacheCheck.analysis.categoryScores,
+          strengths: cacheCheck.analysis.detailedInsights?.strengths || [],
+          weaknesses: cacheCheck.analysis.detailedInsights?.weaknesses || [],
+          improvementAreas: cacheCheck.analysis.detailedInsights?.improvementAreas || {},
+          recommendations: cacheCheck.analysis.recommendations || [],
+          coachingPrompt: cacheCheck.analysis.overallScore < 70,
+          industryBenchmark: {
+            average: 68,
+            percentile: Math.min(95, Math.max(5, cacheCheck.analysis.overallScore))
+          }
+        };
+      }
+
+      console.log('🔄 Generating new basic analysis result');
+      
       // Parse structured resume data if available
       let resumeData;
       try {
@@ -783,7 +911,7 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
       // Generate recommendations
       const recommendations = this.generateQualityRecommendations(improvementAreas, overallScore);
       
-      return {
+      const result = {
         overallScore: Math.max(1, Math.min(100, overallScore)),
         scoreBreakdown: {
           contentQuality: Math.max(0, Math.min(25, contentQuality)),
@@ -802,6 +930,17 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
           percentile: Math.min(95, Math.max(5, overallScore))
         }
       };
+
+      // Save the result to cache
+      try {
+        await this.saveAnalysisResult(resume.id, 'basic', result, contentHash);
+        console.log('💾 Saved basic analysis result to cache');
+      } catch (error) {
+        console.error('Failed to save analysis result:', error);
+        // Don't throw here, just log the error and return the result
+      }
+
+      return result;
     } catch (error) {
       console.error('Resume quality scoring failed:', error);
       return {

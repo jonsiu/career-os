@@ -26,7 +26,6 @@ import {
 import { database, analysis } from "@/lib/abstractions";
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { ResumePDFDocument } from './resume-pdf';
-import { ResumeQualityScore } from "@/lib/abstractions/types";
 import { AdvancedResumeAnalysis } from "@/lib/abstractions/providers/advanced-resume-analysis";
 import { ResumeReportCard } from "@/components/analysis";
 
@@ -40,34 +39,12 @@ interface ResumeListProps {
 
 export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResumeView, onResumeEdit }: ResumeListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [qualityScores, setQualityScores] = useState<Record<string, ResumeQualityScore>>({});
-  const [loadingScores, setLoadingScores] = useState<Set<string>>(new Set());
   const [advancedAnalyses, setAdvancedAnalyses] = useState<Record<string, AdvancedResumeAnalysis>>({});
   const [loadingAdvanced, setLoadingAdvanced] = useState<Set<string>>(new Set());
   const [aiAnalyses, setAiAnalyses] = useState<Record<string, any>>({});
   const [loadingAI, setLoadingAI] = useState<Set<string>>(new Set());
   const [showReportCard, setShowReportCard] = useState<string | null>(null);
 
-  const loadQualityScore = async (resumeId: string) => {
-    if (qualityScores[resumeId] || loadingScores.has(resumeId)) return;
-    
-    try {
-      setLoadingScores(prev => new Set(prev).add(resumeId));
-      const resume = await analysis.getResumeById(resumeId);
-      if (resume) {
-        const score = await analysis.scoreResumeQuality(resume);
-        setQualityScores(prev => ({ ...prev, [resumeId]: score }));
-      }
-    } catch (error) {
-      console.error('Failed to load quality score:', error);
-    } finally {
-      setLoadingScores(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(resumeId);
-        return newSet;
-      });
-    }
-  };
 
   const loadAdvancedAnalysis = async (resumeId: string) => {
     if (advancedAnalyses[resumeId] || loadingAdvanced.has(resumeId)) return;
@@ -342,53 +319,6 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
 
               {/* Analysis Options */}
               <div className="border-t pt-2 space-y-2">
-                {/* Basic Quality Score */}
-                <div className="flex items-center justify-between">
-                  {qualityScores[resume.id] ? (
-                    <>
-                      <div className="flex items-center gap-2">
-                        <div className={`text-sm font-bold ${
-                          qualityScores[resume.id].overallScore >= 80 ? 'text-green-600' :
-                          qualityScores[resume.id].overallScore >= 70 ? 'text-blue-600' :
-                          qualityScores[resume.id].overallScore >= 60 ? 'text-yellow-600' :
-                          'text-red-600'
-                        }`}>
-                          {qualityScores[resume.id].overallScore}/100
-                        </div>
-                        <span className="text-xs text-gray-500">Basic Score</span>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => loadQualityScore(resume.id)}
-                        className="text-xs h-6 px-2"
-                      >
-                        Refresh
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-xs text-gray-500">Basic Analysis</span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => loadQualityScore(resume.id)}
-                        disabled={loadingScores.has(resume.id)}
-                        className="text-xs h-6 px-2"
-                      >
-                        {loadingScores.has(resume.id) ? (
-                          <>
-                            <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                            Analyzing...
-                          </>
-                        ) : (
-                          'Basic'
-                        )}
-                      </Button>
-                    </>
-                  )}
-                </div>
-
                 {/* Analysis Options */}
                 <div className="space-y-2">
                   {/* Advanced Research-Based Analysis */}

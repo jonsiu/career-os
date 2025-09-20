@@ -1,11 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 
+// Helper function to generate AI recommendations
+function generateAIRecommendations(overallScore: number, strengths: string[], weaknesses: string[]): any[] {
+  const recommendations = [];
+  
+  // Generate recommendations based on weaknesses
+  weaknesses.forEach((weakness, index) => {
+    if (index < 3) { // Limit to top 3 weaknesses
+      recommendations.push({
+        title: `Address: ${weakness}`,
+        description: `Focus on improving this area to enhance your resume's overall impact and effectiveness.`,
+        priority: index === 0 ? 'high' : index === 1 ? 'medium' : 'low',
+        category: 'content',
+        impact: index === 0 ? 'high' : 'medium',
+        effort: 'medium',
+        timeline: index === 0 ? '1-2 weeks' : '2-4 weeks',
+        resources: ['Resume writing guides', 'Industry best practices', 'Professional examples']
+      });
+    }
+  });
+  
+  // Add general recommendations based on score
+  if (overallScore < 70) {
+    recommendations.push({
+      title: 'Enhance Overall Impact',
+      description: 'Focus on quantifying achievements and using stronger action verbs to demonstrate value to potential employers.',
+      priority: 'high',
+      category: 'content',
+      impact: 'high',
+      effort: 'medium',
+      timeline: '1-2 weeks',
+      resources: ['Action verb lists', 'Quantification examples', 'Achievement tracking guides']
+    });
+  }
+  
+  if (overallScore < 60) {
+    recommendations.push({
+      title: 'Improve ATS Compatibility',
+      description: 'Optimize formatting and keywords to ensure your resume passes Applicant Tracking Systems.',
+      priority: 'high',
+      category: 'formatting',
+      impact: 'high',
+      effort: 'low',
+      timeline: '3-5 days',
+      resources: ['ATS compatibility guides', 'Keyword optimization tools', 'Formatting standards']
+    });
+  }
+  
+  return recommendations.slice(0, 5); // Limit to 5 recommendations
+}
+
 export async function POST(request: NextRequest) {
   try {
     console.log('🤖 AI-powered analysis API called');
     
-    // Authenticate user
     const { userId } = await auth();
     if (!userId) {
       console.log('❌ Authentication failed');
@@ -22,7 +71,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Resume ID is required' }, { status: 400 });
     }
 
-    // Check if Anthropic API key is available
     if (!process.env.ANTHROPIC_API_KEY) {
       console.log('❌ Anthropic API key not configured');
       return NextResponse.json(
@@ -33,11 +81,10 @@ export async function POST(request: NextRequest) {
     console.log('✅ Anthropic API key available');
     console.log('🔑 API key starts with:', process.env.ANTHROPIC_API_KEY?.substring(0, 10) + '...');
 
-    // Get resume data using existing convex client
     console.log('🔍 Fetching resume data...');
-    const { convexClient, api } = await import('@/lib/convex-client');
+    const { convexClient, api } = await import('@/lib/convex-client'); // Using existing client
     
-    const resume = await convexClient.query(api.resumes.getById, {
+    const resume = await convexClient.query(api.resumes.getById, { // Corrected function name
       id: resumeId as any
     });
     
@@ -45,9 +92,8 @@ export async function POST(request: NextRequest) {
       console.log('❌ Resume not found');
       return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
     }
-    console.log('✅ Resume found:', resume.id);
+    console.log('✅ Resume found:', resume._id);
 
-    // Perform AI-powered analysis using Anthropic directly
     console.log('🤖 Initializing Anthropic client...');
     const { Anthropic } = await import('@anthropic-ai/sdk');
     const anthropic = new Anthropic({
@@ -121,7 +167,6 @@ This is a mock AI response for testing purposes. The actual Anthropic API call f
     const analysis = response.content[0]?.type === 'text' ? response.content[0].text : '';
     console.log('📝 AI response length:', analysis.length);
     
-    // Parse the AI response and create a structured result
     console.log('🔍 Parsing AI response...');
     let analysisResult;
     
@@ -130,7 +175,6 @@ This is a mock AI response for testing purposes. The actual Anthropic API call f
       const scoreMatch = analysis.match(/(?:overall score|score|rating)[:\s]*(\d+)/i);
       const overallScore = scoreMatch ? parseInt(scoreMatch[1]) : 75;
       
-      // Extract strengths and weaknesses from the response
       const strengthsMatch = analysis.match(/(?:strengths?|positive|good)[:\s]*([^.]*)/i);
       const weaknessesMatch = analysis.match(/(?:weaknesses?|areas for improvement|negative|issues)[:\s]*([^.]*)/i);
       
@@ -138,13 +182,17 @@ This is a mock AI response for testing purposes. The actual Anthropic API call f
         strengthsMatch[1].split(/[,;]/).map(s => s.trim()).filter(s => s.length > 0) :
         ['Clear work experience', 'Relevant technical skills', 'Good educational background'];
         
-      const weaknesses = weaknessesMatch ? 
+      let weaknesses = weaknessesMatch ? 
         weaknessesMatch[1].split(/[,;]/).map(s => s.trim()).filter(s => s.length > 0) :
         ['Could use more quantified achievements', 'Missing some industry keywords', 'Formatting could be more consistent'];
       
-      // Calculate score breakdown based on overall score
+      // Ensure there are always areas for improvement if score isn't 100
+      if (overallScore < 100 && weaknesses.length === 0) {
+        weaknesses = ['Continue refining your resume to achieve maximum impact'];
+      }
+      
       const baseScore = Math.max(1, Math.min(25, Math.floor(overallScore * 0.25)));
-      const variation = Math.floor(Math.random() * 6) - 3; // Add some variation
+      const variation = Math.floor(Math.random() * 6) - 3;
       
       analysisResult = {
         overallScore: Math.max(1, Math.min(100, overallScore)),
@@ -162,21 +210,41 @@ This is a mock AI response for testing purposes. The actual Anthropic API call f
           structure: 'Improve section organization',
           keywords: 'Include more industry-relevant terms'
         },
-        recommendations: [
-          {
-            title: 'Add quantified achievements',
-            description: 'Include specific numbers and percentages to demonstrate impact',
-            priority: 'high',
-            category: 'content',
-            impact: 'high'
-          }
-        ],
+        recommendations: generateAIRecommendations(overallScore, strengths, weaknesses),
         coachingPrompt: overallScore < 70,
         industryBenchmark: {
           average: 68,
           percentile: Math.min(95, Math.max(5, overallScore))
         },
-        aiResponse: analysis // Include the raw AI response for debugging
+        aiResponse: analysis, // Include the raw AI response for debugging
+        // Add advanced analysis structure for compatibility
+        categoryScores: {
+          contentQuality: { score: Math.max(1, Math.min(25, baseScore + variation)), maxScore: 25 },
+          structuralIntegrity: { score: Math.max(1, Math.min(20, Math.floor(overallScore * 0.2) + variation)), maxScore: 20 },
+          professionalPresentation: { score: Math.max(1, Math.min(20, Math.floor(overallScore * 0.2) + variation)), maxScore: 20 },
+          skillsAlignment: { score: Math.max(1, Math.min(20, Math.floor(overallScore * 0.2) + variation)), maxScore: 20 },
+          experienceDepth: { score: Math.max(1, Math.min(20, Math.floor(overallScore * 0.2) + variation)), maxScore: 20 },
+          careerProgression: { score: Math.max(1, Math.min(15, Math.floor(overallScore * 0.15) + variation)), maxScore: 15 },
+          atsOptimization: { score: Math.max(1, Math.min(20, Math.floor(overallScore * 0.2) + variation)), maxScore: 20 },
+          industryRelevance: { score: Math.max(1, Math.min(20, Math.floor(overallScore * 0.2) + variation)), maxScore: 20 }
+        },
+        detailedInsights: {
+          strengths: strengths.map(strength => ({
+            category: 'AI Analysis',
+            description: strength,
+            impact: 'medium' as const,
+            evidence: [strength]
+          })),
+          weaknesses: weaknesses.map(weakness => ({
+            category: 'AI Analysis',
+            description: weakness,
+            impact: 'medium' as const,
+            evidence: [weakness],
+            improvementPotential: 75
+          })),
+          opportunities: [],
+          redFlags: []
+        }
       };
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
@@ -224,7 +292,33 @@ This is a mock AI response for testing purposes. The actual Anthropic API call f
       };
     }
 
-    console.log('✅ Analysis result created, returning response');
+    console.log('✅ Analysis result created, saving to database...');
+    
+    // Save the analysis result to the database
+    try {
+      const { generateContentHash } = await import('@/lib/utils/content-hash');
+      const contentHash = await generateContentHash(resume.content);
+      
+      await convexClient.mutation(api.analysisResults.createAnalysisResult, {
+        resumeId: resume._id,
+        analysisType: 'ai-powered',
+        overallScore: analysisResult.overallScore,
+        categoryScores: analysisResult.categoryScores || analysisResult.scoreBreakdown,
+        detailedInsights: analysisResult.detailedInsights || {},
+        recommendations: analysisResult.recommendations || [],
+        contentHash,
+        metadata: {
+          aiResponse: analysisResult.aiResponse,
+          benchmarking: analysisResult.industryBenchmark,
+          analysisType: 'ai-powered'
+        }
+      });
+      console.log('✅ AI analysis result saved to database');
+    } catch (saveError) {
+      console.error('❌ Failed to save AI analysis result:', saveError);
+      // Continue anyway - don't fail the request if saving fails
+    }
+
     return NextResponse.json({
       success: true,
       data: analysisResult,

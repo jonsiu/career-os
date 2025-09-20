@@ -744,16 +744,368 @@ export class AdvancedResumeAnalyzer {
   private generateIndustryRelevanceInsights(breakdown: any, content: string): string[] { return []; }
 
   private generateDetailedInsights(categoryScores: any): DetailedInsights {
+    const strengths: DetailedInsights['strengths'] = [];
+    const weaknesses: DetailedInsights['weaknesses'] = [];
+    const opportunities: DetailedInsights['opportunities'] = [];
+    const redFlags: DetailedInsights['redFlags'] = [];
+
+    // Generate strengths and weaknesses based on category scores
+    Object.entries(categoryScores).forEach(([category, scoreData]: [string, any]) => {
+      const scorePercentage = (scoreData.score / scoreData.maxScore) * 100;
+      
+      // Add strengths for high-scoring categories (80%+)
+      if (scorePercentage >= 80) {
+        strengths.push({
+          category: this.formatCategoryName(category),
+          description: this.getStrengthDescription(category),
+          impact: 'high' as const,
+          evidence: this.getStrengthEvidence(category, scoreData.score)
+        });
+      }
+      
+      // Add weaknesses for any category that's not perfect (100%)
+      // This ensures there are always areas for improvement when score < 100
+      if (scorePercentage < 100) {
+        const impact = scorePercentage < 40 ? 'high' as const : 
+                      scorePercentage < 70 ? 'medium' as const : 'low' as const;
+        
+        weaknesses.push({
+          category: this.formatCategoryName(category),
+          description: this.getWeaknessDescription(category, scorePercentage),
+          impact,
+          evidence: this.getWeaknessEvidence(category, scoreData.score),
+          improvementPotential: Math.min(95, Math.max(60, 100 - scorePercentage))
+        });
+      }
+    });
+
+    // Ensure there are always areas for improvement if overall score isn't 100
+    const overallScore = Object.values(categoryScores).reduce((sum: number, scoreData: any) => 
+      sum + scoreData.score, 0) / Object.values(categoryScores).reduce((sum: number, scoreData: any) => 
+      sum + scoreData.maxScore, 0) * 100;
+    
+    if (overallScore < 100 && weaknesses.length === 0) {
+      // Add general improvement areas if no specific weaknesses were identified
+      weaknesses.push({
+        category: 'Overall',
+        description: 'Continue refining your resume to achieve maximum impact',
+        impact: 'low' as const,
+        evidence: ['Resume is good but can be optimized further'],
+        improvementPotential: Math.min(95, Math.max(60, 100 - overallScore))
+      });
+    }
+
+    // Add general opportunities and red flags
+    if (strengths.length > 0) {
+      opportunities.push({
+        category: 'Overall',
+        description: 'Leverage your strong areas to differentiate yourself from other candidates',
+        effort: 'low' as const,
+        expectedImpact: 85,
+        timeline: '1-2 weeks'
+      });
+    }
+
+    if (weaknesses.length > 0) {
+      redFlags.push({
+        issue: 'Resume optimization needed',
+        severity: 'major' as const,
+        description: 'Address critical weaknesses to improve overall resume effectiveness',
+        recommendation: 'Focus on the identified improvement areas to enhance resume impact'
+      });
+    }
+
     return {
-      strengths: [],
-      weaknesses: [],
-      opportunities: [],
-      redFlags: []
+      strengths,
+      weaknesses,
+      opportunities,
+      redFlags
     };
   }
 
+  private formatCategoryName(category: string): string {
+    return category.replace(/([A-Z])/g, ' $1').trim().replace(/^./, str => str.toUpperCase());
+  }
+
+  private getStrengthDescription(category: string): string {
+    const descriptions: Record<string, string> = {
+      'contentQuality': 'Strong content quality with clear, impactful descriptions',
+      'structuralIntegrity': 'Well-organized structure with logical flow and formatting',
+      'professionalPresentation': 'Professional presentation with consistent formatting',
+      'skillsAlignment': 'Skills are well-aligned with industry requirements',
+      'experienceDepth': 'Comprehensive experience with detailed achievements',
+      'careerProgression': 'Clear career progression showing growth and advancement',
+      'atsOptimization': 'Optimized for ATS systems with proper formatting',
+      'industryRelevance': 'Highly relevant to current industry standards'
+    };
+    return descriptions[category] || 'Strong performance in this area';
+  }
+
+  private getWeaknessDescription(category: string, scorePercentage?: number): string {
+    const descriptions: Record<string, string> = {
+      'contentQuality': 'Content could be more impactful and specific',
+      'structuralIntegrity': 'Structure and formatting need improvement',
+      'professionalPresentation': 'Professional presentation could be enhanced',
+      'skillsAlignment': 'Skills may not align well with target roles',
+      'experienceDepth': 'Experience descriptions could be more detailed',
+      'careerProgression': 'Career progression could be clearer',
+      'atsOptimization': 'May not be optimized for ATS systems',
+      'industryRelevance': 'Could be more relevant to current industry trends'
+    };
+    
+    const baseDescription = descriptions[category] || 'This area needs improvement';
+    
+    // Add more specific descriptions based on score percentage
+    if (scorePercentage !== undefined) {
+      if (scorePercentage >= 80) {
+        return `${baseDescription} - minor refinements needed`;
+      } else if (scorePercentage >= 60) {
+        return `${baseDescription} - moderate improvements recommended`;
+      } else if (scorePercentage >= 40) {
+        return `${baseDescription} - significant improvements needed`;
+      } else {
+        return `${baseDescription} - major overhaul required`;
+      }
+    }
+    
+    return baseDescription;
+  }
+
+  private getStrengthEvidence(category: string, score: number): string[] {
+    const evidence: Record<string, string[]> = {
+      'contentQuality': ['Clear achievement descriptions', 'Quantified results', 'Strong action verbs'],
+      'structuralIntegrity': ['Consistent formatting', 'Logical section order', 'Proper spacing'],
+      'professionalPresentation': ['Professional language', 'Consistent style', 'Clean appearance'],
+      'skillsAlignment': ['Relevant skills listed', 'Industry keywords included', 'Skills match requirements'],
+      'experienceDepth': ['Detailed job descriptions', 'Specific achievements', 'Clear responsibilities'],
+      'careerProgression': ['Clear advancement', 'Increasing responsibility', 'Growth demonstrated'],
+      'atsOptimization': ['ATS-friendly format', 'Standard headings', 'Simple formatting'],
+      'industryRelevance': ['Current terminology', 'Industry standards', 'Relevant experience']
+    };
+    return evidence[category] || ['Strong performance indicators'];
+  }
+
+  private getWeaknessEvidence(category: string, score: number): string[] {
+    const evidence: Record<string, string[]> = {
+      'contentQuality': ['Vague descriptions', 'Missing quantifications', 'Weak action verbs'],
+      'structuralIntegrity': ['Inconsistent formatting', 'Poor organization', 'Formatting issues'],
+      'professionalPresentation': ['Unprofessional language', 'Inconsistent style', 'Poor appearance'],
+      'skillsAlignment': ['Irrelevant skills', 'Missing keywords', 'Skills mismatch'],
+      'experienceDepth': ['Shallow descriptions', 'Missing achievements', 'Unclear responsibilities'],
+      'careerProgression': ['Unclear advancement', 'No growth shown', 'Flat career path'],
+      'atsOptimization': ['Complex formatting', 'Non-standard headings', 'ATS-unfriendly'],
+      'industryRelevance': ['Outdated terminology', 'Missing industry context', 'Irrelevant experience']
+    };
+    return evidence[category] || ['Areas needing improvement'];
+  }
+
   private generateAdvancedRecommendations(insights: DetailedInsights, overallScore: number): AdvancedRecommendation[] {
-    return [];
+    const recommendations: AdvancedRecommendation[] = [];
+    
+    // Generate recommendations based on weaknesses
+    insights.weaknesses.forEach((weakness, index) => {
+      if (weakness.improvementPotential > 60) {
+        recommendations.push({
+          id: `rec-${index}`,
+          title: `Improve ${weakness.category}`,
+          description: weakness.description,
+          priority: weakness.impact === 'high' ? 'high' : weakness.impact === 'medium' ? 'medium' : 'low',
+          category: weakness.category.toLowerCase(),
+          specificActions: this.getSpecificActionsForCategory(weakness.category),
+          expectedImpact: weakness.improvementPotential,
+          effortRequired: weakness.improvementPotential > 80 ? 'high' : 'medium',
+          timeline: weakness.improvementPotential > 80 ? '1-2 weeks' : '2-4 weeks',
+          resources: this.getResourcesForCategory(weakness.category),
+          examples: this.getExamplesForCategory(weakness.category)
+        });
+      }
+    });
+    
+    // Add general recommendations based on overall score
+    if (overallScore < 70) {
+      recommendations.push({
+        id: 'rec-overall-impact',
+        title: 'Enhance Overall Impact',
+        description: 'Focus on quantifying achievements and using stronger action verbs to demonstrate value',
+        priority: 'high',
+        category: 'content',
+        specificActions: [
+          'Add specific numbers and percentages to achievements',
+          'Use strong action verbs (led, implemented, increased)',
+          'Quantify results and outcomes',
+          'Include relevant metrics and KPIs'
+        ],
+        expectedImpact: 85,
+        effortRequired: 'medium',
+        timeline: '1-2 weeks',
+        resources: ['Resume writing guides', 'Action verb lists', 'Quantification examples'],
+        examples: [
+          'Instead of "Managed team", write "Led team of 8 developers, increasing productivity by 25%"',
+          'Instead of "Improved sales", write "Increased sales revenue by $2M through strategic initiatives"',
+          'Instead of "Developed software", write "Built scalable web application serving 10,000+ users"'
+        ]
+      });
+    }
+    
+    if (overallScore < 60) {
+      recommendations.push({
+        id: 'rec-ats-compatibility',
+        title: 'Improve ATS Compatibility',
+        description: 'Optimize formatting and keywords to pass Applicant Tracking Systems',
+        priority: 'high',
+        category: 'formatting',
+        specificActions: [
+          'Use standard section headings',
+          'Avoid complex formatting and graphics',
+          'Include relevant keywords from job descriptions',
+          'Use standard fonts and bullet points'
+        ],
+        expectedImpact: 90,
+        effortRequired: 'low',
+        timeline: '3-5 days',
+        resources: ['ATS compatibility guides', 'Keyword optimization tools'],
+        examples: [
+          'Use "Work Experience" instead of "Professional Journey"',
+          'Include keywords like "project management", "team leadership", "data analysis"',
+          'Use simple bullet points instead of complex formatting',
+          'Save as .docx or .pdf format for best ATS compatibility'
+        ]
+      });
+    }
+    
+    // Sort by priority and expected impact
+    return recommendations.sort((a, b) => {
+      const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
+      
+      if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+        return priorityOrder[b.priority] - priorityOrder[a.priority];
+      }
+      return b.expectedImpact - a.expectedImpact;
+    });
+  }
+  
+  private getResourcesForCategory(category: string): string[] {
+    const resourceMap: Record<string, string[]> = {
+      'Content Quality': ['Resume writing guides', 'Action verb lists', 'Quantification examples'],
+      'Structural Integrity': ['Resume templates', 'Formatting guides', 'Section organization tips'],
+      'Professional Presentation': ['Professional writing guides', 'Industry standards', 'Design principles'],
+      'Skills Alignment': ['Skills assessment tools', 'Industry skill lists', 'Competency frameworks'],
+      'Experience Depth': ['Experience documentation guides', 'Achievement tracking', 'Career progression tips'],
+      'Career Progression': ['Career development resources', 'Promotion strategies', 'Leadership examples'],
+      'ATS Optimization': ['ATS compatibility guides', 'Keyword optimization tools', 'Formatting standards'],
+      'Industry Relevance': ['Industry research', 'Job market analysis', 'Trend reports']
+    };
+    
+    return resourceMap[category] || ['General resume improvement resources'];
+  }
+  
+  private getSpecificActionsForCategory(category: string): string[] {
+    const actionMap: Record<string, string[]> = {
+      'Content Quality': [
+        'Add quantified achievements with specific numbers',
+        'Use strong action verbs to start bullet points',
+        'Include relevant keywords from job descriptions',
+        'Remove unnecessary or outdated information'
+      ],
+      'Structural Integrity': [
+        'Organize sections in logical order',
+        'Use consistent formatting throughout',
+        'Ensure proper spacing and alignment',
+        'Include all essential sections'
+      ],
+      'Professional Presentation': [
+        'Use professional language and tone',
+        'Ensure consistent formatting style',
+        'Check for grammar and spelling errors',
+        'Maintain professional appearance'
+      ],
+      'Skills Alignment': [
+        'Include skills relevant to target roles',
+        'Match skills to job requirements',
+        'Provide evidence of skill proficiency',
+        'Update skills to reflect current abilities'
+      ],
+      'Experience Depth': [
+        'Provide detailed descriptions of responsibilities',
+        'Include specific achievements and outcomes',
+        'Show progression and growth over time',
+        'Highlight relevant experience for target roles'
+      ],
+      'Career Progression': [
+        'Show clear career advancement',
+        'Demonstrate increasing responsibility',
+        'Highlight leadership and management experience',
+        'Include relevant promotions and achievements'
+      ],
+      'ATS Optimization': [
+        'Use standard section headings',
+        'Avoid complex formatting and graphics',
+        'Include relevant keywords naturally',
+        'Use standard fonts and bullet points'
+      ],
+      'Industry Relevance': [
+        'Include industry-specific terminology',
+        'Highlight relevant certifications',
+        'Show understanding of industry trends',
+        'Include relevant professional memberships'
+      ]
+    };
+    
+    return actionMap[category] || ['Review and improve this area of your resume'];
+  }
+  
+  private getExamplesForCategory(category: string): string[] {
+    const exampleMap: Record<string, string[]> = {
+      'Content Quality': [
+        'Before: "Responsible for managing projects" → After: "Led 15+ cross-functional projects, delivering 95% on-time completion"',
+        'Before: "Worked with team" → After: "Collaborated with 12-member development team, reducing bug reports by 40%"',
+        'Before: "Improved processes" → After: "Streamlined workflow processes, saving 20 hours per week"'
+      ],
+      'Structural Integrity': [
+        'Use consistent formatting: All job titles in bold, company names in italics',
+        'Maintain uniform spacing: 1.15 line spacing throughout document',
+        'Organize sections: Contact Info → Summary → Experience → Education → Skills',
+        'Use standard headings: "Work Experience", "Education", "Skills"'
+      ],
+      'Professional Presentation': [
+        'Use professional language: "Implemented" instead of "did"',
+        'Maintain consistent tense: Past tense for completed roles, present for current',
+        'Check grammar: "Led team of 5 developers" not "Lead team of 5 developer"',
+        'Professional tone: "Delivered results" instead of "got stuff done"'
+      ],
+      'Skills Alignment': [
+        'Match job requirements: If job needs "Python", include "Python programming"',
+        'Provide evidence: "Python (3 years experience building web applications)"',
+        'Update regularly: Remove outdated skills, add new ones',
+        'Be specific: "Advanced Excel" instead of just "Microsoft Office"'
+      ],
+      'Experience Depth': [
+        'Include context: "Software Engineer at Fortune 500 company (2019-2023)"',
+        'Show progression: "Junior Developer → Senior Developer → Team Lead"',
+        'Add achievements: "Increased system performance by 50%"',
+        'Provide details: "Managed team of 8 developers across 3 projects"'
+      ],
+      'Career Progression': [
+        'Show advancement: "Software Engineer → Senior Engineer → Engineering Manager"',
+        'Demonstrate growth: "Led 2-person team → Managed 10-person department"',
+        'Include promotions: "Promoted to Senior Role after 2 years"',
+        'Highlight leadership: "Mentored 5 junior developers"'
+      ],
+      'ATS Optimization': [
+        'Standard headings: "Work Experience" not "Professional Journey"',
+        'Simple formatting: Use bullet points, avoid tables and graphics',
+        'Keywords: Include terms from job descriptions naturally',
+        'File format: Save as .docx or .pdf for best compatibility'
+      ],
+      'Industry Relevance': [
+        'Industry terms: "Agile methodology" for software, "ROI analysis" for business',
+        'Certifications: "PMP Certified", "AWS Solutions Architect"',
+        'Memberships: "IEEE Member", "Project Management Institute"',
+        'Trends: "Cloud computing", "Machine learning", "Digital transformation"'
+      ]
+    };
+    
+    return exampleMap[category] || ['Review examples in resume writing guides for this category'];
   }
 
   private generateRecruiterPerspective(overallScore: number, insights: DetailedInsights): RecruiterPerspective {

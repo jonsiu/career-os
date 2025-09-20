@@ -39,12 +39,14 @@ interface ResumeReportCardProps {
 }
 
 export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCardProps) {
-  const [basicAnalysis, setBasicAnalysis] = useState<ResumeQualityScore | null>(null);
   const [advancedAnalysis, setAdvancedAnalysis] = useState<AdvancedResumeAnalysis | null>(null);
+  const [aiAnalysis, setAiAnalysis] = useState<any>(null);
   const [analysisStats, setAnalysisStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingAI, setLoadingAI] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'detailed' | 'history' | 'suggestions'>('overview');
+  const [suggestionMode, setSuggestionMode] = useState<'advanced' | 'ai'>('advanced');
 
   useEffect(() => {
     loadReportCard();
@@ -55,14 +57,27 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
       setIsLoading(true);
       setError(null);
       
-      // Load basic analysis
+      // Load advanced analysis as primary analysis
       const resume = await analysis.getResumeById(resumeId);
       if (!resume) {
         throw new Error('Resume not found');
       }
       
-      const basicResult = await analysis.scoreResumeQuality(resume);
-      setBasicAnalysis(basicResult);
+      // Check if we have cached advanced analysis
+      const cachedAdvanced = await analysis.getCachedAnalysisResult(resumeId, 'advanced');
+      if (cachedAdvanced) {
+        setAdvancedAnalysis(cachedAdvanced);
+      } else {
+        // Load fresh advanced analysis
+        const advancedResult = await analysis.performAdvancedResumeAnalysis(resume);
+        setAdvancedAnalysis(advancedResult);
+      }
+      
+      // Check if we have cached AI analysis
+      const cachedAI = await analysis.getCachedAnalysisResult(resumeId, 'ai-powered');
+      if (cachedAI) {
+        setAiAnalysis(cachedAI);
+      }
       
       // Load analysis stats
       const stats = await analysis.getAnalysisStats(resumeId);
@@ -87,6 +102,23 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
       setAdvancedAnalysis(advancedResult);
     } catch (err) {
       console.error('Failed to load advanced analysis:', err);
+    }
+  };
+
+  const loadAIAnalysis = async () => {
+    try {
+      setLoadingAI(true);
+      const resume = await analysis.getResumeById(resumeId);
+      if (!resume) {
+        throw new Error('Resume not found');
+      }
+      
+      const aiResult = await (analysis as any).performAIPoweredAnalysis(resume);
+      setAiAnalysis(aiResult);
+    } catch (err) {
+      console.error('Failed to load AI analysis:', err);
+    } finally {
+      setLoadingAI(false);
     }
   };
 
@@ -168,7 +200,7 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
     );
   }
 
-  if (!basicAnalysis) return null;
+  if (!advancedAnalysis) return null;
 
   return (
     <div className="space-y-6">
@@ -186,6 +218,27 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
               </CardDescription>
             </div>
             <div className="flex gap-2">
+              {!aiAnalysis && (
+                <Button 
+                  onClick={loadAIAnalysis} 
+                  variant="outline" 
+                  size="sm"
+                  disabled={loadingAI}
+                  className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                >
+                  {loadingAI ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      AI Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="h-4 w-4 mr-2" />
+                      AI Analysis
+                    </>
+                  )}
+                </Button>
+              )}
               <Button onClick={loadReportCard} variant="outline" size="sm">
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
@@ -202,21 +255,27 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white mb-4">
               <div className="text-center">
-                <div className="text-2xl font-bold">{getGrade(basicAnalysis.overallScore)}</div>
+                <div className="text-2xl font-bold">{getGrade(advancedAnalysis.overallScore)}</div>
                 <div className="text-xs opacity-90">Grade</div>
               </div>
             </div>
-            <div className={`text-4xl font-bold ${getScoreColor(basicAnalysis.overallScore)}`}>
-              {basicAnalysis.overallScore}
+            <div className={`text-4xl font-bold ${getScoreColor(advancedAnalysis.overallScore)}`}>
+              {advancedAnalysis.overallScore}
             </div>
             <div className="text-sm text-gray-600 mb-2">out of 100</div>
-            <Badge variant={getScoreBadgeVariant(basicAnalysis.overallScore)} className="text-sm">
-              {getScoreLabel(basicAnalysis.overallScore)}
-            </Badge>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Badge variant={getScoreBadgeVariant(advancedAnalysis.overallScore)} className="text-sm">
+                {getScoreLabel(advancedAnalysis.overallScore)}
+              </Badge>
+              <Badge variant="outline" className="text-xs">Advanced Analysis</Badge>
+              {aiAnalysis && (
+                <Badge variant="default" className="text-xs bg-purple-600">AI Enhanced</Badge>
+              )}
+            </div>
           </div>
 
           {/* Progress Bar */}
-          <Progress value={basicAnalysis.overallScore} className="mb-4" />
+          <Progress value={advancedAnalysis.overallScore} className="mb-4" />
 
           {/* Quick Stats */}
           <div className="grid grid-cols-3 gap-4 text-center">
@@ -265,32 +324,59 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
 
         <TabsContent value="overview" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Score Breakdown */}
+            {/* Summary Overview */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-5 w-5" />
-                  Score Breakdown
+                  Analysis Summary
                 </CardTitle>
                 <CardDescription>
-                  Performance across key evaluation categories
+                  Key insights and overall performance
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {Object.entries(basicAnalysis.scoreBreakdown).map(([category, score]) => (
-                    <div key={category} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium capitalize">
-                          {category.replace(/([A-Z])/g, ' $1').trim()}
-                        </span>
-                        <span className={`text-sm font-bold ${getScoreColor(score as number)}`}>
-                          {score}/25
-                        </span>
-                      </div>
-                      <Progress value={(score as number / 25) * 100} className="h-2" />
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600 mb-2">
+                      {advancedAnalysis.overallScore}/100
                     </div>
-                  ))}
+                    <div className="text-sm text-gray-600">
+                      Overall Resume Score
+                    </div>
+                    <Badge variant={getScoreBadgeVariant(advancedAnalysis.overallScore)} className="mt-2">
+                      {getScoreLabel(advancedAnalysis.overallScore)}
+                    </Badge>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 text-center">
+                    <div className="p-3 bg-green-50 rounded-lg">
+                      <div className="text-lg font-bold text-green-600">
+                        {advancedAnalysis.detailedInsights.strengths.length}
+                      </div>
+                      <div className="text-xs text-green-700">Strengths</div>
+                    </div>
+                    <div className="p-3 bg-red-50 rounded-lg">
+                      <div className="text-lg font-bold text-red-600">
+                        {advancedAnalysis.detailedInsights.weaknesses.length}
+                      </div>
+                      <div className="text-xs text-red-700">Areas to Improve</div>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <div className="text-sm font-medium text-blue-900 mb-1">Top Strength</div>
+                    <div className="text-sm text-blue-700">
+                      {advancedAnalysis.detailedInsights.strengths[0]?.description || 'No strengths identified'}
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-orange-50 rounded-lg">
+                    <div className="text-sm font-medium text-orange-900 mb-1">Priority Improvement</div>
+                    <div className="text-sm text-orange-700">
+                      {advancedAnalysis.detailedInsights.weaknesses[0]?.description || 'No weaknesses identified'}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -306,10 +392,13 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">
-                    {basicAnalysis.strengths.map((strength, index) => (
+                    {advancedAnalysis.detailedInsights.strengths.map((strength, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">{strength}</span>
+                        <div className="text-sm">
+                          <div className="font-medium">{strength.description}</div>
+                          <div className="text-xs text-gray-600 mt-1">{strength.category}</div>
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -325,10 +414,13 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">
-                    {basicAnalysis.weaknesses.map((weakness, index) => (
+                    {advancedAnalysis.detailedInsights.weaknesses.map((weakness, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">{weakness}</span>
+                        <div className="text-sm">
+                          <div className="font-medium">{weakness.description}</div>
+                          <div className="text-xs text-gray-600 mt-1">{weakness.category}</div>
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -339,52 +431,69 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
         </TabsContent>
 
         <TabsContent value="detailed" className="mt-6">
-          {!advancedAnalysis ? (
+          <div className="space-y-6">
+            {/* Advanced Analysis Results */}
             <Card>
-              <CardContent className="py-8">
-                <div className="text-center">
-                  <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Advanced Analysis</h3>
-                  <p className="text-gray-600 mb-4">
-                    Get detailed insights with our research-based analysis framework
-                  </p>
-                  <Button onClick={loadAdvancedAnalysis}>
-                    <Brain className="h-4 w-4 mr-2" />
-                    Run Advanced Analysis
-                  </Button>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Brain className="h-5 w-5" />
+                  Advanced Analysis Results
+                </CardTitle>
+                <CardDescription>
+                  Research-based evaluation across 8 comprehensive categories
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Object.entries(advancedAnalysis.categoryScores).map(([category, score]) => (
+                    <div key={category} className="text-center p-4 border rounded-lg">
+                      <div className={`text-2xl font-bold ${getScoreColor(score.score)}`}>
+                        {Math.round((score.score / score.maxScore) * 100)}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">
+                        {category.replace(/([A-Z])/g, ' $1').trim()}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
-          ) : (
-            <div className="space-y-6">
-              {/* Advanced Analysis Results */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Brain className="h-5 w-5" />
-                    Advanced Analysis Results
-                  </CardTitle>
-                  <CardDescription>
-                    Research-based evaluation across 8 comprehensive categories
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {Object.entries(advancedAnalysis.categoryScores).map(([category, score]) => (
-                      <div key={category} className="text-center p-4 border rounded-lg">
-                        <div className={`text-2xl font-bold ${getScoreColor(score.score)}`}>
-                          {Math.round((score.score / score.maxScore) * 100)}
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">
+
+            {/* Detailed Score Breakdown */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  Detailed Score Breakdown
+                </CardTitle>
+                <CardDescription>
+                  Comprehensive analysis across all evaluation categories
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {Object.entries(advancedAnalysis.categoryScores).map(([category, categoryData]) => (
+                    <div key={category} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium capitalize">
                           {category.replace(/([A-Z])/g, ' $1').trim()}
-                        </div>
+                        </span>
+                        <span className={`text-sm font-bold ${getScoreColor(categoryData.score)}`}>
+                          {categoryData.score}/{categoryData.maxScore}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                      <Progress value={(categoryData.score / categoryData.maxScore) * 100} className="h-2" />
+                      <div className="text-xs text-gray-500">
+                        {categoryData.score >= categoryData.maxScore * 0.8 ? 'Excellent' :
+                         categoryData.score >= categoryData.maxScore * 0.6 ? 'Good' :
+                         categoryData.score >= categoryData.maxScore * 0.4 ? 'Fair' : 'Needs Improvement'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="history" className="mt-6">
@@ -440,17 +549,48 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
         <TabsContent value="suggestions" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5" />
-                Improvement Suggestions
-              </CardTitle>
-              <CardDescription>
-                Prioritized recommendations to enhance your resume
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lightbulb className="h-5 w-5" />
+                    Improvement Suggestions
+                  </CardTitle>
+                  <CardDescription>
+                    Prioritized recommendations to enhance your resume
+                  </CardDescription>
+                </div>
+                {aiAnalysis && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Analysis Mode:</span>
+                    <div className="flex border rounded-lg">
+                      <button
+                        onClick={() => setSuggestionMode('advanced')}
+                        className={`px-3 py-1 text-xs rounded-l-lg ${
+                          suggestionMode === 'advanced' 
+                            ? 'bg-blue-600 text-white' 
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        Advanced
+                      </button>
+                      <button
+                        onClick={() => setSuggestionMode('ai')}
+                        className={`px-3 py-1 text-xs rounded-r-lg ${
+                          suggestionMode === 'ai' 
+                            ? 'bg-purple-600 text-white' 
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        AI-Powered
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {basicAnalysis.recommendations.map((rec, index) => (
+                {(suggestionMode === 'advanced' ? advancedAnalysis.recommendations : aiAnalysis?.recommendations || []).map((rec, index) => (
                   <div key={index} className="border rounded-lg p-4">
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-medium">{rec.title}</h4>
@@ -472,7 +612,7 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
       </Tabs>
 
       {/* Coaching Prompt */}
-      {basicAnalysis.coachingPrompt && (
+      {(advancedAnalysis.overallScore < 70 || (aiAnalysis && aiAnalysis.overallScore < 70)) && (
         <Card className="border-blue-200 bg-blue-50">
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-2">

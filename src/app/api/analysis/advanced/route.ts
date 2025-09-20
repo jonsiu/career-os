@@ -30,6 +30,18 @@ export async function POST(request: NextRequest) {
     const analysisProvider = new ServerAnalysisProvider();
     const analysisResult = await analysisProvider.performAdvancedResumeAnalysis(resume);
 
+    // Save the analysis result to the database
+    try {
+      const { generateContentHash } = await import('@/lib/utils/content-hash');
+      const contentHash = await generateContentHash(resume.content);
+      
+      await analysisProvider.saveAnalysisResult(resumeId, 'advanced', analysisResult, contentHash);
+      console.log('✅ Advanced analysis result saved to database');
+    } catch (saveError) {
+      console.error('❌ Failed to save advanced analysis result:', saveError);
+      // Continue anyway - don't fail the request if saving fails
+    }
+
     return NextResponse.json({
       success: true,
       data: analysisResult,

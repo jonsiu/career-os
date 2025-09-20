@@ -1,11 +1,14 @@
 import { AnalysisProvider, Resume, Job, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation, ResumeQualityScore } from '../types';
 import { AdvancedResumeAnalysis } from './advanced-resume-analysis';
+import { ExperienceAnalyzer } from './experience-analyzer';
 
 export class APIAnalysisProvider implements AnalysisProvider {
   private baseUrl: string;
+  private experienceAnalyzer: ExperienceAnalyzer;
 
   constructor() {
     this.baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    this.experienceAnalyzer = new ExperienceAnalyzer();
   }
 
   private async makeAPICall(endpoint: string, data: any) {
@@ -47,36 +50,63 @@ export class APIAnalysisProvider implements AnalysisProvider {
   }
 
   async analyzeResume(resume: Resume, job: Job): Promise<AnalysisResult> {
-    // For now, delegate to basic analysis
-    // In the future, this could be enhanced to use AI-powered analysis
-    const qualityScore = await this.scoreResumeQuality(resume);
-    
-    // Convert ResumeQualityScore to AnalysisResult
-    return {
-      matchScore: qualityScore.overallScore,
-      skillsMatch: [],
-      experienceMatch: {
-        level: 'mid',
-        confidence: qualityScore.overallScore / 100,
-        yearsRequired: 3
-      },
-      gaps: [],
-      summary: `Resume scored ${qualityScore.overallScore}/100`,
-      severity: qualityScore.overallScore < 70 ? 'high' : qualityScore.overallScore < 85 ? 'medium' : 'low'
-    };
+    try {
+      // Use sophisticated experience analysis based on academic research
+      const experienceMatch = this.experienceAnalyzer.matchExperience(resume, job);
+      const skillsMatch = this.experienceAnalyzer.generateSkillsMatch(resume, job);
+      const gaps = this.experienceAnalyzer.generateSkillsGaps(resume, job);
+      
+      // Create initial analysis result
+      const analysisResult: AnalysisResult = {
+        matchScore: 0, // Will be calculated below
+        skillsMatch,
+        experienceMatch,
+        gaps,
+        recommendations: [],
+        summary: ''
+      };
+      
+      // Generate recommendations based on the analysis
+      analysisResult.recommendations = this.experienceAnalyzer.generateRecommendations(resume, job, analysisResult);
+      
+      // Calculate overall match score based on multiple factors
+      analysisResult.matchScore = this.calculateOverallMatchScore(analysisResult);
+      
+      // Generate summary
+      analysisResult.summary = this.generateAnalysisSummary(analysisResult, experienceMatch);
+      
+      return analysisResult;
+    } catch (error) {
+      console.error('Sophisticated analysis failed, falling back to basic analysis:', error);
+      
+      // Fallback to basic analysis if sophisticated analysis fails
+      const qualityScore = await this.scoreResumeQuality(resume);
+      
+      return {
+        matchScore: qualityScore.overallScore,
+        skillsMatch: [],
+        experienceMatch: {
+          level: 'mid',
+          confidence: qualityScore.overallScore / 100,
+          yearsRequired: 3,
+          yearsActual: 2
+        },
+        gaps: [],
+        recommendations: [],
+        summary: `Resume scored ${qualityScore.overallScore}/100 (basic analysis)`
+      };
+    }
   }
 
   async analyzeCareerTransition(currentRole: string, targetRole: string, experience?: string): Promise<CareerAnalysis> {
     // This would need to be implemented as a separate API endpoint
     // For now, return a basic structure
     return {
-      timeline: {
-        estimated: 12,
-        minimum: 6,
-        maximum: 18,
-        unit: 'months'
-      },
-      milestones: [],
+      currentLevel: currentRole,
+      targetLevel: targetRole,
+      transitionPath: [],
+      timeToTarget: 12,
+      keyMilestones: [],
       risks: [],
       opportunities: []
     };
@@ -272,5 +302,117 @@ export class APIAnalysisProvider implements AnalysisProvider {
       console.error('Get analysis stats API call failed:', error);
       return null;
     }
+  }
+
+  /**
+   * Calculate overall match score based on multiple factors
+   * Based on research showing that multi-factor analysis is more predictive
+   */
+  private calculateOverallMatchScore(analysis: AnalysisResult): number {
+    let totalScore = 0;
+    let weightSum = 0;
+
+    // Experience match weight: 30%
+    const experienceWeight = 0.3;
+    const experienceScore = analysis.experienceMatch.confidence * 100;
+    totalScore += experienceScore * experienceWeight;
+    weightSum += experienceWeight;
+
+    // Skills match weight: 40%
+    const skillsWeight = 0.4;
+    const skillsScore = this.calculateSkillsMatchScore(analysis.skillsMatch);
+    totalScore += skillsScore * skillsWeight;
+    weightSum += skillsWeight;
+
+    // Gaps penalty weight: 20%
+    const gapsWeight = 0.2;
+    const gapsScore = Math.max(0, 100 - (analysis.gaps.length * 10));
+    totalScore += gapsScore * gapsWeight;
+    weightSum += gapsWeight;
+
+    // Recommendations weight: 10%
+    const recommendationsWeight = 0.1;
+    const recommendationsScore = Math.max(0, 100 - (analysis.recommendations.length * 5));
+    totalScore += recommendationsScore * recommendationsWeight;
+    weightSum += recommendationsWeight;
+
+    return Math.round(totalScore / weightSum);
+  }
+
+  /**
+   * Calculate skills match score based on skill relevance and match levels
+   */
+  private calculateSkillsMatchScore(skillsMatch: import('../types').SkillsMatch[]): number {
+    if (skillsMatch.length === 0) return 50; // Neutral score for no skills data
+
+    let totalScore = 0;
+    let totalWeight = 0;
+
+    for (const skill of skillsMatch) {
+      const matchScore = this.getMatchLevelScore(skill.matchLevel);
+      const weight = skill.relevance; // Use relevance as weight
+      
+      totalScore += matchScore * weight;
+      totalWeight += weight;
+    }
+
+    return totalWeight > 0 ? (totalScore / totalWeight) * 100 : 50;
+  }
+
+  /**
+   * Convert match level to numeric score
+   */
+  private getMatchLevelScore(level: 'excellent' | 'good' | 'partial' | 'missing'): number {
+    const scores = {
+      excellent: 100,
+      good: 80,
+      partial: 60,
+      missing: 0
+    };
+    return scores[level];
+  }
+
+  /**
+   * Generate analysis summary based on research findings
+   */
+  private generateAnalysisSummary(analysis: AnalysisResult, experienceMatch: any): string {
+    const matchScore = analysis.matchScore;
+    const experienceLevel = experienceMatch.level;
+    const yearsActual = experienceMatch.yearsActual;
+    const yearsRequired = experienceMatch.yearsRequired;
+    const skillsCount = analysis.skillsMatch.length;
+    const gapsCount = analysis.gaps.length;
+
+    let summary = `Overall match score: ${matchScore}%. `;
+    
+    // Experience summary
+    if (yearsActual >= yearsRequired) {
+      summary += `You meet the experience requirements (${yearsActual} years vs ${yearsRequired} required). `;
+    } else {
+      summary += `You have ${yearsActual} years of relevant experience, but the role requires ${yearsRequired} years. `;
+    }
+
+    // Skills summary
+    if (skillsCount > 0) {
+      const excellentSkills = analysis.skillsMatch.filter(s => s.matchLevel === 'excellent').length;
+      const goodSkills = analysis.skillsMatch.filter(s => s.matchLevel === 'good').length;
+      summary += `Skills analysis shows ${excellentSkills} excellent matches and ${goodSkills} good matches. `;
+    }
+
+    // Gaps summary
+    if (gapsCount > 0) {
+      summary += `Identified ${gapsCount} skill gaps that need attention. `;
+    }
+
+    // Overall assessment
+    if (matchScore >= 80) {
+      summary += "Strong candidate match with minor areas for improvement.";
+    } else if (matchScore >= 60) {
+      summary += "Good candidate match with some development areas.";
+    } else {
+      summary += "Significant gaps identified that require focused development.";
+    }
+
+    return summary;
   }
 }

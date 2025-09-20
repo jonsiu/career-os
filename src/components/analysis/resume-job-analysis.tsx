@@ -247,7 +247,7 @@ export function ResumeJobAnalysis({ resumeId, jobId, onAnalysisComplete }: Resum
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {analysisResult.skillsMatch.map((skill, index) => (
+                {analysisResult.skillsMatch?.map((skill, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-3">
                       <Badge variant={getMatchBadgeVariant(skill.matchLevel)}>
@@ -307,7 +307,7 @@ export function ResumeJobAnalysis({ resumeId, jobId, onAnalysisComplete }: Resum
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {analysisResult.gaps.map((gap, index) => (
+                {analysisResult.gaps?.map((gap, index) => (
                   <div key={index} className="border-l-4 border-orange-500 pl-4 py-2">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium text-gray-900">{gap.skill}</h4>
@@ -332,7 +332,7 @@ export function ResumeJobAnalysis({ resumeId, jobId, onAnalysisComplete }: Resum
                     <div className="mt-2">
                       <div className="text-sm font-medium text-gray-700 mb-1">Learning Resources:</div>
                       <div className="flex flex-wrap gap-2">
-                        {gap.resources.map((resource, idx) => (
+                        {gap.resources?.map((resource, idx) => (
                           <Badge key={idx} variant="secondary" className="text-xs">
                             {resource}
                           </Badge>
@@ -355,7 +355,7 @@ export function ResumeJobAnalysis({ resumeId, jobId, onAnalysisComplete }: Resum
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {analysisResult.recommendations.map((rec, index) => (
+                {analysisResult.recommendations?.map((rec, index) => (
                   <div key={index} className="p-4 border rounded-lg">
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-medium text-gray-900">{rec.title}</h4>

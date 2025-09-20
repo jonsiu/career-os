@@ -107,9 +107,9 @@ export default function AnalysisPage() {
                   <Target className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-purple-600">
-                    {lastResumeAnalysis?.gaps.length || lastCareerAnalysis?.risks.length || 0}
-                  </div>
+                    <div className="text-2xl font-bold text-purple-600">
+                      {lastResumeAnalysis?.gaps?.length || lastCareerAnalysis?.risks?.length || 0}
+                    </div>
                   <div className="text-sm text-gray-600">Areas to Improve</div>
                 </div>
               </div>
@@ -162,7 +162,7 @@ export default function AnalysisPage() {
                       <div className="font-medium text-gray-900">Resume-Job Analysis</div>
                       <div className="text-sm text-gray-600">
                         Match Score: {lastResumeAnalysis.matchScore}% • 
-                        {lastResumeAnalysis.gaps.length} skills gaps identified
+                        {lastResumeAnalysis.gaps?.length || 0} skills gaps identified
                       </div>
                     </div>
                   </div>

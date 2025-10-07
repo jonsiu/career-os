@@ -9,16 +9,21 @@
 - [ ] Set up Convex database and backend
 - [ ] **NEW**: Implement vendor abstraction interfaces
 - [ ] **NEW**: Create service factory for vendor management
+- [ ] **NEW**: O*NET API integration for skills taxonomy
+- [ ] **NEW**: BLS API integration for salary benchmarking
 - [ ] Create basic layout and navigation
 - [ ] Resume upload component (PDF/DOCX support)
 - [ ] Resume parsing and data extraction
 
-### Week 2: Resume Scoring System
-- [ ] **NEW**: Resume quality scoring algorithm (1-100)
-- [ ] **NEW**: Multi-criteria scoring implementation
-- [ ] **NEW**: Industry-specific scoring models
-- [ ] **NEW**: Improvement recommendation engine
-- [ ] **NEW**: Score-based coaching prompts
+### Week 2: Research-Backed Resume Scoring System
+- [ ] **NEW**: Modern ATS-compatible scoring algorithm (2023-2025 research)
+- [ ] **NEW**: AI-driven contextual analysis beyond keyword matching
+- [ ] **NEW**: Skills-based assessment with competency evaluation
+- [ ] **NEW**: Multimodal data analysis integration
+- [ ] **NEW**: Research-backed improvement recommendations
+- [ ] **NEW**: Growth-focused feedback integration
+- [ ] **NEW**: Hugging Face API integration for AI text analysis
+- [ ] **NEW**: GitHub API integration for technical skill validation
 - [ ] Resume builder interface
 - [ ] Resume preview and editing
 - [ ] Convex database integration for resume data
@@ -26,26 +31,24 @@
 
 ## Phase 2: Virtual HR Coach System (Weeks 3-4)
 
-### Week 3: Coaching Interface & Templates
-- [ ] **NEW**: Virtual HR coach interface
-- [ ] **NEW**: Question template database
-- [ ] **NEW**: Industry-specific question sets
-- [ ] **NEW**: Role-specific question templates
-- [ ] **NEW**: Interactive coaching session flow
-- [ ] **NEW**: Dynamic question progression
-- [ ] **NEW**: Response collection and storage
-- [ ] **NEW**: General vs. job-specific coaching options
+### Week 3: Growth-Focused Career Development
+- [ ] **NEW**: Career development dashboard with skill journey visualization
+- [ ] **NEW**: Growth analysis component for career capital assessment
+- [ ] **NEW**: Deliberate practice tracker with mastery progression
+- [ ] **NEW**: Career capital building roadmap
+- [ ] **NEW**: Abundance mindset opportunity explorer
+- [ ] **NEW**: Multiple career path visualization
+- [ ] **NEW**: Growth milestone tracking system
 - [ ] **NEW**: Abstract database operations for vendor switching
 
-### Week 4: Coaching Analysis & Job Description Integration
-- [ ] **NEW**: Response analysis engine
-- [ ] **NEW**: Experience extraction algorithms
-- [ ] **NEW**: Achievement quantification tools
-- [ ] **NEW**: Skills identification system
-- [ ] **NEW**: Career narrative development
-- [ ] **NEW**: Job description input and parsing
-- [ ] **NEW**: Job requirement extraction and analysis
-- [ ] **NEW**: Job-specific question generation
+### Week 4: Integrated Feedback System
+- [ ] **NEW**: Scoring-to-growth integration component
+- [ ] **NEW**: Research-backed feedback with growth opportunities
+- [ ] **NEW**: Assessment recommendation engine
+- [ ] **NEW**: Industry-specific assessment integration
+- [ ] **NEW**: Mock interview service for role preparation
+- [ ] **NEW**: Skills validation assessments
+- [ ] **NEW**: Leadership readiness evaluations
 - [ ] **NEW**: Implement analysis engine abstraction
 - [ ] **NEW**: Support multiple AI providers (OpenAI, Anthropic)
 
@@ -77,6 +80,7 @@
 - [ ] **NEW**: Current skills extraction from resume
 - [ ] **NEW**: Target role skills analysis
 - [ ] **NEW**: Course recommendation system
+- [ ] **NEW**: Coursera API integration for course recommendations
 - [ ] **NEW**: Affiliate link integration and tracking
 - [ ] **NEW**: Learning platform partnerships (Coursera, Udemy, LinkedIn Learning)
 - [ ] **NEW**: Course quality scoring and validation
@@ -90,9 +94,27 @@
 - [ ] **NEW**: Portfolio integration for project showcase
 - [ ] **NEW**: Skill validation through project results
 
-## Phase 5: Polish & Launch (Weeks 9-10)
+## Phase 5: Browser Extension & Market Intelligence (Weeks 9-10)
 
-### Week 9: User Experience & Revenue Integration
+### Week 9: Browser Extension Development
+- [ ] **NEW**: Browser extension manifest and structure
+- [ ] **NEW**: Job bookmarking functionality
+- [ ] **NEW**: Job analysis integration
+- [ ] **NEW**: Resume optimization suggestions
+- [ ] **NEW**: Career insights dashboard
+- [ ] **NEW**: Data synchronization with Career OS
+
+### Week 10: Market Intelligence Integration
+- [ ] **NEW**: Adzuna API integration for job market data
+- [ ] **NEW**: Jooble API integration for job postings
+- [ ] **NEW**: Market trend analysis
+- [ ] **NEW**: Regional job market insights
+- [ ] **NEW**: Industry demand analysis
+- [ ] **NEW**: Salary benchmarking integration
+
+## Phase 6: Polish & Launch (Weeks 11-12)
+
+### Week 11: User Experience & Revenue Integration
 - [ ] UI/UX improvements and animations
 - [ ] Responsive design optimization
 - [ ] Error handling and validation
@@ -101,7 +123,7 @@
 - [ ] **NEW**: Affiliate commission tracking and reporting
 - [ ] **NEW**: Vendor health monitoring and fallbacks
 
-### Week 10: Testing & Deployment
+### Week 12: Testing & Deployment
 - [ ] User testing and feedback collection
 - [ ] Bug fixes and performance optimization
 - [ ] Vercel deployment
@@ -109,6 +131,7 @@
 - [ ] **NEW**: Multi-vendor testing and validation
 - [ ] **NEW**: Vendor cost optimization analysis
 - [ ] **NEW**: Affiliate marketing system testing
+- [ ] **NEW**: Browser extension store submissions
 - [ ] MVP launch and monitoring
 
 ## Technical Milestones

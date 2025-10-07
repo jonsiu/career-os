@@ -1,4 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { addCorsHeaders, handleCorsPreflight } from '@/lib/cors';
+
+export async function OPTIONS() {
+  return handleCorsPreflight();
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,11 +24,12 @@ export async function GET(request: NextRequest) {
 
     console.log('✅ Health check passed');
 
-    return NextResponse.json(health);
+    const response = NextResponse.json(health);
+    return addCorsHeaders(response);
 
   } catch (error) {
     console.error('❌ Health check failed:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { 
         status: 'unhealthy',
         timestamp: new Date().toISOString(),
@@ -31,5 +37,6 @@ export async function GET(request: NextRequest) {
       },
       { status: 500 }
     );
+    return addCorsHeaders(response);
   }
 }

@@ -17,12 +17,12 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Your Career,{" "}
+              Grow Your Career,{" "}
               <span className="text-blue-600">Your Way</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              CareerOS is your personal career development platform. Build your resume, 
-              track job opportunities, get AI-powered insights, and create a roadmap to success.
+              CareerOS is your personal career development platform. Develop your skills, 
+              explore opportunities, get growth-focused insights, and build systems for long-term success.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/sign-up">
@@ -45,10 +45,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Everything you need to advance your career
+              Everything you need to develop your career
             </h2>
             <p className="text-xl text-gray-600">
-              From resume building to career planning, we&apos;ve got you covered
+              From skill development to career growth, we&apos;ve got you covered
             </p>
           </div>
 
@@ -59,7 +59,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Smart Resume Builder</h3>
               <p className="text-gray-600">
-                Create compelling resumes with AI-powered suggestions and professional templates.
+                Develop your professional story with growth-focused suggestions and career capital building.
               </p>
             </div>
 
@@ -67,9 +67,9 @@ export default function HomePage() {
               <div className="bg-green-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <Briefcase className="h-8 w-8 text-green-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Job Tracking</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Opportunity Explorer</h3>
               <p className="text-gray-600">
-                Organize your job search, track applications, and never miss an opportunity.
+                Discover career opportunities, track your growth journey, and explore multiple career paths.
               </p>
             </div>
 
@@ -77,9 +77,9 @@ export default function HomePage() {
               <div className="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <BarChart3 className="h-8 w-8 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">AI Analysis</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Growth Analysis</h3>
               <p className="text-gray-600">
-                Get personalized insights about your resume, skills gaps, and career opportunities.
+                Discover your growth potential, skill development opportunities, and career capital building insights.
               </p>
             </div>
 
@@ -87,9 +87,9 @@ export default function HomePage() {
               <div className="bg-orange-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <Target className="h-8 w-8 text-orange-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Development Planning</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Skill Development</h3>
               <p className="text-gray-600">
-                Create personalized career roadmaps with milestones and timelines.
+                Build your career capital through deliberate practice and continuous skill development.
               </p>
             </div>
 
@@ -97,9 +97,9 @@ export default function HomePage() {
               <div className="bg-indigo-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <Zap className="h-8 w-8 text-indigo-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Real-time Updates</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Progress Tracking</h3>
               <p className="text-gray-600">
-                Stay updated with live notifications and progress tracking.
+                Monitor your growth journey with compound progress tracking and habit formation.
               </p>
             </div>
 
@@ -120,10 +120,10 @@ export default function HomePage() {
       <div className="py-24 bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to take control of your career?
+            Ready to grow your career potential?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of professionals who are already using CareerOS to advance their careers.
+            Join thousands of professionals who are already using CareerOS to develop their skills and build career capital.
           </p>
           <Link href="/sign-up">
             <Button size="lg" variant="secondary" className="px-8 py-3">

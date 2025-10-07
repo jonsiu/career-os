@@ -16,7 +16,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Welcome to CareerOS</h1>
         <p className="mt-2 text-gray-600">
-          Your personal career development platform. Build your path to success.
+          Your personal career development platform. Grow your skills, build your future.
         </p>
       </div>
 
@@ -29,12 +29,12 @@ export default function DashboardPage() {
               Resume Builder
             </CardTitle>
             <CardDescription>
-              Create and manage your professional resume
+              Develop and refine your professional story
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 mb-4">
-              Build a compelling resume with our step-by-step builder and AI-powered suggestions.
+              Continuously improve your resume through deliberate practice and growth-focused feedback.
             </p>
             <Link href="/dashboard/resume">
               <Button className="w-full">Get Started</Button>
@@ -47,15 +47,15 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Briefcase className="h-5 w-5 text-green-600" />
-              Job Tracker
+              Opportunity Explorer
             </CardTitle>
             <CardDescription>
-              Track and manage job opportunities
+              Discover and explore career opportunities
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 mb-4">
-              Save job postings, track applications, and organize your job search.
+              Explore career opportunities, track your growth journey, and discover multiple career paths.
             </p>
             <Link href="/dashboard/jobs">
               <Button className="w-full">View Jobs</Button>
@@ -68,15 +68,15 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-purple-600" />
-              Career Analysis
+              Growth Analysis
             </CardTitle>
             <CardDescription>
-              AI-powered insights and recommendations
+              Growth-focused insights and skill development guidance
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 mb-4">
-              Get personalized analysis of your resume and career transition opportunities.
+              Discover your potential and build a roadmap for continuous career development.
             </p>
             <Link href="/dashboard/analysis">
               <Button className="w-full">Analyze</Button>
@@ -89,15 +89,15 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5 text-orange-600" />
-              Development Plan
+              Skill Development
             </CardTitle>
             <CardDescription>
-              Create your career development roadmap
+              Build your career capital through deliberate practice
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 mb-4">
-              Build a personalized development plan with milestones and timelines.
+              Develop rare and valuable skills through structured practice and continuous improvement.
             </p>
             <Link href="/dashboard/plan">
               <Button className="w-full">Create Plan</Button>
@@ -113,12 +113,12 @@ export default function DashboardPage() {
               Progress Tracking
             </CardTitle>
             <CardDescription>
-              Monitor your career development progress
+              Monitor your growth journey and compound progress
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 mb-4">
-              Track your skills development, learning progress, and career milestones.
+              Track your skill development journey, deliberate practice progress, and career capital building.
             </p>
             <Button className="w-full" variant="outline">Coming Soon</Button>
           </CardContent>
@@ -132,12 +132,12 @@ export default function DashboardPage() {
               Career Timeline
             </CardTitle>
             <CardDescription>
-              Visualize your career journey
+              Visualize your growth journey
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 mb-4">
-              See your career progression and plan future milestones.
+              See your skill development progression and plan your career capital building journey.
             </p>
             <Button className="w-full" variant="outline">Coming Soon</Button>
           </CardContent>
@@ -152,13 +152,13 @@ export default function DashboardPage() {
             <Button variant="outline">Upload Resume</Button>
           </Link>
           <Link href="/dashboard/jobs">
-            <Button variant="outline">Add Job Posting</Button>
+            <Button variant="outline">Explore Opportunities</Button>
           </Link>
           <Link href="/dashboard/analysis">
-            <Button variant="outline">Run Analysis</Button>
+            <Button variant="outline">Discover Growth Potential</Button>
           </Link>
           <Link href="/dashboard/plan">
-            <Button variant="outline">Start Planning</Button>
+            <Button variant="outline">Start Skill Development</Button>
           </Link>
         </div>
       </div>

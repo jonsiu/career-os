@@ -112,9 +112,9 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Career Coach Analysis</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Career Growth Coach</h1>
         <p className="mt-2 text-gray-600">
-          AI-powered insights for your career transition and management readiness
+          Growth-focused insights for your career development and skill building journey
         </p>
       </div>
 
@@ -124,10 +124,10 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5 text-blue-600" />
-              Define Your Career Goal
+              Define Your Growth Goal
             </CardTitle>
             <CardDescription>
-              Tell us about the role you want to transition to
+              Tell us about the skills and career capital you want to develop
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -160,14 +160,14 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
               </div>
             </div>
 
-            <Button 
+              <Button 
               onClick={runCareerAnalysis}
               disabled={!targetRoleInput.trim()}
               className="w-full md:w-auto"
               size="lg"
             >
               <TrendingUp className="h-5 w-5 mr-2" />
-              Analyze Career Transition
+              Analyze Growth Potential
             </Button>
           </CardContent>
         </Card>
@@ -178,9 +178,9 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
         <Card>
           <CardContent className="text-center py-16">
             <Loader2 className="mx-auto h-16 w-16 text-blue-600 mb-6 animate-spin" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Analyzing Your Career Path</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Analyzing Your Growth Potential</h3>
             <p className="text-gray-600 mb-4">
-              Our AI is evaluating your current skills, experience, and the transition path to &quot;{targetRoleInput}&quot;
+              Our AI is evaluating your current skills, experience, and the growth opportunities for &quot;{targetRoleInput}&quot;
             </p>
             <div className="flex justify-center space-x-2">
               <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
@@ -199,7 +199,7 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-green-600" />
-                Career Transition Overview
+                Growth Potential Overview
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -222,7 +222,7 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <h4 className="font-medium text-gray-900">Transition Path</h4>
+                  <h4 className="font-medium text-gray-900">Growth Path</h4>
                   <div className="space-y-2">
                     {careerAnalysis.transitionPath.map((step, index) => (
                       <div key={index} className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-red-600" />
-                  Potential Risks
+                  Growth Challenges
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -266,7 +266,7 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Star className="h-5 w-5 text-green-600" />
-                  Your Strengths
+                  Your Career Capital
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -290,7 +290,7 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
                 Development Roadmap
               </CardTitle>
               <CardDescription>
-                Key milestones and timeline for your transition
+                Key milestones and timeline for your skill development
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -358,7 +358,7 @@ export function CareerCoachAnalysis({ targetRole, onAnalysisComplete }: CareerCo
           <div className="flex gap-3">
             <Button onClick={() => setCurrentStep('input')} variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
-              Analyze Different Role
+              Analyze Different Growth Path
             </Button>
             <Button>
               <BookOpen className="h-4 w-4 mr-2" />

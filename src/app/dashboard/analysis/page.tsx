@@ -55,9 +55,9 @@ export default function AnalysisPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Career Analysis</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Growth Analysis</h1>
         <p className="mt-2 text-gray-600">
-          AI-powered insights and recommendations for your career development
+          Growth-focused insights and skill development guidance for your career journey
         </p>
       </div>
 
@@ -75,7 +75,7 @@ export default function AnalysisPage() {
                     <div className="text-2xl font-bold text-blue-600">
                       {lastResumeAnalysis.matchScore}%
                     </div>
-                    <div className="text-sm text-gray-600">Resume Match</div>
+                    <div className="text-sm text-gray-600">Growth Potential</div>
                   </div>
                 </div>
               </CardContent>
@@ -110,7 +110,7 @@ export default function AnalysisPage() {
                     <div className="text-2xl font-bold text-purple-600">
                       {lastResumeAnalysis?.gaps?.length || lastCareerAnalysis?.risks?.length || 0}
                     </div>
-                  <div className="text-sm text-gray-600">Areas to Improve</div>
+                  <div className="text-sm text-gray-600">Growth Opportunities</div>
                 </div>
               </div>
             </CardContent>
@@ -123,7 +123,7 @@ export default function AnalysisPage() {
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="resume-job" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            Resume-Job Analysis
+            Growth Analysis
           </TabsTrigger>
           <TabsTrigger value="career-coach" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
@@ -159,10 +159,10 @@ export default function AnalysisPage() {
                   <div className="flex items-center gap-3">
                     <BarChart3 className="h-5 w-5 text-blue-600" />
                     <div>
-                      <div className="font-medium text-gray-900">Resume-Job Analysis</div>
+                      <div className="font-medium text-gray-900">Growth Analysis</div>
                       <div className="text-sm text-gray-600">
-                        Match Score: {lastResumeAnalysis.matchScore}% • 
-                        {lastResumeAnalysis.gaps?.length || 0} skills gaps identified
+                        Growth Potential: {lastResumeAnalysis.matchScore}% • 
+                        {lastResumeAnalysis.gaps?.length || 0} development opportunities identified
                       </div>
                     </div>
                   </div>

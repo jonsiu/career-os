@@ -617,13 +617,13 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-2">
               <Lightbulb className="h-5 w-5 text-blue-600" />
-              <span className="font-medium text-blue-900">Ready for Coaching</span>
+              <span className="font-medium text-blue-900">Ready for Growth</span>
             </div>
             <p className="text-blue-800 text-sm mb-3">
-              Your resume could benefit from personalized coaching to improve its impact and effectiveness.
+              Your resume shows great potential for skill development and career capital building.
             </p>
             <Button onClick={onCoachingPrompt} size="sm">
-              Start Virtual HR Coach Session
+              Start Growth Coaching Session
             </Button>
           </CardContent>
         </Card>

@@ -522,4 +522,10 @@ export class AnthropicAnalysisProvider implements AnalysisProvider {
     const provider = new ConvexAnalysisProvider();
     return await provider.getAnalysisStats(resumeId);
   }
+
+  async calculateContentHash(resume: Resume): Promise<string> {
+    const { ConvexAnalysisProvider } = await import('./convex-analysis');
+    const provider = new ConvexAnalysisProvider();
+    return await provider.calculateContentHash(resume);
+  }
 }

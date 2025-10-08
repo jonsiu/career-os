@@ -114,6 +114,7 @@ export interface AnalysisProvider {
   saveAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered', analysisResult: any, contentHash: string): Promise<void>;
   getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced' | 'ai-powered'): Promise<any[]>;
   getAnalysisStats(resumeId: string): Promise<any>;
+  calculateContentHash(resume: Resume): Promise<string>;
 }
 
 export interface RealTimeProvider {

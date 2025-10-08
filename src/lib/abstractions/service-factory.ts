@@ -1,7 +1,7 @@
 import { DatabaseProvider, FileStorageProvider, AnalysisProvider } from './types';
 import { ConvexDatabaseProvider } from './providers/convex-database';
 import { ConvexFileStorageProvider } from './providers/convex-file-storage';
-import { APIAnalysisProvider } from './providers/api-analysis';
+import { ConvexAnalysisProvider } from './providers/convex-analysis';
 
 // Service factory for creating provider instances
 export class ServiceFactory {
@@ -26,10 +26,10 @@ export class ServiceFactory {
     return new ConvexFileStorageProvider();
   }
 
-  // Create analysis provider - use API-based provider for server-side processing
+  // Create analysis provider - use Convex-based provider for server-side processing
   createAnalysisProvider(): AnalysisProvider {
-    console.log('✅ ServiceFactory: Using API-based analysis provider (server-side processing)');
-    return new APIAnalysisProvider();
+    console.log('✅ ServiceFactory: Using Convex-based analysis provider (server-side processing)');
+    return new ConvexAnalysisProvider();
   }
 
   // Get database provider for AI parsing (server-side)

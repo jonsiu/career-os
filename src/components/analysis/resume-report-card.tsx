@@ -68,9 +68,17 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
       if (cachedAdvanced) {
         setAdvancedAnalysis(cachedAdvanced);
       } else {
-        // Load fresh advanced analysis
+        // Load fresh advanced analysis and save it
         const advancedResult = await analysis.performAdvancedResumeAnalysis(resume);
         setAdvancedAnalysis(advancedResult);
+        
+        // Save the analysis result for tracking
+        try {
+          const contentHash = await analysis.calculateContentHash(resume);
+          await analysis.saveAnalysisResult(resumeId, 'advanced', advancedResult, contentHash);
+        } catch (saveError) {
+          console.warn('Failed to save analysis result:', saveError);
+        }
       }
       
       // Check if we have cached AI analysis
@@ -199,6 +207,128 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
       </Card>
     );
   }
+
+  // Generate actionable suggestions based on analysis results
+  const generateActionableSuggestions = (analysis: AdvancedResumeAnalysis) => {
+    const suggestions = [];
+    
+    // Analyze each category and generate specific suggestions
+    Object.entries(analysis.categoryScores).forEach(([category, score]) => {
+      const percentage = Math.round((score.score / score.maxScore) * 100);
+      
+      if (percentage < 60) {
+        // Low scoring categories need high priority suggestions
+        switch (category) {
+          case 'contentQuality':
+            suggestions.push({
+              title: 'Enhance Content Quality',
+              description: 'Your resume content needs significant improvement in clarity, specificity, and impact.',
+              priority: 'high' as const,
+              actions: [
+                'Add quantified achievements with specific numbers and percentages',
+                'Use strong action verbs (led, implemented, increased, reduced)',
+                'Replace generic descriptions with specific accomplishments',
+                'Include metrics for all major achievements (e.g., "increased sales by 25%")'
+              ],
+              impact: 'High - Content quality is crucial for ATS systems and human reviewers'
+            });
+            break;
+          case 'structuralIntegrity':
+            suggestions.push({
+              title: 'Improve Resume Structure',
+              description: 'Your resume structure and organization need improvement for better readability.',
+              priority: 'high' as const,
+              actions: [
+                'Use consistent formatting throughout the document',
+                'Organize sections in logical order (Contact, Summary, Experience, Education)',
+                'Use bullet points for easy scanning',
+                'Ensure proper spacing and margins for readability'
+              ],
+              impact: 'High - Poor structure makes it difficult for recruiters to find key information'
+            });
+            break;
+          case 'skillsAlignment':
+            suggestions.push({
+              title: 'Align Skills with Target Roles',
+              description: 'Your skills section needs better alignment with industry requirements.',
+              priority: 'medium' as const,
+              actions: [
+                'Research job descriptions for your target roles',
+                'Add relevant technical and soft skills',
+                'Include industry-specific certifications',
+                'Prioritize skills mentioned in job postings'
+              ],
+              impact: 'Medium - Better skill alignment increases ATS matching scores'
+            });
+            break;
+          case 'atsOptimization':
+            suggestions.push({
+              title: 'Optimize for ATS Systems',
+              description: 'Your resume needs better ATS optimization for automated screening.',
+              priority: 'high' as const,
+              actions: [
+                'Use standard section headings (Experience, Education, Skills)',
+                'Avoid graphics, tables, or complex formatting',
+                'Include relevant keywords from job descriptions',
+                'Use a simple, clean font like Arial or Calibri'
+              ],
+              impact: 'High - ATS optimization is critical for passing initial screening'
+            });
+            break;
+        }
+      } else if (percentage < 80) {
+        // Medium scoring categories need medium priority suggestions
+        switch (category) {
+          case 'experienceDepth':
+            suggestions.push({
+              title: 'Deepen Experience Descriptions',
+              description: 'Your experience descriptions could be more detailed and impactful.',
+              priority: 'medium' as const,
+              actions: [
+                'Add more context about your role and responsibilities',
+                'Include specific projects and their outcomes',
+                'Highlight leadership and collaboration examples',
+                'Show progression and growth in your career'
+              ],
+              impact: 'Medium - Deeper experience descriptions help recruiters understand your value'
+            });
+            break;
+          case 'careerProgression':
+            suggestions.push({
+              title: 'Highlight Career Progression',
+              description: 'Better showcase your career advancement and increasing responsibilities.',
+              priority: 'medium' as const,
+              actions: [
+                'Emphasize promotions and role changes',
+                'Show increasing scope of responsibilities',
+                'Highlight leadership development',
+                'Include relevant training and development'
+              ],
+              impact: 'Medium - Clear progression shows career growth potential'
+            });
+            break;
+        }
+      }
+    });
+    
+    // Add general suggestions based on overall score
+    if (analysis.overallScore < 70) {
+      suggestions.push({
+        title: 'Consider Professional Resume Review',
+        description: 'Your resume would benefit from professional review and coaching.',
+        priority: 'high' as const,
+        actions: [
+          'Engage with our virtual HR coach for personalized guidance',
+          'Get feedback from industry professionals',
+          'Consider professional resume writing services',
+          'Practice with mock interviews to refine your pitch'
+        ],
+        impact: 'High - Professional guidance can significantly improve your resume quality'
+      });
+    }
+    
+    return suggestions;
+  };
 
   if (!advancedAnalysis) return null;
 
@@ -448,10 +578,13 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
                   {Object.entries(advancedAnalysis.categoryScores).map(([category, score]) => (
                     <div key={category} className="text-center p-4 border rounded-lg">
                       <div className={`text-2xl font-bold ${getScoreColor(score.score)}`}>
-                        {Math.round((score.score / score.maxScore) * 100)}
+                        {Math.round((score.score / score.maxScore) * 100)}%
                       </div>
                       <div className="text-xs text-gray-600 mt-1">
                         {category.replace(/([A-Z])/g, ' $1').trim()}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {score.score}/{score.maxScore} points
                       </div>
                     </div>
                   ))}
@@ -479,7 +612,7 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
                           {category.replace(/([A-Z])/g, ' $1').trim()}
                         </span>
                         <span className={`text-sm font-bold ${getScoreColor(categoryData.score)}`}>
-                          {categoryData.score}/{categoryData.maxScore}
+                          {Math.round((categoryData.score / categoryData.maxScore) * 100)}% ({categoryData.score}/{categoryData.maxScore})
                         </span>
                       </div>
                       <Progress value={(categoryData.score / categoryData.maxScore) * 100} className="h-2" />
@@ -590,21 +723,53 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {(suggestionMode === 'advanced' ? advancedAnalysis.recommendations : aiAnalysis?.recommendations || []).map((rec, index) => (
-                  <div key={index} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-medium">{rec.title}</h4>
-                      <Badge variant={rec.priority === 'high' ? 'destructive' : rec.priority === 'medium' ? 'default' : 'secondary'}>
-                        {rec.priority}
-                      </Badge>
+                {suggestionMode === 'advanced' ? (
+                  // Enhanced suggestions based on analysis results
+                  generateActionableSuggestions(advancedAnalysis).map((suggestion, index) => (
+                    <div key={index} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-medium">{suggestion.title}</h4>
+                        <Badge variant={suggestion.priority === 'high' ? 'destructive' : suggestion.priority === 'medium' ? 'default' : 'secondary'}>
+                          {suggestion.priority}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{suggestion.description}</p>
+                      <div className="space-y-2">
+                        <h5 className="text-sm font-medium text-gray-700">Action Items:</h5>
+                        <ul className="space-y-1">
+                          {suggestion.actions.map((action, actionIndex) => (
+                            <li key={actionIndex} className="text-sm text-gray-600 flex items-start gap-2">
+                              <span className="text-blue-600 mt-1">•</span>
+                              {action}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      {suggestion.impact && (
+                        <div className="mt-3 p-2 bg-blue-50 rounded text-xs text-blue-700">
+                          <strong>Expected Impact:</strong> {suggestion.impact}
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-3">{rec.description}</p>
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                      <span>Category: {rec.category}</span>
-                      <span>Impact: {rec.impact}</span>
+                  ))
+                ) : (
+                  // AI-powered suggestions
+                  (aiAnalysis?.recommendations || []).map((rec: any, index: number) => (
+                    <div key={index} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-medium">{rec.title}</h4>
+                        <Badge variant={rec.priority === 'high' ? 'destructive' : rec.priority === 'medium' ? 'default' : 'secondary'}>
+                          {rec.priority}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{rec.description}</p>
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <span>Category: {rec.category}</span>
+                        <span>Impact: {rec.impact}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>

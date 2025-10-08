@@ -16,23 +16,22 @@ export class ServerAnalysisProvider implements AnalysisProvider {
       experienceMatch: {
         level: 'mid',
         confidence: qualityScore.overallScore / 100,
-        yearsRequired: 3
+        yearsRequired: 3,
+        yearsActual: 3
       },
       gaps: [],
-      summary: `Resume scored ${qualityScore.overallScore}/100`,
-      severity: qualityScore.overallScore < 70 ? 'high' : qualityScore.overallScore < 85 ? 'medium' : 'low'
+      recommendations: [],
+      summary: `Resume scored ${qualityScore.overallScore}/100`
     };
   }
 
   async analyzeCareerTransition(currentRole: string, targetRole: string, experience?: string): Promise<CareerAnalysis> {
     return {
-      timeline: {
-        estimated: 12,
-        minimum: 6,
-        maximum: 18,
-        unit: 'months'
-      },
-      milestones: [],
+      currentLevel: currentRole,
+      targetLevel: targetRole,
+      transitionPath: [],
+      timeToTarget: 12,
+      keyMilestones: [],
       risks: [],
       opportunities: []
     };
@@ -163,7 +162,13 @@ export class ServerAnalysisProvider implements AnalysisProvider {
         },
         strengths: ['Resume uploaded successfully'],
         weaknesses: ['Unable to analyze content'],
-        improvementAreas: {},
+        improvementAreas: {
+          content: [],
+          structure: [],
+          keywords: [],
+          experience: [],
+          narrative: []
+        },
         recommendations: [],
         coachingPrompt: true,
         industryBenchmark: {
@@ -239,9 +244,11 @@ export class ServerAnalysisProvider implements AnalysisProvider {
 
   async getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced' | 'ai-powered'): Promise<any[]> {
     try {
+      // Convert ai-powered to advanced for Convex compatibility
+      const convexAnalysisType = analysisType === 'ai-powered' ? 'advanced' : analysisType;
       const result = await convexClient.query(api.analysisResults.getAnalysisHistory, {
         resumeId: resumeId as any,
-        analysisType
+        analysisType: convexAnalysisType
       });
       return result;
     } catch (error) {
@@ -260,6 +267,11 @@ export class ServerAnalysisProvider implements AnalysisProvider {
       console.error('Failed to get analysis stats:', error);
       return null;
     }
+  }
+
+  async calculateContentHash(resume: Resume): Promise<string> {
+    const { generateContentHash } = await import('../../utils/content-hash');
+    return await generateContentHash(resume);
   }
 
   // Helper methods for scoring (copied from ConvexAnalysisProvider)
@@ -433,57 +445,63 @@ export class ServerAnalysisProvider implements AnalysisProvider {
   }
 
   private generateImprovementAreas(contentQuality: number, structureFormat: number, keywordsOptimization: number, experienceSkills: number, careerNarrative: number): any {
-    const areas = {};
+    const areas = {
+      content: [] as string[],
+      structure: [] as string[],
+      keywords: [] as string[],
+      experience: [] as string[],
+      narrative: [] as string[]
+    };
     
     if (contentQuality < 15) {
-      areas.content = 'Improve content quality and add quantified achievements';
+      areas.content.push('Improve content quality and add quantified achievements');
     }
     if (structureFormat < 12) {
-      areas.structure = 'Better organize sections and formatting';
+      areas.structure.push('Better organize sections and formatting');
     }
     if (keywordsOptimization < 12) {
-      areas.keywords = 'Add more industry-relevant keywords';
+      areas.keywords.push('Add more industry-relevant keywords');
     }
     if (experienceSkills < 12) {
-      areas.experience = 'Highlight more relevant experience and skills';
+      areas.experience.push('Highlight more relevant experience and skills');
     }
     if (careerNarrative < 8) {
-      areas.narrative = 'Show career progression and impact';
+      areas.narrative.push('Show career progression and impact');
     }
     
     return areas;
   }
 
-  private generateQualityRecommendations(improvementAreas: any, overallScore: number): Recommendation[] {
-    const recommendations = [];
+  private generateQualityRecommendations(improvementAreas: any, overallScore: number): any[] {
+    const recommendations: any[] = [];
     
-    if (improvementAreas.content) {
+    if (improvementAreas.content.length > 0) {
       recommendations.push({
+        priority: 'high' as const,
+        category: 'content' as const,
         title: 'Add quantified achievements',
         description: 'Include specific numbers and percentages to demonstrate impact',
-        priority: 'high',
-        category: 'content',
-        impact: 'high'
+        impact: 'high' as const
       });
     }
     
-    if (improvementAreas.structure) {
+    if (improvementAreas.structure.length > 0) {
       recommendations.push({
+        priority: 'medium' as const,
+        category: 'structure' as const,
         title: 'Improve formatting consistency',
         description: 'Ensure consistent bullet points, dates, and section formatting',
-        priority: 'medium',
-        category: 'formatting',
-        impact: 'medium'
+        impact: 'medium' as const
       });
     }
     
-    if (improvementAreas.keywords) {
+    if (improvementAreas.keywords.length > 0) {
       recommendations.push({
+        priority: 'high' as const,
+        category: 'keywords' as const,
         title: 'Include more industry keywords',
         description: 'Add relevant technical and industry-specific terms',
-        priority: 'high',
-        category: 'content',
-        impact: 'high'
+        impact: 'high' as const
       });
     }
     

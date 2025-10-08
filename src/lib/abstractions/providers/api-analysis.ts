@@ -1,14 +1,16 @@
 import { AnalysisProvider, Resume, Job, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation, ResumeQualityScore } from '../types';
-import { AdvancedResumeAnalysis } from './advanced-resume-analysis';
+import { AdvancedResumeAnalysis, AdvancedResumeAnalyzer } from './advanced-resume-analysis';
 import { ExperienceAnalyzer } from './experience-analyzer';
 
 export class APIAnalysisProvider implements AnalysisProvider {
   private baseUrl: string;
   private experienceAnalyzer: ExperienceAnalyzer;
+  private advancedAnalyzer: AdvancedResumeAnalyzer;
 
   constructor() {
     this.baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     this.experienceAnalyzer = new ExperienceAnalyzer();
+    this.advancedAnalyzer = new AdvancedResumeAnalyzer();
   }
 
   private async makeAPICall(endpoint: string, data: any) {
@@ -177,16 +179,79 @@ export class APIAnalysisProvider implements AnalysisProvider {
     return [];
   }
 
+  // NEW: Advanced resume analysis method for comprehensive analysis
+  async performAdvancedResumeAnalysis(resume: Resume): Promise<AdvancedResumeAnalysis> {
+    try {
+      console.log('🎯 APIAnalysisProvider: Starting advanced resume analysis...');
+      
+      // Use the advanced resume analyzer for comprehensive analysis
+      const advancedAnalysis = await this.advancedAnalyzer.analyzeResume(resume);
+      
+      console.log('✅ APIAnalysisProvider: Advanced analysis completed with score:', advancedAnalysis.overallScore);
+      return advancedAnalysis;
+      
+    } catch (error) {
+      console.error('Advanced analysis failed:', error);
+      throw new Error(`Advanced resume analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
   async scoreResumeQuality(resume: Resume): Promise<ResumeQualityScore> {
     try {
-      const result = await this.makeAPICall('basic', { resumeId: resume.id });
-      return result.data;
+      console.log('🎯 APIAnalysisProvider: Starting advanced resume quality scoring...');
+      
+      // Use the advanced resume analyzer for comprehensive scoring
+      const advancedAnalysis = await this.advancedAnalyzer.analyzeResume(resume);
+      
+      // Convert advanced analysis to ResumeQualityScore format
+      const qualityScore: ResumeQualityScore = {
+        overallScore: Math.round(advancedAnalysis.overallScore),
+        scoreBreakdown: {
+          contentQuality: Math.round(advancedAnalysis.categoryScores.contentQuality.score),
+          structureFormat: Math.round(advancedAnalysis.categoryScores.structuralIntegrity.score),
+          keywordsOptimization: Math.round(advancedAnalysis.categoryScores.atsOptimization.score),
+          experienceSkills: Math.round(advancedAnalysis.categoryScores.experienceDepth.score),
+          careerNarrative: Math.round(advancedAnalysis.categoryScores.careerProgression.score)
+        },
+        strengths: advancedAnalysis.detailedInsights.strengths,
+        weaknesses: advancedAnalysis.detailedInsights.weaknesses,
+        improvementAreas: {
+          content: advancedAnalysis.detailedInsights.contentImprovements,
+          structure: advancedAnalysis.detailedInsights.structureImprovements,
+          keywords: advancedAnalysis.detailedInsights.keywordImprovements,
+          experience: advancedAnalysis.detailedInsights.experienceImprovements,
+          narrative: advancedAnalysis.detailedInsights.narrativeImprovements
+        },
+        recommendations: advancedAnalysis.recommendations.map(rec => ({
+          priority: rec.priority as 'high' | 'medium' | 'low',
+          category: rec.category as 'content' | 'structure' | 'keywords' | 'experience' | 'narrative',
+          title: rec.title,
+          description: rec.description,
+          impact: rec.impact as 'high' | 'medium' | 'low'
+        })),
+        coachingPrompt: advancedAnalysis.overallScore < 70,
+        industryBenchmark: {
+          average: advancedAnalysis.benchmarking.industryAverage,
+          percentile: advancedAnalysis.benchmarking.percentile
+        }
+      };
+      
+      console.log('✅ APIAnalysisProvider: Advanced scoring completed with score:', qualityScore.overallScore);
+      return qualityScore;
+      
     } catch (error) {
-      console.error('Basic analysis API call failed:', error);
-      // Fallback to local rule-based analysis
-      const { ConvexAnalysisProvider } = await import('./convex-analysis');
-      const provider = new ConvexAnalysisProvider();
-      return await provider.scoreResumeQuality(resume);
+      console.error('Advanced analysis failed, falling back to API call:', error);
+      
+      try {
+        const result = await this.makeAPICall('basic', { resumeId: resume.id });
+        return result.data;
+      } catch (apiError) {
+        console.error('Basic analysis API call failed:', apiError);
+        // Final fallback to local rule-based analysis
+        const { ConvexAnalysisProvider } = await import('./convex-analysis');
+        const provider = new ConvexAnalysisProvider();
+        return await provider.scoreResumeQuality(resume);
+      }
     }
   }
 
@@ -302,6 +367,11 @@ export class APIAnalysisProvider implements AnalysisProvider {
       console.error('Get analysis stats API call failed:', error);
       return null;
     }
+  }
+
+  async calculateContentHash(resume: Resume): Promise<string> {
+    const { generateContentHash } = await import('../../utils/content-hash');
+    return await generateContentHash(resume);
   }
 
   /**

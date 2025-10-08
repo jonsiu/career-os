@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '../../../../../convex/_generated/api';
+import { addCorsHeaders, handleCorsPreflight } from '@/lib/cors';
 
 // Create a Convex HTTP client for server-side operations
 const convexClient = new ConvexHttpClient(
   process.env.NEXT_PUBLIC_CONVEX_URL || "http://localhost:8000"
 );
+
+export async function OPTIONS() {
+  return handleCorsPreflight();
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +21,8 @@ export async function POST(request: NextRequest) {
     const { userId } = await auth();
     if (!userId) {
       console.log('❌ Authentication failed');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      const response = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return addCorsHeaders(response);
     }
     console.log('✅ User authenticated:', userId);
 
@@ -25,10 +31,11 @@ export async function POST(request: NextRequest) {
 
     if (!Array.isArray(jobs)) {
       console.log('❌ Invalid jobs data');
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Jobs must be an array' },
         { status: 400 }
       );
+      return addCorsHeaders(response);
     }
 
     console.log('📦 Syncing jobs:', jobs.length);
@@ -40,7 +47,8 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       console.log('❌ User not found in database');
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      const response = NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return addCorsHeaders(response);
     }
 
     // Get existing jobs to avoid duplicates
@@ -106,7 +114,7 @@ export async function POST(request: NextRequest) {
       duplicates: duplicateJobs.length 
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       synced: newJobs.length,
       duplicates: duplicateJobs.length,
@@ -114,13 +122,15 @@ export async function POST(request: NextRequest) {
       newJobs,
       duplicateJobs
     });
+    return addCorsHeaders(response);
 
   } catch (error) {
     console.error('❌ Job sync API error:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
+    return addCorsHeaders(response);
   }
 }
 
@@ -131,7 +141,8 @@ export async function GET(request: NextRequest) {
     // Authenticate user
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      const response = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return addCorsHeaders(response);
     }
 
     // Get user ID from Convex
@@ -140,7 +151,8 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      const response = NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return addCorsHeaders(response);
     }
 
     // Get user's job statistics
@@ -160,16 +172,18 @@ export async function GET(request: NextRequest) {
 
     console.log('✅ Sync status retrieved:', stats);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       stats
     });
+    return addCorsHeaders(response);
 
   } catch (error) {
     console.error('❌ Get sync status error:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
+    return addCorsHeaders(response);
   }
 }

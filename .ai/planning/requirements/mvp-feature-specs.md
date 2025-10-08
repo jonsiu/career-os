@@ -1,6 +1,45 @@
 # 📋 CareerOS MVP Feature Specifications
 
-## Feature 1: Resume Management System
+## Feature 1: Enhanced Job Parsing & Resume Management System
+
+### Enhanced LinkedIn Job Parsing
+**Priority**: P0 (Must Have)
+**User Story**: As a user, I want the browser extension to accurately extract job descriptions from LinkedIn so I can analyze them against my resume.
+
+**Requirements**:
+- **Robust LinkedIn Parsing**: Multiple selector strategies with fallback mechanisms
+- **Raw HTML Storage**: Store complete job description HTML for offline re-parsing
+- **Parsing Metadata**: Track extraction confidence, selectors used, and fallback strategies
+- **Offline Re-parsing**: Ability to re-parse stored HTML without re-fetching jobs
+- **Data Validation**: Quality checks for extracted job data
+- **Unit Testing**: Comprehensive test coverage for all parsing strategies
+
+**Technical Implementation**:
+```typescript
+interface JobParsingResult {
+  title: string;
+  company: string;
+  description: string;
+  rawJobDescriptionHtml: string; // NEW: Complete HTML storage
+  parsingMetadata: {
+    extractedAt: Date;
+    selector: string;
+    confidence: number;
+    fallbackUsed: boolean;
+    linkedInVersion: string;
+  };
+}
+```
+
+**LinkedIn Selector Strategy**:
+```javascript
+const linkedInSelectors = [
+  '.jobs-description-content__text',      // Primary selector
+  '.jobs-box__html-content',              // Secondary selector
+  '[data-test-id="job-description"]',     // Tertiary selector
+  '.job-description'                      // Fallback selector
+];
+```
 
 ### Resume Upload & Parsing
 **Priority**: P0 (Must Have)
@@ -62,25 +101,33 @@
 
 ## Feature 2: Resume Scoring & Virtual HR Coach
 
-### Resume Quality Scoring System
+### Advanced Resume Scoring System
 **Priority**: P0 (Must Have)
-**User Story**: As a tech professional, I want to know how good my resume is so I can understand what needs improvement.
+**User Story**: As a tech professional, I want to know exactly how good my resume is so I can understand what needs improvement and get specific, actionable recommendations.
 
 **Requirements**:
-- Generate comprehensive quality score (1-100) based on multiple criteria
-- Assess content quality, structure, keywords, and formatting
-- Identify specific strengths and weaknesses
-- Provide actionable improvement recommendations
-- Compare against industry standards and best practices
-- **NEW**: Score-based coaching recommendations
+- **8-Category Research-Backed Scoring System** (160 total points):
+  - Content Quality (25 points): Quantified achievements, action verbs, specificity
+  - Structural Integrity (20 points): Organization, formatting, readability
+  - Professional Presentation (20 points): Clean appearance, appropriate length
+  - Skills Alignment (20 points): Industry-relevant skills, technical competency
+  - Experience Depth (20 points): Relevant experience, leadership, impact
+  - Career Progression (15 points): Logical advancement, increasing responsibility
+  - ATS Optimization (20 points): Keywords, format compatibility, searchability
+  - Industry Relevance (20 points): Industry terminology, relevant context
+- **AI/API Integration**: Leverage AI for complex analysis where programmatic analysis falls short
+- **Industry-Specific Models**: Different scoring weights for tech, healthcare, finance, etc.
+- **Detailed Recommendations**: Specific, actionable improvement suggestions
+- **Confidence Scoring**: Indicate reliability of each score component
+- **Unit Test Coverage**: Comprehensive testing for all scoring algorithms
 
 **Technical Implementation**:
-- Multi-criteria scoring algorithm
-- Industry-specific scoring models
-- Keyword optimization analysis
-- Structure and formatting assessment
-- Content quality evaluation
-- **NEW**: Abstract analysis engine for multiple AI providers
+- **Programmatic Analysis**: Rule-based scoring for quantifiable metrics
+- **AI Integration**: OpenAI/Anthropic for content analysis, sentiment, and complex evaluation
+- **API Integration**: External services for skills taxonomy, industry standards
+- **Vendor Abstraction**: Support multiple AI providers with fallback strategies
+- **Performance Optimization**: Caching and batch processing for large-scale analysis
+- **Real-time Updates**: Live scoring as user edits resume content
 
 **Acceptance Criteria**:
 - [ ] Resume receives comprehensive quality score (1-100)
@@ -576,7 +623,57 @@
 - [ ] Progress reports can be exported
 - [ ] **NEW**: Real-time progress updates work with multiple providers
 
-## Feature 5: User Experience & Interface
+## Feature 5: User Onboarding & Experience
+
+### User Onboarding Flow
+**Priority**: P0 (Must Have)
+**User Story**: As a new user, I want a clear, guided onboarding experience that helps me get started with Career OS quickly and effectively.
+
+**Requirements**:
+- **Step-by-Step Onboarding**: Resume upload → Job interests → Browser extension installation
+- **Progress Tracking**: Track onboarding completion state per user
+- **Resume Upload Entry Point**: Start with resume upload as the primary entry point
+- **Job Interests Collection**: Understand user's target roles and industries
+- **Browser Extension Guidance**: Clear instructions for extension installation
+- **Skip Option**: Allow experienced users to skip onboarding
+- **Browser Extension CTA**: Persistent call-to-action for extension installation in main navigation
+
+**Technical Implementation**:
+```typescript
+interface OnboardingStep {
+  id: string;
+  title: string;
+  description: string;
+  component: React.ComponentType;
+  required: boolean;
+  nextStep: string;
+  previousStep?: string;
+}
+
+interface UserOnboardingState {
+  userId: string;
+  currentStep: string;
+  completedSteps: string[];
+  skipped: boolean;
+  completedAt?: Date;
+}
+```
+
+**Onboarding Steps**:
+1. **Welcome**: Introduction to Career OS value proposition
+2. **Resume Upload**: Upload current resume (required)
+3. **Job Interests**: Specify target roles and industries (required)
+4. **Browser Extension**: Install extension for job collection (required)
+5. **Complete**: Onboarding completion and next steps
+
+**Acceptance Criteria**:
+- [ ] New users see onboarding flow on first visit
+- [ ] Existing users skip onboarding automatically
+- [ ] Resume upload is the primary entry point
+- [ ] Browser extension installation is clearly guided
+- [ ] Progress is saved and can be resumed
+- [ ] Browser extension CTA is available in main navigation
+- [ ] Onboarding can be skipped by experienced users
 
 ### Responsive Design
 **Priority**: P1 (Should Have)

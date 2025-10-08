@@ -1,56 +1,58 @@
 # 🗺️ CareerOS MVP Roadmap
 
-## Phase 1: Foundation & Resume Scoring (Weeks 1-2)
+## Phase 1: Enhanced Job Parsing & Resume Scoring (Weeks 1-2)
 
-### Week 1: Project Setup & Resume Upload
+### Week 1: Enhanced LinkedIn Job Parsing & Project Setup
+- [ ] **PRIORITY**: Implement robust LinkedIn job description extraction
+- [ ] **PRIORITY**: Add raw HTML storage for offline re-parsing
+- [ ] **PRIORITY**: Create parsing metadata tracking system
+- [ ] **PRIORITY**: Implement multiple selector strategies with fallbacks
+- [ ] **PRIORITY**: Add unit tests for all parsing strategies
 - [ ] Initialize Next.js 15 project with App Router
 - [ ] Set up Tailwind CSS and shadcn/ui
 - [ ] Configure Clerk authentication
 - [ ] Set up Convex database and backend
-- [ ] **NEW**: Implement vendor abstraction interfaces
-- [ ] **NEW**: Create service factory for vendor management
-- [ ] **NEW**: O*NET API integration for skills taxonomy
-- [ ] **NEW**: BLS API integration for salary benchmarking
 - [ ] Create basic layout and navigation
 - [ ] Resume upload component (PDF/DOCX support)
 - [ ] Resume parsing and data extraction
 
-### Week 2: Research-Backed Resume Scoring System
-- [ ] **NEW**: Modern ATS-compatible scoring algorithm (2023-2025 research)
-- [ ] **NEW**: AI-driven contextual analysis beyond keyword matching
-- [ ] **NEW**: Skills-based assessment with competency evaluation
-- [ ] **NEW**: Multimodal data analysis integration
-- [ ] **NEW**: Research-backed improvement recommendations
-- [ ] **NEW**: Growth-focused feedback integration
-- [ ] **NEW**: Hugging Face API integration for AI text analysis
-- [ ] **NEW**: GitHub API integration for technical skill validation
+### Week 2: Advanced Resume Scoring System
+- [ ] **PRIORITY**: Implement 8-category research-backed scoring system
+- [ ] **PRIORITY**: Add AI/API integration for complex analysis
+- [ ] **PRIORITY**: Create comprehensive unit test coverage
+- [ ] **PRIORITY**: Implement industry-specific scoring models
+- [ ] **PRIORITY**: Add confidence scoring for each category
 - [ ] Resume builder interface
 - [ ] Resume preview and editing
 - [ ] Convex database integration for resume data
 - [ ] **NEW**: Abstract file storage for vendor flexibility
+- [ ] **NEW**: Real-time scoring updates as user edits
 
-## Phase 2: Virtual HR Coach System (Weeks 3-4)
+## Phase 2: User Onboarding & Browser Extension (Weeks 3-4)
 
-### Week 3: Growth-Focused Career Development
-- [ ] **NEW**: Career development dashboard with skill journey visualization
-- [ ] **NEW**: Growth analysis component for career capital assessment
-- [ ] **NEW**: Deliberate practice tracker with mastery progression
-- [ ] **NEW**: Career capital building roadmap
-- [ ] **NEW**: Abundance mindset opportunity explorer
-- [ ] **NEW**: Multiple career path visualization
-- [ ] **NEW**: Growth milestone tracking system
-- [ ] **NEW**: Abstract database operations for vendor switching
+### Week 3: User Onboarding Flow
+- [ ] **PRIORITY**: Implement step-by-step onboarding flow
+- [ ] **PRIORITY**: Create onboarding progress tracking system
+- [ ] **PRIORITY**: Add resume upload as primary entry point
+- [ ] **PRIORITY**: Implement job interests collection
+- [ ] **PRIORITY**: Add browser extension installation guidance
+- [ ] **PRIORITY**: Create persistent browser extension CTA in navigation
+- [ ] **PRIORITY**: Add onboarding skip option for experienced users
+- [ ] Create onboarding state management
+- [ ] Add mobile-responsive onboarding components
+- [ ] Implement onboarding completion validation
 
-### Week 4: Integrated Feedback System
-- [ ] **NEW**: Scoring-to-growth integration component
-- [ ] **NEW**: Research-backed feedback with growth opportunities
-- [ ] **NEW**: Assessment recommendation engine
-- [ ] **NEW**: Industry-specific assessment integration
-- [ ] **NEW**: Mock interview service for role preparation
-- [ ] **NEW**: Skills validation assessments
-- [ ] **NEW**: Leadership readiness evaluations
-- [ ] **NEW**: Implement analysis engine abstraction
-- [ ] **NEW**: Support multiple AI providers (OpenAI, Anthropic)
+### Week 4: Enhanced Browser Extension Authentication
+- [ ] **PRIORITY**: Research open source Clerk authentication patterns
+- [ ] **PRIORITY**: Implement enhanced authentication flow
+- [ ] **PRIORITY**: Add secure token management
+- [ ] **PRIORITY**: Create authentication fallback strategies
+- [ ] **PRIORITY**: Add authentication state persistence
+- [ ] **PRIORITY**: Implement Career OS session detection
+- [ ] **PRIORITY**: Add authentication error handling
+- [ ] **PRIORITY**: Create authentication unit tests
+- [ ] Document Chrome Web Store preparation (no action needed yet)
+- [ ] Add extension authentication debugging tools
 
 ## Phase 3: AI-Driven Resume Improvement (Weeks 5-6)
 

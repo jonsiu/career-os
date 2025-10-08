@@ -22,20 +22,18 @@ Transform your resume from good to exceptional through intelligent scoring and p
 
 ## MVP Scope Boundaries
 ### ✅ **In Scope**
-- Resume upload and parsing with intelligent scoring
-- Resume quality assessment and improvement recommendations
-- Virtual HR coach with template-based questioning (general optimization)
-- Job description input and analysis for targeted optimization
-- Job-specific virtual HR coach sessions
-- AI-driven resume rewriting based on user responses
-- Job-targeted resume optimization and rewriting
-- Resume validation and accuracy checking
-- Skill gap analysis and learning pathway recommendations
-- Course recommendations with affiliate marketing integration
-- Progress tracking and skill validation
-- Personal project recommendations for skill development
-- Multi-industry resume templates and coaching
-- Real-time data synchronization
+- **Enhanced Job Parsing**: Robust LinkedIn job description extraction with raw HTML storage
+- **Advanced Resume Scoring**: Research-backed 8-category scoring system with AI/API integration
+- **User Onboarding Flow**: Resume upload → Job interests → Browser extension installation
+- **Resume Analysis & Improvement**: Comprehensive scoring with detailed recommendations
+- **Browser Extension Integration**: Enhanced authentication and job collection system
+- **Progress Tracking**: Onboarding state management and user journey tracking
+- **Resume Quality Assessment**: Technical, programmatic analysis with AI fallbacks
+- **Job Description Analysis**: Enhanced parsing and requirement extraction
+- **Career Development Tools**: Skill gap analysis and learning recommendations
+- **Multi-vendor Architecture**: Vendor abstraction for database, AI, and storage services
+- **Unit Testing**: Comprehensive test coverage for all scoring algorithms
+- **Real-time Data Synchronization**: Seamless extension-to-app data flow
 
 ### ❌ **Out of Scope (Future Phases)**
 - Other personas (HR Recruiter, Talent Manager, Hiring Manager)

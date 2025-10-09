@@ -1246,6 +1246,8 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
           jobInterests: onboardingState.stepData?.jobInterests?.targetRoles,
           targetRoles: onboardingState.stepData?.jobInterests?.targetRoles,
           industries: onboardingState.stepData?.jobInterests?.industries,
+          careerLevel: onboardingState.stepData?.jobInterests?.careerLevel,
+          yearsOfExperience: onboardingState.stepData?.jobInterests?.yearsOfExperience,
         }
       });
     } catch (error) {
@@ -1262,6 +1264,8 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
     jobInterests?: string[];
     targetRoles?: string[];
     industries?: string[];
+    careerLevel?: string;
+    yearsOfExperience?: string;
   } | null> {
     try {
       const user = await convexClient.query(api.users.getByClerkUserId, { 
@@ -1280,6 +1284,8 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
         jobInterests: user.onboardingState.jobInterests,
         targetRoles: user.onboardingState.targetRoles,
         industries: user.onboardingState.industries,
+        careerLevel: user.onboardingState.careerLevel,
+        yearsOfExperience: user.onboardingState.yearsOfExperience,
       };
     } catch (error) {
       console.error('Error getting user onboarding state:', error);

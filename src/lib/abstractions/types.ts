@@ -64,6 +64,8 @@ export interface DatabaseProvider {
     jobInterests?: string[];
     targetRoles?: string[];
     industries?: string[];
+    careerLevel?: string;
+    yearsOfExperience?: string;
   } | null>;
 }
 

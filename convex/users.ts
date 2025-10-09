@@ -101,6 +101,8 @@ export const updateOnboardingState = mutation({
       jobInterests: v.optional(v.array(v.string())),
       targetRoles: v.optional(v.array(v.string())),
       industries: v.optional(v.array(v.string())),
+      careerLevel: v.optional(v.string()),
+      yearsOfExperience: v.optional(v.string()),
     }),
   },
   handler: async (ctx, args) => {

@@ -37,6 +37,7 @@ import { database } from "@/lib/abstractions";
 
 interface JobCategoryManagerProps {
   categories: JobCategory[];
+  userId: string;
   onCategoryCreated: (category: JobCategory) => void;
   onCategoryUpdated: (category: JobCategory) => void;
   onCategoryDeleted: (categoryId: string) => void;
@@ -50,6 +51,7 @@ const statusConfig = {
 
 export function JobCategoryManager({ 
   categories, 
+  userId,
   onCategoryCreated, 
   onCategoryUpdated, 
   onCategoryDeleted 
@@ -69,6 +71,7 @@ export function JobCategoryManager({
   const handleCreateCategory = async () => {
     try {
       const categoryData = {
+        userId: userId,
         name: formData.name,
         description: formData.description || undefined,
         targetRole: formData.targetRole,
@@ -81,13 +84,10 @@ export function JobCategoryManager({
         status: formData.status
       };
 
-      const categoryId = await database.createJobCategory(categoryData);
-      const newCategory = await database.getJobCategoryById(categoryId);
-      if (newCategory) {
-        onCategoryCreated(newCategory);
-        resetForm();
-        setIsCreateDialogOpen(false);
-      }
+      const newCategory = await database.createJobCategory(categoryData);
+      onCategoryCreated(newCategory);
+      resetForm();
+      setIsCreateDialogOpen(false);
     } catch (error) {
       console.error('Failed to create category:', error);
       alert('Failed to create category. Please try again.');
@@ -193,10 +193,6 @@ export function JobCategoryManager({
           <p className="text-gray-600 mb-4">
             Create your first job category to organize your job searches
           </p>
-          <Button onClick={() => setIsCreateDialogOpen(true)} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Create Category
-          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -324,60 +320,65 @@ export function JobCategoryManager({
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Category Name</Label>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium text-gray-700">Category Name</Label>
               <Input
                 id="name"
                 placeholder="e.g., Engineering Manager Search 2024"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full"
               />
             </div>
 
-            <div>
-              <Label htmlFor="description">Description (Optional)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-sm font-medium text-gray-700">Description (Optional)</Label>
               <Textarea
                 id="description"
                 placeholder="Brief description of this job search category..."
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
+                className="w-full"
               />
             </div>
 
-            <div>
-              <Label htmlFor="targetRole">Target Role</Label>
+            <div className="space-y-2">
+              <Label htmlFor="targetRole" className="text-sm font-medium text-gray-700">Target Role</Label>
               <Input
                 id="targetRole"
                 placeholder="e.g., Engineering Manager, Senior Software Engineer"
                 value={formData.targetRole}
                 onChange={(e) => setFormData(prev => ({ ...prev, targetRole: e.target.value }))}
+                className="w-full"
               />
             </div>
 
-            <div>
-              <Label htmlFor="targetCompanies">Target Companies (Optional)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="targetCompanies" className="text-sm font-medium text-gray-700">Target Companies (Optional)</Label>
               <Input
                 id="targetCompanies"
                 placeholder="e.g., Google, Microsoft, Amazon (comma-separated)"
                 value={formData.targetCompanies}
                 onChange={(e) => setFormData(prev => ({ ...prev, targetCompanies: e.target.value }))}
+                className="w-full"
               />
             </div>
 
-            <div>
-              <Label htmlFor="targetLocations">Target Locations (Optional)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="targetLocations" className="text-sm font-medium text-gray-700">Target Locations (Optional)</Label>
               <Input
                 id="targetLocations"
                 placeholder="e.g., San Francisco, Remote, New York (comma-separated)"
                 value={formData.targetLocations}
                 onChange={(e) => setFormData(prev => ({ ...prev, targetLocations: e.target.value }))}
+                className="w-full"
               />
             </div>
 
-            <div>
-              <Label htmlFor="status">Status</Label>
+            <div className="space-y-2">
+              <Label htmlFor="status" className="text-sm font-medium text-gray-700">Status</Label>
               <select
                 id="status"
                 value={formData.status}

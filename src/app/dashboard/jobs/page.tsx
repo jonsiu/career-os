@@ -153,8 +153,10 @@ export default function JobsPage() {
             <JobTracker
               jobs={jobs}
               categories={categories}
+              userId={user.id}
               onJobDeleted={handleJobDeleted}
               onJobUpdated={handleJobUpdated}
+              onJobCreated={handleJobCreated}
               onEditJob={handleEditJob}
               onCreateCategory={() => setActiveTab('categories')}
               onEditCategory={() => setActiveTab('categories')}
@@ -163,17 +165,14 @@ export default function JobsPage() {
         </TabsContent>
 
         <TabsContent value="add" className="mt-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">
                 {editingJob ? 'Edit Job' : 'Add New Job'}
               </h2>
-              <Button 
-                variant="outline" 
-                onClick={handleCancelEdit}
-              >
-                Cancel
-              </Button>
+              <p className="mt-2 text-gray-600">
+                {editingJob ? 'Update job details and application status' : 'Save job opportunities and track your applications'}
+              </p>
             </div>
             
             <JobBookmark
@@ -182,6 +181,7 @@ export default function JobsPage() {
               onJobUpdated={handleJobUpdated}
               editingJob={editingJob}
               onCancelEdit={handleCancelEdit}
+              inline={true}
             />
           </div>
         </TabsContent>
@@ -189,6 +189,7 @@ export default function JobsPage() {
         <TabsContent value="categories" className="mt-6">
           <JobCategoryManager
             categories={categories}
+            userId={user.id}
             onCategoryCreated={handleCategoryCreated}
             onCategoryUpdated={handleCategoryUpdated}
             onCategoryDeleted={handleCategoryDeleted}

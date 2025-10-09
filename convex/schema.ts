@@ -8,6 +8,16 @@ export default defineSchema({
     name: v.string(),
     avatar: v.optional(v.string()),
     metadata: v.optional(v.any()),
+    // Onboarding state
+    onboardingState: v.optional(v.object({
+      currentStep: v.string(),
+      completedSteps: v.array(v.string()),
+      skipped: v.boolean(),
+      completedAt: v.optional(v.number()),
+      jobInterests: v.optional(v.array(v.string())),
+      targetRoles: v.optional(v.array(v.string())),
+      industries: v.optional(v.array(v.string())),
+    })),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -162,4 +172,26 @@ export default defineSchema({
     .index("by_content_hash", ["contentHash"])
     .index("by_created_at", ["createdAt"])
     .index("by_resume_and_type", ["resumeId", "analysisType"]),
+
+  onboardingSessions: defineTable({
+    userId: v.id("users"),
+    currentStep: v.string(),
+    completedSteps: v.array(v.string()),
+    skipped: v.boolean(),
+    completedAt: v.optional(v.number()),
+    // Step-specific data
+    resumeUploaded: v.optional(v.boolean()),
+    jobInterests: v.optional(v.array(v.string())),
+    targetRoles: v.optional(v.array(v.string())),
+    industries: v.optional(v.array(v.string())),
+    extensionInstalled: v.optional(v.boolean()),
+    // Progress tracking
+    stepData: v.optional(v.any()), // Store step-specific data
+    metadata: v.optional(v.any()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user_id", ["userId"])
+    .index("by_current_step", ["currentStep"])
+    .index("by_created_at", ["createdAt"]),
 });

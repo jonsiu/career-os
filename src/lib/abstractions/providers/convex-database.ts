@@ -1217,4 +1217,73 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
       throw error;
     }
   }
+
+  // Onboarding operations
+  async updateUserOnboardingState(clerkUserId: string, onboardingState: {
+    currentStep: string;
+    completedSteps: string[];
+    skipped?: boolean;
+    completedAt?: number;
+    stepData?: any;
+  }): Promise<void> {
+    try {
+      // First, get the user by Clerk user ID to get the Convex user ID
+      const user = await convexClient.query(api.users.getByClerkUserId, { 
+        clerkUserId 
+      });
+      
+      if (!user) {
+        throw new Error(`User not found for Clerk user ID: ${clerkUserId}`);
+      }
+
+      await convexClient.mutation(api.users.updateOnboardingState, {
+        id: user._id,
+        onboardingState: {
+          currentStep: onboardingState.currentStep,
+          completedSteps: onboardingState.completedSteps,
+          skipped: onboardingState.skipped || false,
+          completedAt: onboardingState.completedAt,
+          jobInterests: onboardingState.stepData?.jobInterests?.targetRoles,
+          targetRoles: onboardingState.stepData?.jobInterests?.targetRoles,
+          industries: onboardingState.stepData?.jobInterests?.industries,
+        }
+      });
+    } catch (error) {
+      console.error('Error updating user onboarding state:', error);
+      throw error;
+    }
+  }
+
+  async getUserOnboardingState(clerkUserId: string): Promise<{
+    currentStep: string;
+    completedSteps: string[];
+    skipped: boolean;
+    completedAt?: number;
+    jobInterests?: string[];
+    targetRoles?: string[];
+    industries?: string[];
+  } | null> {
+    try {
+      const user = await convexClient.query(api.users.getByClerkUserId, { 
+        clerkUserId 
+      });
+      
+      if (!user || !user.onboardingState) {
+        return null;
+      }
+
+      return {
+        currentStep: user.onboardingState.currentStep,
+        completedSteps: user.onboardingState.completedSteps,
+        skipped: user.onboardingState.skipped,
+        completedAt: user.onboardingState.completedAt,
+        jobInterests: user.onboardingState.jobInterests,
+        targetRoles: user.onboardingState.targetRoles,
+        industries: user.onboardingState.industries,
+      };
+    } catch (error) {
+      console.error('Error getting user onboarding state:', error);
+      return null;
+    }
+  }
 }

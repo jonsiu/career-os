@@ -2,6 +2,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import { Download, ExternalLink } from "lucide-react";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard" },
@@ -41,7 +43,22 @@ export function MainNav() {
               ))}
             </div>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-4">
+            {/* Browser Extension CTA */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="hidden md:flex items-center gap-2 text-sm"
+              onClick={() => {
+                // In a real implementation, this would redirect to the browser extension store
+                window.open('https://chrome.google.com/webstore', '_blank');
+              }}
+            >
+              <Download className="h-4 w-4" />
+              Install Extension
+              <ExternalLink className="h-3 w-3" />
+            </Button>
+            
             <UserButton />
           </div>
         </div>

@@ -36,10 +36,14 @@
 - **Development Planning**: Skill tracking and learning pathways
 
 ### 🎯 **RECOMMENDED NEXT STEPS** (Phase III Focus)
-1. **Build Virtual HR Coach System** - Core value proposition feature with AI-powered coaching
-2. **Add Development Planning Features** - Skill tracking and learning pathways
-3. **Implement Advanced Job Matching** - Resume-to-job compatibility analysis
-4. **Enhance Browser Extension Features** - Job collection and analysis integration
+1. **Redesign Job Tracker Interface** - LinkedIn-style sidebar + preview layout
+2. **Implement Job Categories System** - Organize jobs by role/project (e.g., "Engineering Manager Search")
+3. **Fix Job Data Parsing Issues** - Ensure all fields (company, location, posted date) are properly extracted
+4. **Add HTML Job Description Storage** - Store and display job descriptions with proper formatting
+5. **Build Resume Versioning System** - Create role-specific resume versions for different job categories
+6. **Implement Cover Letter System** - Cover letter creation, management, and AI-powered generation
+7. **Enhance Browser Extension** - Improve HTML extraction and job data parsing
+8. **Build Virtual HR Coach System** - Core value proposition feature with AI-powered coaching
 
 ---
 
@@ -97,9 +101,29 @@
 - [⏸️] Document Chrome Web Store preparation (no action needed yet)
 - [✅] Add extension authentication debugging tools
 
-## Phase 3: AI-Driven Resume Improvement (Weeks 5-6)
+## Phase 3: Job Tracker UI Redesign & Data Enhancement (Weeks 5-6)
 
-### Week 5: Resume Rewriting Engine
+### Week 5: Job Tracker Interface Redesign
+- [ ] **PRIORITY**: Redesign Job Tracker with LinkedIn-style layout (sidebar + preview panel)
+- [ ] **PRIORITY**: Implement job categories system for organizing jobs by role/project
+- [ ] **PRIORITY**: Fix job data parsing issues (company, location, posted date)
+- [ ] **PRIORITY**: Add HTML job description storage and display
+- [ ] **PRIORITY**: Implement rich text editor for job description editing
+- [ ] **PRIORITY**: Add job filtering and search by category, status, company
+- [ ] **PRIORITY**: Enhance browser extension HTML extraction
+
+### Week 6: Resume Versioning & Cover Letter System
+- [ ] **PRIORITY**: Implement resume versioning system for different job categories
+- [ ] **PRIORITY**: Create role-specific resume optimization workflow
+- [ ] **PRIORITY**: Build cover letter creation and management system
+- [ ] **PRIORITY**: Add AI-powered cover letter generation
+- [ ] **PRIORITY**: Integrate cover letters with job applications
+- [ ] **PRIORITY**: Add cover letter quality scoring and suggestions
+- [ ] **PRIORITY**: Create resume comparison and diff view
+
+## Phase 4: AI-Driven Resume Improvement (Weeks 7-8)
+
+### Week 7: Resume Rewriting Engine
 - [ ] **NEW**: AI content generation system
 - [ ] **NEW**: Resume rewriting based on coaching responses
 - [ ] **NEW**: Industry-specific language optimization
@@ -110,7 +134,7 @@
 - [ ] **NEW**: Experience positioning for job relevance
 - [ ] **NEW**: Vendor-agnostic content generation
 
-### Week 6: Validation & Accuracy System
+### Week 8: Validation & Accuracy System
 - [ ] **NEW**: Content validation and accuracy checking
 - [ ] **NEW**: User review and approval interface
 - [ ] **NEW**: Side-by-side comparison view
@@ -201,12 +225,63 @@ interface JobPosting {
   userId: string;
   title: string;
   company: string;
-  description: string;
+  description: string; // Plain text version
+  descriptionHtml: string; // NEW: Sanitized HTML version
   requirements: string[];
   skills: string[];
   experienceLevel: string;
   location: string;
+  salary?: string; // NEW: Salary information
+  postedDate?: string; // NEW: Job posting date
+  category?: string; // NEW: Job category/project
+  url?: string; // NEW: Original job posting URL
+  status: 'saved' | 'applied' | 'interviewing' | 'offered' | 'rejected'; // NEW: Application status
+  metadata?: {
+    rawJobDescriptionHtml?: string; // NEW: Raw HTML from browser extension
+    parsingMetadata?: any; // NEW: Parsing confidence and metadata
+    applicationDate?: string; // NEW: When user applied
+    interviewDates?: string[]; // NEW: Interview scheduling
+  };
   bookmarkedAt: Date;
+}
+
+interface JobCategory {
+  id: string;
+  userId: string;
+  name: string; // e.g., "Engineering Manager Search"
+  description?: string;
+  targetRole: string; // e.g., "Engineering Manager"
+  targetCompanies?: string[];
+  targetLocations?: string[];
+  status: 'active' | 'paused' | 'completed';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface CoverLetter {
+  id: string;
+  userId: string;
+  title: string;
+  content: string;
+  jobId?: string; // NEW: Associated job posting
+  resumeId?: string; // NEW: Associated resume version
+  category?: string; // NEW: Job category this cover letter is for
+  baseCoverLetterId?: string; // NEW: Reference to base cover letter if this is a version
+  isBaseCoverLetter: boolean; // NEW: Whether this is the master cover letter
+  optimizationTarget?: {
+    jobCategory: string;
+    targetRole: string;
+    targetCompany?: string;
+    keyPoints?: string[];
+  };
+  qualityScore?: number; // NEW: AI-generated quality score
+  metadata?: {
+    wordCount?: number;
+    lastUsed?: string;
+    applicationCount?: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface DevelopmentPlan {

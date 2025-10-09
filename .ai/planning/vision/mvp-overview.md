@@ -34,6 +34,12 @@ Transform your resume from good to exceptional through intelligent scoring and p
 - **Multi-vendor Architecture**: Vendor abstraction for database, AI, and storage services
 - **Unit Testing**: Comprehensive test coverage for all scoring algorithms
 - **Real-time Data Synchronization**: Seamless extension-to-app data flow
+- **NEW**: LinkedIn-style Job Tracker Interface with sidebar + preview layout
+- **NEW**: Job Categories System for organizing jobs by role/project
+- **NEW**: Resume Versioning System for role-specific resume optimization
+- **NEW**: Cover Letter Management System with AI-powered generation
+- **NEW**: HTML Job Description Storage and Rich Text Editing
+- **NEW**: Enhanced Browser Extension with improved data extraction
 
 ### ❌ **Out of Scope (Future Phases)**
 - Other personas (HR Recruiter, Talent Manager, Hiring Manager)
@@ -56,9 +62,10 @@ Transform your resume from good to exceptional through intelligent scoring and p
 ## Development Timeline
 - **Week 1-2**: Project setup and Convex integration
 - **Week 3-4**: Resume management and file storage
-- **Week 5-6**: Job posting system and analysis engine
-- **Week 7-8**: Career Coach persona and development planning
-- **Week 9-10**: Polish, testing, and deployment
+- **Week 5-6**: Job Tracker UI redesign and data enhancement
+- **Week 7-8**: Resume versioning and cover letter system
+- **Week 9-10**: Career Coach persona and development planning
+- **Week 11-12**: Polish, testing, and deployment
 
 ## Success Criteria
 1. Users can upload their resume and receive an instant quality score
@@ -73,3 +80,9 @@ Transform your resume from good to exceptional through intelligent scoring and p
 10. Users can receive project recommendations to demonstrate new skills
 11. The application significantly improves resume quality and job prospects
 12. Real-time data synchronization works seamlessly across devices
+13. **NEW**: Users can organize jobs by categories/projects (e.g., "Engineering Manager Search")
+14. **NEW**: Users can view jobs in LinkedIn-style interface with sidebar + preview layout
+15. **NEW**: Users can create role-specific resume versions for different job categories
+16. **NEW**: Users can create and manage cover letters with AI-powered generation
+17. **NEW**: Job descriptions display with proper HTML formatting and rich text editing
+18. **NEW**: Browser extension properly extracts all job fields including company, location, posted date

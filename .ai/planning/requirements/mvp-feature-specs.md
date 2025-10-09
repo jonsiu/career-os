@@ -72,9 +72,9 @@ const linkedInSelectors = [
 - [ ] **NEW**: Specific improvement areas are identified and highlighted
 - [ ] **NEW**: User is prompted to engage with virtual HR coach if score is below threshold
 
-### Resume Builder Interface
+### Resume Builder Interface & Versioning
 **Priority**: P0 (Must Have)
-**User Story**: As a tech professional, I want to build my resume step-by-step so I can create a comprehensive career profile.
+**User Story**: As a tech professional, I want to build my resume step-by-step and create role-specific versions so I can tailor my resume for different job categories.
 
 **Requirements**:
 - Multi-step form interface with progress indicator
@@ -82,14 +82,32 @@ const linkedInSelectors = [
 - Real-time preview of resume layout
 - Auto-save functionality
 - Tech-focused resume templates
+- **NEW**: Resume versioning system for different job categories/roles
+- **NEW**: Role-specific resume optimization based on job requirements
+- **NEW**: Resume comparison and diff view
 
 **Technical Implementation**:
-- Form state management with React Hook Form
-- Multi-step navigation with progress tracking
-- Real-time preview with live updates
-- Convex database for auto-save and persistence
-- Responsive design for mobile/desktop
-- **NEW**: Abstract database operations for vendor independence
+```typescript
+interface Resume {
+  id: string;
+  userId: string;
+  title: string;
+  content: string;
+  filePath?: string;
+  category?: string; // NEW: Job category this resume is optimized for
+  baseResumeId?: string; // NEW: Reference to base resume if this is a version
+  isBaseResume: boolean; // NEW: Whether this is the master resume
+  optimizationTarget?: {
+    jobCategory: string;
+    targetRole: string;
+    targetCompanies?: string[];
+    keywords?: string[];
+  };
+  metadata?: Record<string, unknown>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
 
 **Acceptance Criteria**:
 - [ ] User can navigate between form sections
@@ -97,6 +115,9 @@ const linkedInSelectors = [
 - [ ] Real-time preview updates as user types
 - [ ] User can switch between template styles
 - [ ] Form validation prevents incomplete submissions
+- [ ] **NEW**: User can create role-specific resume versions from base resume
+- [ ] **NEW**: User can optimize resume content for specific job categories
+- [ ] **NEW**: User can compare different resume versions side-by-side
 - [ ] **NEW**: Data persistence works with multiple database vendors
 
 ## Feature 2: Resume Scoring & Virtual HR Coach
@@ -455,7 +476,68 @@ const linkedInSelectors = [
 - [ ] **NEW**: Project recommendations work with multiple AI providers
 - [ ] **NEW**: Skills are demonstrated through project results
 
-## Feature 6: Job Posting Management
+## Feature 6: Cover Letter Management System
+
+### Cover Letter Writing & Management
+**Priority**: P0 (Must Have)
+**User Story**: As a tech professional, I want to create and manage cover letters for my job applications so I can make a strong first impression with hiring managers.
+
+**Requirements**:
+- **NEW**: Cover letter creation and editing interface
+- **NEW**: Role-specific cover letter templates
+- **NEW**: AI-powered cover letter generation based on job requirements
+- **NEW**: Cover letter versioning for different job categories
+- **NEW**: Integration with job applications and resume versions
+- **NEW**: Cover letter quality scoring and improvement suggestions
+
+**Technical Implementation**:
+```typescript
+interface CoverLetter {
+  id: string;
+  userId: string;
+  title: string;
+  content: string;
+  jobId?: string; // NEW: Associated job posting
+  resumeId?: string; // NEW: Associated resume version
+  category?: string; // NEW: Job category this cover letter is for
+  baseCoverLetterId?: string; // NEW: Reference to base cover letter if this is a version
+  isBaseCoverLetter: boolean; // NEW: Whether this is the master cover letter
+  optimizationTarget?: {
+    jobCategory: string;
+    targetRole: string;
+    targetCompany?: string;
+    keyPoints?: string[];
+  };
+  qualityScore?: number; // NEW: AI-generated quality score
+  metadata?: {
+    wordCount?: number;
+    lastUsed?: string;
+    applicationCount?: number;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface CoverLetterTemplate {
+  id: string;
+  name: string;
+  category: string; // e.g., "Engineering Manager", "Product Manager"
+  template: string;
+  variables: string[]; // Placeholder variables like {company}, {role}, {key_achievement}
+  isDefault: boolean;
+}
+```
+
+**Acceptance Criteria**:
+- [ ] **NEW**: User can create and edit cover letters with rich text editor
+- [ ] **NEW**: User can create role-specific cover letter versions
+- [ ] **NEW**: AI generates personalized cover letters based on job requirements
+- [ ] **NEW**: User can associate cover letters with specific jobs and resume versions
+- [ ] **NEW**: Cover letter quality is scored and improvement suggestions provided
+- [ ] **NEW**: User can manage multiple cover letter versions for different job categories
+- [ ] **NEW**: Cover letters integrate seamlessly with job application workflow
+
+## Feature 7: Job Posting Management & Organization
 
 ### Job Bookmarking System
 **Priority**: P0 (Must Have)
@@ -463,26 +545,64 @@ const linkedInSelectors = [
 
 **Requirements**:
 - Bookmark job postings from various sources
-- Store job title, company, description, requirements
-- Categorize by role type (Engineering Manager, Product Manager, etc.)
-- Search and filter saved jobs
+- Store job title, company, description, requirements, location, salary, posted date
+- **NEW**: Store full job description as sanitized HTML for proper formatting
+- **NEW**: Create job categories/projects (e.g., "Engineering Manager Search", "Product Manager Roles")
+- **NEW**: LinkedIn-style interface: left sidebar job list + right panel job preview
+- Search and filter saved jobs by category, status, company, location
 - Add personal notes and ratings
+- **NEW**: Track application status and timeline
 
 **Technical Implementation**:
-- Job data structure with metadata
-- Convex database for job bookmarks
-- Search and filter functionality
-- Job categorization system
-- Notes and rating system
-- **NEW**: Abstract database operations for vendor switching
+```typescript
+interface Job {
+  id: string;
+  userId: string;
+  title: string;
+  company: string;
+  description: string; // Plain text version
+  descriptionHtml: string; // NEW: Sanitized HTML version
+  requirements: string[];
+  location?: string;
+  salary?: string;
+  postedDate?: string; // NEW: Job posting date
+  status: 'saved' | 'applied' | 'interviewing' | 'offered' | 'rejected';
+  category?: string; // NEW: Job category/project
+  url?: string; // NEW: Original job posting URL
+  notes?: string;
+  metadata?: {
+    rawJobDescriptionHtml?: string; // NEW: Raw HTML from browser extension
+    parsingMetadata?: any; // NEW: Parsing confidence and metadata
+    applicationDate?: string; // NEW: When user applied
+    interviewDates?: string[]; // NEW: Interview scheduling
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface JobCategory {
+  id: string;
+  userId: string;
+  name: string; // e.g., "Engineering Manager Search"
+  description?: string;
+  targetRole: string; // e.g., "Engineering Manager"
+  targetCompanies?: string[];
+  targetLocations?: string[];
+  status: 'active' | 'paused' | 'completed';
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
 
 **Acceptance Criteria**:
-- [ ] User can bookmark jobs with title, company, description
-- [ ] Jobs are categorized by role type
-- [ ] User can search and filter saved jobs
-- [ ] User can add personal notes and ratings
-- [ ] Job data persists between sessions
-- [ ] **NEW**: Job data works with multiple database vendors
+- [ ] User can bookmark jobs with complete information (title, company, description, location, salary, posted date)
+- [ ] **NEW**: Job descriptions are stored and displayed with proper HTML formatting
+- [ ] **NEW**: User can create and manage job categories/projects
+- [ ] **NEW**: Interface uses LinkedIn-style layout (sidebar + preview panel)
+- [ ] User can search and filter saved jobs by category, status, company, location
+- [ ] User can add personal notes and track application status
+- [ ] **NEW**: Browser extension properly extracts and stores full job description HTML
+- [ ] Job data persists between sessions with vendor-agnostic storage
 
 ### Job Description Analysis
 **Priority**: P1 (Should Have)

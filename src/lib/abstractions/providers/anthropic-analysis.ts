@@ -1,13 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { AnalysisProvider, Resume, Job, AnalysisResult, CareerAnalysis, SkillsGap, Recommendation, ResumeQualityScore } from '../types';
 
 export class AnthropicAnalysisProvider implements AnalysisProvider {
-  private anthropic: Anthropic;
-
   constructor() {
-    this.anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    });
+    // No need to initialize Anthropic client here - we use the server-side API route
   }
 
   async analyzeResume(resume: Resume, job: Job): Promise<AnalysisResult> {
@@ -485,11 +480,34 @@ export class AnthropicAnalysisProvider implements AnalysisProvider {
   }
 
   async performAdvancedResumeAnalysis(resume: Resume): Promise<any> {
-    // For now, delegate to the rule-based advanced analyzer
-    // In the future, this could use Anthropic for more sophisticated analysis
-    const { AdvancedResumeAnalyzer } = await import('./advanced-resume-analysis');
-    const analyzer = new AdvancedResumeAnalyzer();
-    return await analyzer.analyzeResume(resume);
+    try {
+      // Use the server-side API route for advanced analysis
+      const response = await fetch('/api/analysis/advanced', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          resumeId: resume.id
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Advanced analysis API call failed');
+      }
+
+      const result = await response.json();
+      
+      if (!result.success || !result.data) {
+        throw new Error('Invalid response from advanced analysis API');
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error('Advanced analysis failed:', error);
+      throw error;
+    }
   }
 
   // Caching and persistence methods - delegate to ConvexAnalysisProvider
@@ -527,5 +545,37 @@ export class AnthropicAnalysisProvider implements AnalysisProvider {
     const { ConvexAnalysisProvider } = await import('./convex-analysis');
     const provider = new ConvexAnalysisProvider();
     return await provider.calculateContentHash(resume);
+  }
+
+  async performAIPoweredAnalysis(resume: Resume): Promise<ResumeQualityScore> {
+    try {
+      // Use the server-side API route for AI-powered analysis
+      const response = await fetch('/api/analysis/ai-powered', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          resumeId: resume.id
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'AI analysis API call failed');
+      }
+
+      const result = await response.json();
+      
+      if (!result.success || !result.data) {
+        throw new Error('Invalid response from AI analysis API');
+      }
+
+      // The API already returns data in ResumeQualityScore format
+      return result.data;
+    } catch (error) {
+      console.error('AI-powered analysis failed:', error);
+      throw error;
+    }
   }
 }

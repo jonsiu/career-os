@@ -853,6 +853,7 @@ export class ConvexAnalysisProvider implements AnalysisProvider {
     return await generateContentHash(resume);
   }
 
+
   async scoreResumeQuality(resume: Resume): Promise<ResumeQualityScore> {
     try {
       // Generate content hash for caching

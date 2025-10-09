@@ -32,6 +32,7 @@ import {
 import { ResumeQualityScore } from "@/lib/abstractions/types";
 import { AdvancedResumeAnalysis } from "@/lib/abstractions/providers/advanced-resume-analysis";
 import { analysis } from "@/lib/abstractions";
+import { ServiceFactory } from "@/lib/abstractions/service-factory";
 
 interface ResumeReportCardProps {
   resumeId: string;
@@ -121,7 +122,15 @@ export function ResumeReportCard({ resumeId, onCoachingPrompt }: ResumeReportCar
         throw new Error('Resume not found');
       }
       
-      const aiResult = await (analysis as any).performAIPoweredAnalysis(resume);
+      // Use AI analysis provider for AI-powered analysis
+      const serviceFactory = ServiceFactory.getInstance();
+      const aiAnalysisProvider = serviceFactory.createAIAnalysisProvider();
+      
+      if (!aiAnalysisProvider.performAIPoweredAnalysis) {
+        throw new Error('AI-powered analysis not available');
+      }
+      
+      const aiResult = await aiAnalysisProvider.performAIPoweredAnalysis(resume);
       setAiAnalysis(aiResult);
     } catch (err) {
       console.error('Failed to load AI analysis:', err);

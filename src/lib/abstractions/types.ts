@@ -115,6 +115,7 @@ export interface AnalysisProvider {
   getAnalysisHistory(resumeId: string, analysisType?: 'basic' | 'advanced' | 'ai-powered'): Promise<any[]>;
   getAnalysisStats(resumeId: string): Promise<any>;
   calculateContentHash(resume: Resume): Promise<string>;
+  performAIPoweredAnalysis?(resume: Resume): Promise<ResumeQualityScore>;
 }
 
 export interface RealTimeProvider {

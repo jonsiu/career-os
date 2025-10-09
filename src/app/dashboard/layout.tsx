@@ -3,6 +3,7 @@
 import { MainNav } from "@/components/layout/main-nav";
 import { SignedIn } from "@clerk/nextjs";
 import { useUserSync } from "@/lib/hooks/use-user-sync";
+import { useOnboardingCheck } from "@/lib/hooks/use-onboarding-check";
 
 export default function DashboardLayout({
   children,
@@ -10,9 +11,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { isSyncing, error: syncError } = useUserSync();
+  const { isLoading: isCheckingOnboarding, error: onboardingError } = useOnboardingCheck();
 
-  // Show loading state while syncing user
-  if (isSyncing) {
+  // Show loading state while syncing user or checking onboarding
+  if (isSyncing || isCheckingOnboarding) {
     return (
       <SignedIn>
         <div className="min-h-screen bg-gray-50">
@@ -33,8 +35,8 @@ export default function DashboardLayout({
     );
   }
 
-  // Show error state if sync failed
-  if (syncError) {
+  // Show error state if sync or onboarding check failed
+  if (syncError || onboardingError) {
     return (
       <SignedIn>
         <div className="min-h-screen bg-gray-50">
@@ -44,7 +46,7 @@ export default function DashboardLayout({
               <div className="flex items-center justify-center min-h-64">
                 <div className="text-center">
                   <h3 className="text-lg font-medium text-red-900 mb-2">Setup Error</h3>
-                  <p className="text-red-600 mb-4">{syncError}</p>
+                  <p className="text-red-600 mb-4">{syncError || onboardingError}</p>
                   <button 
                     onClick={() => window.location.reload()} 
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"

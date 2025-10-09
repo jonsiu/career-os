@@ -88,3 +88,41 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+// Onboarding state management
+export const updateOnboardingState = mutation({
+  args: {
+    id: v.id("users"),
+    onboardingState: v.object({
+      currentStep: v.string(),
+      completedSteps: v.array(v.string()),
+      skipped: v.boolean(),
+      completedAt: v.optional(v.number()),
+      jobInterests: v.optional(v.array(v.string())),
+      targetRoles: v.optional(v.array(v.string())),
+      industries: v.optional(v.array(v.string())),
+      careerLevel: v.optional(v.string()),
+      yearsOfExperience: v.optional(v.string()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const { id, onboardingState } = args;
+    await ctx.db.patch(id, {
+      onboardingState,
+      updatedAt: Date.now(),
+    });
+    return await ctx.db.get(id);
+  },
+});
+
+export const getOnboardingState = query({
+  args: { clerkUserId: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_user_id", (q) => q.eq("clerkUserId", args.clerkUserId))
+      .first();
+    
+    return user?.onboardingState || null;
+  },
+});

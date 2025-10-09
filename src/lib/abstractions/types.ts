@@ -47,6 +47,26 @@ export interface DatabaseProvider {
   updateSkillProgress(id: string, progress: number, timeSpent?: number, status?: Skill['status']): Promise<Skill>;
   addSkillResource(id: string, resource: SkillResource): Promise<Skill>;
   updateResourceCompletion(id: string, resourceIndex: number, completed: boolean): Promise<Skill>;
+
+  // Onboarding operations
+  updateUserOnboardingState(clerkUserId: string, onboardingState: {
+    currentStep: string;
+    completedSteps: string[];
+    skipped?: boolean;
+    completedAt?: number;
+    stepData?: any;
+  }): Promise<void>;
+  getUserOnboardingState(clerkUserId: string): Promise<{
+    currentStep: string;
+    completedSteps: string[];
+    skipped: boolean;
+    completedAt?: number;
+    jobInterests?: string[];
+    targetRoles?: string[];
+    industries?: string[];
+    careerLevel?: string;
+    yearsOfExperience?: string;
+  } | null>;
 }
 
 export interface FileStorageProvider {

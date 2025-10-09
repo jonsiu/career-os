@@ -2,6 +2,7 @@ import { DatabaseProvider, FileStorageProvider, AnalysisProvider } from './types
 import { ConvexDatabaseProvider } from './providers/convex-database';
 import { ConvexFileStorageProvider } from './providers/convex-file-storage';
 import { ConvexAnalysisProvider } from './providers/convex-analysis';
+import { AnthropicAnalysisProvider } from './providers/anthropic-analysis';
 
 // Service factory for creating provider instances
 export class ServiceFactory {
@@ -30,6 +31,12 @@ export class ServiceFactory {
   createAnalysisProvider(): AnalysisProvider {
     console.log('✅ ServiceFactory: Using Convex-based analysis provider (server-side processing)');
     return new ConvexAnalysisProvider();
+  }
+
+  // Create AI-powered analysis provider - use Anthropic for enhanced AI analysis
+  createAIAnalysisProvider(): AnalysisProvider {
+    console.log('✅ ServiceFactory: Using Anthropic-based AI analysis provider');
+    return new AnthropicAnalysisProvider();
   }
 
   // Get database provider for AI parsing (server-side)

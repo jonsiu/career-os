@@ -28,6 +28,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
 import { ResumePDFDocument } from './resume-pdf';
 import { AdvancedResumeAnalysis } from "@/lib/abstractions/providers/advanced-resume-analysis";
 import { ResumeReportCard } from "@/components/analysis";
+import { ServiceFactory } from "@/lib/abstractions/service-factory";
 
 interface ResumeListProps {
   resumes: Resume[];
@@ -74,8 +75,15 @@ export function ResumeList({ resumes, onResumeDeleted, onResumeUpdated, onResume
       setLoadingAI(prev => new Set(prev).add(resumeId));
       const resume = await analysis.getResumeById(resumeId);
       if (resume) {
-        // Use the new AI-powered analysis method
-        const aiAnalysis = await (analysis as any).performAIPoweredAnalysis(resume);
+        // Use AI analysis provider for AI-powered analysis
+        const serviceFactory = ServiceFactory.getInstance();
+        const aiAnalysisProvider = serviceFactory.createAIAnalysisProvider();
+        
+        if (!aiAnalysisProvider.performAIPoweredAnalysis) {
+          throw new Error('AI-powered analysis not available');
+        }
+        
+        const aiAnalysis = await aiAnalysisProvider.performAIPoweredAnalysis(resume);
         setAiAnalyses(prev => ({ ...prev, [resumeId]: aiAnalysis }));
       }
     } catch (error) {

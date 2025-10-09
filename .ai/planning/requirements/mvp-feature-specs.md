@@ -72,19 +72,21 @@ const linkedInSelectors = [
 - [ ] **NEW**: Specific improvement areas are identified and highlighted
 - [ ] **NEW**: User is prompted to engage with virtual HR coach if score is below threshold
 
-### Resume Builder Interface & Versioning
+### Resume Manager Interface & Job Hunting Projects
 **Priority**: P0 (Must Have)
-**User Story**: As a tech professional, I want to build my resume step-by-step and create role-specific versions so I can tailor my resume for different job categories.
+**User Story**: As a tech professional, I want to manage my resumes in a clean, organized interface and tie them to specific job hunting projects so I can track my applications effectively.
 
 **Requirements**:
-- Multi-step form interface with progress indicator
-- Sections: Personal Info, Experience, Skills, Education, Projects
-- Real-time preview of resume layout
-- Auto-save functionality
-- Tech-focused resume templates
-- **NEW**: Resume versioning system for different job categories/roles
-- **NEW**: Role-specific resume optimization based on job requirements
-- **NEW**: Resume comparison and diff view
+- **NEW**: LinkedIn-style interface: left sidebar resume list + right panel preview/edit
+- **NEW**: Simplified resume cards showing only relevant information:
+  - Resume title (e.g., "John Smith - Engineering Manager v1", "2024 Resume")
+  - Years of experience calculated from work history
+  - Primary industry/industries worked in
+  - Job hunting project association
+  - Key actions: View, Download PDF, Run Report
+- **NEW**: Job hunting projects system for organizing resumes by role searches
+- **NEW**: Remove analysis from cards - move to dedicated report view only
+- **NEW**: Remove irrelevant card information (degree count, skills count, file size, file type)
 
 **Technical Implementation**:
 ```typescript
@@ -94,31 +96,101 @@ interface Resume {
   title: string;
   content: string;
   filePath?: string;
-  category?: string; // NEW: Job category this resume is optimized for
+  jobHuntingProjectId?: string; // NEW: Associated job hunting project
   baseResumeId?: string; // NEW: Reference to base resume if this is a version
   isBaseResume: boolean; // NEW: Whether this is the master resume
-  optimizationTarget?: {
-    jobCategory: string;
-    targetRole: string;
-    targetCompanies?: string[];
-    keywords?: string[];
+  metadata?: {
+    yearsOfExperience?: number; // NEW: Calculated from work history
+    primaryIndustry?: string; // NEW: Main industry worked in
+    industries?: string[]; // NEW: All industries worked in
+    originalFileName?: string; // NEW: Original uploaded file name
+    lastAnalysisDate?: string; // NEW: When last analyzed
+    analysisScore?: number; // NEW: Latest analysis score
   };
-  metadata?: Record<string, unknown>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface JobHuntingProject {
+  id: string;
+  userId: string;
+  name: string; // e.g., "Engineering Manager Search 2024"
+  description?: string;
+  targetRole: string; // e.g., "Engineering Manager", "Senior Software Engineer"
+  targetLevel: 'entry' | 'mid' | 'senior' | 'staff' | 'principal' | 'manager' | 'director' | 'executive';
+  targetIndustries?: string[];
+  targetCompanies?: string[];
+  targetLocations?: string[];
+  status: 'planning' | 'active' | 'paused' | 'completed';
+  startDate: Date;
+  endDate?: Date;
+  resumes: string[]; // Resume IDs associated with this project
+  jobs: string[]; // Job IDs associated with this project
+  coverLetters: string[]; // Cover letter IDs associated with this project
   createdAt: Date;
   updatedAt: Date;
 }
 ```
 
 **Acceptance Criteria**:
-- [ ] User can navigate between form sections
-- [ ] Form data is auto-saved locally
-- [ ] Real-time preview updates as user types
-- [ ] User can switch between template styles
-- [ ] Form validation prevents incomplete submissions
-- [ ] **NEW**: User can create role-specific resume versions from base resume
-- [ ] **NEW**: User can optimize resume content for specific job categories
-- [ ] **NEW**: User can compare different resume versions side-by-side
-- [ ] **NEW**: Data persistence works with multiple database vendors
+- [ ] **NEW**: Resume Manager uses sidebar + preview layout similar to Job Tracker
+- [ ] **NEW**: Resume cards show only: title, years of experience, industry, job hunting project
+- [ ] **NEW**: User can create and manage job hunting projects
+- [ ] **NEW**: User can associate resumes with specific job hunting projects
+- [ ] **NEW**: Analysis is removed from cards and only available in dedicated report view
+- [ ] **NEW**: User can view, download, and run reports on resumes from simplified interface
+- [ ] **NEW**: Years of experience is automatically calculated from work history
+- [ ] **NEW**: Industry information is extracted and displayed from work experience
+
+### Resume Builder Single-Page Form
+**Priority**: P0 (Must Have)
+**User Story**: As a tech professional, I want to edit my resume in a single-page form with easy navigation so I can quickly jump between sections without clicking through a wizard.
+
+**Requirements**:
+- **NEW**: Convert from wizard interface to single-page scrollable form
+- **NEW**: All form sections (Personal Info, Experience, Education, Skills, Projects) on one page
+- **NEW**: Left sidebar navigation with clickable section links for easy jumping
+- **NEW**: Auto-scroll to section when clicking navigation links
+- **NEW**: Remove "Next" and "Previous" buttons - use scrolling instead
+- **NEW**: Real-time preview updates as user types
+- **NEW**: Auto-save functionality with visual indicators
+- **NEW**: Form validation with inline error messages
+
+**Technical Implementation**:
+```typescript
+interface ResumeBuilderForm {
+  sections: {
+    personalInfo: boolean;
+    experience: boolean;
+    education: boolean;
+    skills: boolean;
+    projects: boolean;
+  };
+  currentSection: string;
+  autoSave: boolean;
+  lastSaved: Date;
+  hasUnsavedChanges: boolean;
+}
+
+interface FormSection {
+  id: string;
+  title: string;
+  icon: string;
+  completed: boolean;
+  hasErrors: boolean;
+  errorCount: number;
+}
+```
+
+**Acceptance Criteria**:
+- [ ] **NEW**: All resume form sections are on a single scrollable page
+- [ ] **NEW**: Left sidebar shows clickable section navigation
+- [ ] **NEW**: Clicking section navigation auto-scrolls to that section
+- [ ] **NEW**: No wizard-style "Next" and "Previous" buttons
+- [ ] **NEW**: Form auto-saves changes with visual feedback
+- [ ] **NEW**: Inline validation shows errors immediately
+- [ ] **NEW**: Section completion status is visually indicated
+- [ ] **NEW**: User can scroll naturally through all sections
 
 ## Feature 2: Resume Scoring & Virtual HR Coach
 

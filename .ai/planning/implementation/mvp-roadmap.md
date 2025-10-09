@@ -40,10 +40,13 @@
 2. **Implement Job Categories System** - Organize jobs by role/project (e.g., "Engineering Manager Search")
 3. **Fix Job Data Parsing Issues** - Ensure all fields (company, location, posted date) are properly extracted
 4. **Add HTML Job Description Storage** - Store and display job descriptions with proper formatting
-5. **Build Resume Versioning System** - Create role-specific resume versions for different job categories
-6. **Implement Cover Letter System** - Cover letter creation, management, and AI-powered generation
-7. **Enhance Browser Extension** - Improve HTML extraction and job data parsing
-8. **Build Virtual HR Coach System** - Core value proposition feature with AI-powered coaching
+5. **Redesign Resume Manager Interface** - LinkedIn-style sidebar + preview layout
+6. **Implement Job Hunting Projects System** - Organize resumes by role searches
+7. **Convert Resume Builder to Single-Page Form** - Remove wizard, add clickable section navigation
+8. **Build Resume Versioning System** - Create role-specific resume versions for different job categories
+9. **Implement Cover Letter System** - Cover letter creation, management, and AI-powered generation
+10. **Enhance Browser Extension** - Improve HTML extraction and job data parsing
+11. **Build Virtual HR Coach System** - Core value proposition feature with AI-powered coaching
 
 ---
 
@@ -112,7 +115,19 @@
 - [ ] **PRIORITY**: Add job filtering and search by category, status, company
 - [ ] **PRIORITY**: Enhance browser extension HTML extraction
 
-### Week 6: Resume Versioning & Cover Letter System
+### Week 6: Resume Manager UX Redesign & Job Hunting Projects
+- [ ] **PRIORITY**: Redesign Resume Manager with sidebar + preview layout (similar to Job Tracker)
+- [ ] **PRIORITY**: Simplify resume cards to show only relevant information (title, years of experience, industry, job hunting project)
+- [ ] **PRIORITY**: Remove analysis from resume cards - move to dedicated report view only
+- [ ] **PRIORITY**: Implement job hunting projects system for organizing resumes by role searches
+- [ ] **PRIORITY**: Add years of experience calculation from work history
+- [ ] **PRIORITY**: Add industry extraction and display from work experience
+- [ ] **PRIORITY**: Convert resume builder from wizard to single-page scrollable form
+- [ ] **PRIORITY**: Add clickable section navigation for easy jumping between form sections
+
+## Phase 4: Resume Versioning & Cover Letter System (Weeks 7-8)
+
+### Week 7: Resume Versioning & Cover Letter System
 - [ ] **PRIORITY**: Implement resume versioning system for different job categories
 - [ ] **PRIORITY**: Create role-specific resume optimization workflow
 - [ ] **PRIORITY**: Build cover letter creation and management system
@@ -121,9 +136,7 @@
 - [ ] **PRIORITY**: Add cover letter quality scoring and suggestions
 - [ ] **PRIORITY**: Create resume comparison and diff view
 
-## Phase 4: AI-Driven Resume Improvement (Weeks 7-8)
-
-### Week 7: Resume Rewriting Engine
+### Week 8: AI-Driven Resume Improvement
 - [ ] **NEW**: AI content generation system
 - [ ] **NEW**: Resume rewriting based on coaching responses
 - [ ] **NEW**: Industry-specific language optimization
@@ -211,11 +224,40 @@
 interface Resume {
   id: string;
   userId: string;
-  personalInfo: PersonalInfo;
-  experience: Experience[];
-  skills: Skill[];
-  education: Education[];
-  projects: Project[];
+  title: string;
+  content: string;
+  filePath?: string;
+  jobHuntingProjectId?: string; // NEW: Associated job hunting project
+  baseResumeId?: string; // NEW: Reference to base resume if this is a version
+  isBaseResume: boolean; // NEW: Whether this is the master resume
+  metadata?: {
+    yearsOfExperience?: number; // NEW: Calculated from work history
+    primaryIndustry?: string; // NEW: Main industry worked in
+    industries?: string[]; // NEW: All industries worked in
+    originalFileName?: string; // NEW: Original uploaded file name
+    lastAnalysisDate?: string; // NEW: When last analyzed
+    analysisScore?: number; // NEW: Latest analysis score
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface JobHuntingProject {
+  id: string;
+  userId: string;
+  name: string; // e.g., "Engineering Manager Search 2024"
+  description?: string;
+  targetRole: string; // e.g., "Engineering Manager", "Senior Software Engineer"
+  targetLevel: 'entry' | 'mid' | 'senior' | 'staff' | 'principal' | 'manager' | 'director' | 'executive';
+  targetIndustries?: string[];
+  targetCompanies?: string[];
+  targetLocations?: string[];
+  status: 'planning' | 'active' | 'paused' | 'completed';
+  startDate: Date;
+  endDate?: Date;
+  resumes: string[]; // Resume IDs associated with this project
+  jobs: string[]; // Job IDs associated with this project
+  coverLetters: string[]; // Cover letter IDs associated with this project
   createdAt: Date;
   updatedAt: Date;
 }

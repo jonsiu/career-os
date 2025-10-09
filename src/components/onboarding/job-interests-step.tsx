@@ -24,7 +24,8 @@ interface JobInterestsData {
   targetRoles: string[];
   industries: string[];
   locations: string[];
-  experienceLevel: string;
+  careerLevel: string;
+  yearsOfExperience: string;
 }
 
 const commonRoles = [
@@ -58,18 +59,28 @@ const commonIndustries = [
 ];
 
 const experienceLevels = [
-  { value: "entry", label: "Entry Level (0-2 years)" },
-  { value: "mid", label: "Mid Level (3-5 years)" },
-  { value: "senior", label: "Senior Level (6-10 years)" },
-  { value: "lead", label: "Lead/Principal (10+ years)" },
+  { value: "entry", label: "Entry Level" },
+  { value: "mid", label: "Mid Level" },
+  { value: "senior", label: "Senior Level" },
+  { value: "lead", label: "Lead/Principal" },
   { value: "executive", label: "Executive/C-Level" }
+];
+
+const yearsOfExperienceOptions = [
+  { value: "0-1", label: "0-1 years" },
+  { value: "2-3", label: "2-3 years" },
+  { value: "4-5", label: "4-5 years" },
+  { value: "6-10", label: "6-10 years" },
+  { value: "11-15", label: "11-15 years" },
+  { value: "16+", label: "16+ years" }
 ];
 
 export function JobInterestsStep({ onNext, onBack }: JobInterestsStepProps) {
   const [targetRoles, setTargetRoles] = useState<string[]>([]);
   const [industries, setIndustries] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
-  const [experienceLevel, setExperienceLevel] = useState<string>("");
+  const [careerLevel, setCareerLevel] = useState<string>("");
+  const [yearsOfExperience, setYearsOfExperience] = useState<string>("");
   const [customRole, setCustomRole] = useState("");
   const [customIndustry, setCustomIndustry] = useState("");
   const [customLocation, setCustomLocation] = useState("");
@@ -109,12 +120,13 @@ export function JobInterestsStep({ onNext, onBack }: JobInterestsStepProps) {
       targetRoles,
       industries,
       locations,
-      experienceLevel
+      careerLevel,
+      yearsOfExperience
     };
     onNext(data);
   };
 
-  const isFormValid = targetRoles.length > 0 && industries.length > 0 && experienceLevel;
+  const isFormValid = targetRoles.length > 0 && industries.length > 0 && careerLevel && yearsOfExperience;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -283,12 +295,12 @@ export function JobInterestsStep({ onNext, onBack }: JobInterestsStepProps) {
         </CardContent>
       </Card>
 
-      {/* Experience Level */}
+      {/* Career Level */}
       <Card>
         <CardHeader>
-          <CardTitle>Experience Level</CardTitle>
+          <CardTitle>Career Level</CardTitle>
           <CardDescription>
-            What's your current experience level?
+            What's your current career level or the level you're targeting?
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -297,13 +309,40 @@ export function JobInterestsStep({ onNext, onBack }: JobInterestsStepProps) {
               <label key={level.value} className="flex items-center space-x-3 cursor-pointer">
                 <input
                   type="radio"
-                  name="experience"
+                  name="careerLevel"
                   value={level.value}
-                  checked={experienceLevel === level.value}
-                  onChange={(e) => setExperienceLevel(e.target.value)}
+                  checked={careerLevel === level.value}
+                  onChange={(e) => setCareerLevel(e.target.value)}
                   className="h-4 w-4 text-blue-600"
                 />
                 <span className="text-sm">{level.label}</span>
+              </label>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Years of Experience */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Years of Experience</CardTitle>
+          <CardDescription>
+            How many years of professional experience do you have?
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {yearsOfExperienceOptions.map((years) => (
+              <label key={years.value} className="flex items-center space-x-3 cursor-pointer">
+                <input
+                  type="radio"
+                  name="yearsOfExperience"
+                  value={years.value}
+                  checked={yearsOfExperience === years.value}
+                  onChange={(e) => setYearsOfExperience(e.target.value)}
+                  className="h-4 w-4 text-blue-600"
+                />
+                <span className="text-sm">{years.label}</span>
               </label>
             ))}
           </div>

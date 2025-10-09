@@ -24,7 +24,8 @@ interface JobInterestsData {
   targetRoles: string[];
   industries: string[];
   locations: string[];
-  experienceLevel: string;
+  careerLevel: string;
+  yearsOfExperience: string;
 }
 
 interface OnboardingData {

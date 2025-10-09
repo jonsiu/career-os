@@ -7,7 +7,7 @@ import {
   ArrowRight,
   ArrowLeft,
   CheckCircle,
-  ExternalLink,
+  // ExternalLink, // Unused import
   Chrome,
   Zap,
   Bookmark,
@@ -128,7 +128,7 @@ export function BrowserExtensionStep({ onNext, onBack, onSkip }: BrowserExtensio
           <CardHeader>
             <CardTitle>Detected Browser</CardTitle>
             <CardDescription>
-              We detected you're using {detectedBrowser}. Click below to install the extension.
+              We detected you&apos;re using {detectedBrowser}. Click below to install the extension.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -178,7 +178,7 @@ export function BrowserExtensionStep({ onNext, onBack, onSkip }: BrowserExtensio
                 <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white text-xs font-bold">1</span>
                 </div>
-                <span className="text-sm">Click "Add to {detectedBrowser}" in the popup</span>
+                <span className="text-sm">Click &quot;Add to {detectedBrowser}&quot; in the popup</span>
               </div>
               <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
                 <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
@@ -203,7 +203,7 @@ export function BrowserExtensionStep({ onNext, onBack, onSkip }: BrowserExtensio
                 variant="outline"
                 className="w-full"
               >
-                I've Installed the Extension
+                I&apos;ve Installed the Extension
               </Button>
             </div>
           </CardContent>

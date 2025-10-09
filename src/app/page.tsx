@@ -14,7 +14,6 @@ import {
   Shield
 } from "lucide-react";
 import { database } from "@/lib/abstractions";
-import { ConvexDatabaseProvider } from "@/lib/abstractions/providers/convex-database";
 
 export default function HomePage() {
   const { user, isLoaded } = useUser();
@@ -26,12 +25,7 @@ export default function HomePage() {
 
       try {
         // Check if user has completed onboarding
-        console.log('Database object:', database);
-        console.log('Available methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(database)));
-        
-        // Try direct instantiation as fallback
-        const dbProvider = new ConvexDatabaseProvider();
-        const onboardingState = await dbProvider.getUserOnboardingState(user.id);
+        const onboardingState = await database.getUserOnboardingState(user.id);
         
         if (onboardingState && (onboardingState.skipped || onboardingState.currentStep === 'complete')) {
           // User has completed or skipped onboarding, redirect to dashboard

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { OnboardingFlow } from "@/components/onboarding";
 import { database } from "@/lib/abstractions";
-import { ConvexDatabaseProvider } from "@/lib/abstractions/providers/convex-database";
 import { Loader2 } from "lucide-react";
 
 export default function OnboardingPage() {
@@ -20,8 +19,7 @@ export default function OnboardingPage() {
 
       try {
         // Check if user has completed onboarding
-        const dbProvider = new ConvexDatabaseProvider();
-        const onboardingState = await dbProvider.getUserOnboardingState(user.id);
+        const onboardingState = await database.getUserOnboardingState(user.id);
         
         if (onboardingState && (onboardingState.skipped || onboardingState.currentStep === 'complete')) {
           // User has completed or skipped onboarding, redirect to dashboard

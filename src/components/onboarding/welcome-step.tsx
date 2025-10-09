@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { CardDescription } from "@/components/ui/card"; // Unused import
 import { Badge } from "@/components/ui/badge";
 import { 
   Target, 
   TrendingUp, 
-  Users, 
+  // Users, // Unused import 
   FileText, 
   Brain, 
   CheckCircle,
@@ -93,7 +94,7 @@ export function WelcomeStep({ onNext, onSkip }: WelcomeStepProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-green-800">
             <CheckCircle className="h-5 w-5" />
-            What You'll Achieve
+            What You&apos;ll Achieve
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -111,7 +112,7 @@ export function WelcomeStep({ onNext, onSkip }: WelcomeStepProps) {
       {/* Call to Action */}
       <div className="text-center space-y-4">
         <p className="text-gray-600">
-          Ready to get started? We'll guide you through uploading your resume and setting up your career goals.
+          Ready to get started? We&apos;ll guide you through uploading your resume and setting up your career goals.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

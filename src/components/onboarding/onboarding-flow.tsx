@@ -3,21 +3,21 @@ import { useRouter } from "next/navigation";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { X, ArrowLeft } from "lucide-react";
+import { X } from "lucide-react";
+// import { ArrowLeft } from "lucide-react"; // Unused import
 import { WelcomeStep } from "./welcome-step";
 import { ResumeUploadStep } from "./resume-upload-step";
 import { JobInterestsStep } from "./job-interests-step";
 import { BrowserExtensionStep } from "./browser-extension-step";
 import { CompletionStep } from "./completion-step";
 import { database } from "@/lib/abstractions";
-import { ConvexDatabaseProvider } from "@/lib/abstractions/providers/convex-database";
 import { Resume } from "@/lib/abstractions/types";
 import { useToast } from "@/hooks/use-toast";
 
 interface OnboardingFlowProps {
   userId: string;
   onComplete: () => void;
-  onSkip: () => void;
+  onSkip: () => void; // eslint-disable-line @typescript-eslint/no-unused-vars
 }
 
 interface JobInterestsData {
@@ -41,8 +41,8 @@ const ONBOARDING_STEPS = [
   { id: 'complete', title: 'Complete', component: 'complete' }
 ];
 
-export function OnboardingFlow({ userId, onComplete, onSkip }: OnboardingFlowProps) {
-  const router = useRouter();
+export function OnboardingFlow({ userId, onComplete, onSkip: _onSkip }: OnboardingFlowProps) {
+  const router = useRouter(); // eslint-disable-line @typescript-eslint/no-unused-vars
   const { toast } = useToast();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({});
@@ -55,8 +55,7 @@ export function OnboardingFlow({ userId, onComplete, onSkip }: OnboardingFlowPro
   useEffect(() => {
     const loadOnboardingState = async () => {
       try {
-        const dbProvider = new ConvexDatabaseProvider();
-        const onboardingState = await dbProvider.getUserOnboardingState(userId);
+        const onboardingState = await database.getUserOnboardingState(userId);
         if (onboardingState) {
           const stepIndex = ONBOARDING_STEPS.findIndex(step => step.id === onboardingState.currentStep);
           if (stepIndex !== -1) {
@@ -71,11 +70,10 @@ export function OnboardingFlow({ userId, onComplete, onSkip }: OnboardingFlowPro
     loadOnboardingState();
   }, [userId]);
 
-  const updateOnboardingState = async (stepId: string, data?: any) => {
+  const updateOnboardingState = async (stepId: string, data?: Record<string, unknown>) => {
     try {
       setIsLoading(true);
-      const dbProvider = new ConvexDatabaseProvider();
-      await dbProvider.updateUserOnboardingState(userId, {
+      await database.updateUserOnboardingState(userId, {
         currentStep: stepId,
         completedSteps: ONBOARDING_STEPS.slice(0, currentStepIndex + 1).map(s => s.id),
         stepData: { ...onboardingData, ...data }
@@ -92,7 +90,7 @@ export function OnboardingFlow({ userId, onComplete, onSkip }: OnboardingFlowPro
     }
   };
 
-  const handleNext = async (data?: any) => {
+  const handleNext = async (data?: Record<string, unknown>) => {
     const newData = { ...onboardingData, ...data };
     setOnboardingData(newData);
 
@@ -122,8 +120,7 @@ export function OnboardingFlow({ userId, onComplete, onSkip }: OnboardingFlowPro
     try {
       setIsLoading(true);
       
-      const dbProvider = new ConvexDatabaseProvider();
-      await dbProvider.updateUserOnboardingState(userId, {
+      await database.updateUserOnboardingState(userId, {
         currentStep: 'complete',
         completedSteps: ONBOARDING_STEPS.map(s => s.id),
         skipped,

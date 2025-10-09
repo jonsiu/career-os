@@ -44,9 +44,13 @@ export default defineSchema({
     title: v.string(),
     company: v.string(),
     description: v.string(),
+    descriptionHtml: v.optional(v.string()), // NEW: Sanitized HTML version
     requirements: v.array(v.string()),
     location: v.optional(v.string()),
     salary: v.optional(v.string()),
+    postedDate: v.optional(v.string()), // NEW: Job posting date
+    category: v.optional(v.string()), // NEW: Job category/project
+    url: v.optional(v.string()), // NEW: Original job posting URL
     status: v.union(
       v.literal("saved"),
       v.literal("applied"),
@@ -55,6 +59,27 @@ export default defineSchema({
       v.literal("rejected")
     ),
     metadata: v.optional(v.any()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user_id", ["userId"])
+    .index("by_status", ["status"])
+    .index("by_category", ["category"]) // NEW: Index for job categories
+    .index("by_created_at", ["createdAt"]),
+
+  // NEW: Job Categories/Projects table
+  jobCategories: defineTable({
+    userId: v.id("users"),
+    name: v.string(), // e.g., "Engineering Manager Search"
+    description: v.optional(v.string()),
+    targetRole: v.string(), // e.g., "Engineering Manager"
+    targetCompanies: v.optional(v.array(v.string())),
+    targetLocations: v.optional(v.array(v.string())),
+    status: v.union(
+      v.literal("active"),
+      v.literal("paused"),
+      v.literal("completed")
+    ),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

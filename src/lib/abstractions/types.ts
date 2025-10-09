@@ -23,6 +23,13 @@ export interface DatabaseProvider {
   updateJob(id: string, updates: Partial<Job>): Promise<Job>;
   deleteJob(id: string): Promise<void>;
 
+  // Job Category operations
+  createJobCategory(category: CreateJobCategoryInput): Promise<JobCategory>;
+  getJobCategoryById(id: string): Promise<JobCategory | null>;
+  getUserJobCategories(userId: string): Promise<JobCategory[]>;
+  updateJobCategory(id: string, updates: Partial<JobCategory>): Promise<JobCategory>;
+  deleteJobCategory(id: string): Promise<void>;
+
   // Analysis operations
   createAnalysis(analysis: CreateAnalysisInput): Promise<Analysis>;
   getAnalysisById(id: string): Promise<Analysis | null>;
@@ -175,11 +182,26 @@ export interface CreateJobInput {
   title: string;
   company: string;
   description: string;
+  descriptionHtml?: string; // NEW: Sanitized HTML version
   requirements: string[];
   location?: string;
   salary?: string;
+  postedDate?: string; // NEW: Job posting date
+  category?: string; // NEW: Job category/project
+  url?: string; // NEW: Original job posting URL
   status: 'saved' | 'applied' | 'interviewing' | 'offered' | 'rejected';
   metadata?: Record<string, unknown>;
+}
+
+// NEW: Create Job Category Input
+export interface CreateJobCategoryInput {
+  userId: string;
+  name: string;
+  description?: string;
+  targetRole: string;
+  targetCompanies?: string[];
+  targetLocations?: string[];
+  status: 'active' | 'paused' | 'completed';
 }
 
 export interface CreateAnalysisInput {
@@ -230,13 +252,31 @@ export interface Job {
   title: string;
   company: string;
   description: string;
+  descriptionHtml?: string; // NEW: Sanitized HTML version
   requirements: string[];
   location?: string;
   salary?: string;
+  postedDate?: string; // NEW: Job posting date
+  category?: string; // NEW: Job category/project
+  url?: string; // NEW: Original job posting URL
   status: 'saved' | 'applied' | 'interviewing' | 'offered' | 'rejected';
   createdAt: Date;
   updatedAt: Date;
   metadata?: Record<string, unknown>;
+}
+
+// NEW: Job Category interface
+export interface JobCategory {
+  id: string;
+  userId: string;
+  name: string; // e.g., "Engineering Manager Search"
+  description?: string;
+  targetRole: string; // e.g., "Engineering Manager"
+  targetCompanies?: string[];
+  targetLocations?: string[];
+  status: 'active' | 'paused' | 'completed';
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Analysis {

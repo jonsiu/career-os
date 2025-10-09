@@ -28,7 +28,7 @@ export function useOnboardingCheck(): OnboardingStatus {
         setError(null);
 
         // Check if user has completed onboarding
-               const onboardingState = await database.getUserOnboardingState(user.id);
+        const onboardingState = await database.getUserOnboardingState(user.id);
         
         if (onboardingState && (onboardingState.skipped || onboardingState.currentStep === 'complete')) {
           // User has completed or skipped onboarding

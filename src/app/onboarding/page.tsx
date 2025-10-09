@@ -5,17 +5,22 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { OnboardingFlow } from "@/components/onboarding";
 import { database } from "@/lib/abstractions";
+import { useUserSync } from "@/lib/hooks/use-user-sync";
 import { Loader2 } from "lucide-react";
 
 export default function OnboardingPage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
+  
+  // Sync user to Convex database first
+  const { isSyncing, isSynced, error: syncError } = useUserSync();
   const [shouldShowOnboarding, setShouldShowOnboarding] = useState(false);
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
-      if (!isLoaded || !user) return;
+      // Wait for user sync to complete first
+      if (!isLoaded || !user || !isSynced) return;
 
       try {
         // Check if user has completed onboarding
@@ -39,7 +44,7 @@ export default function OnboardingPage() {
     };
 
     checkOnboardingStatus();
-  }, [isLoaded, user, router]);
+  }, [isLoaded, user, isSynced, router]);
 
   const handleOnboardingComplete = () => {
     router.push('/dashboard');
@@ -49,7 +54,7 @@ export default function OnboardingPage() {
     router.push('/dashboard');
   };
 
-  if (!isLoaded || isCheckingOnboarding) {
+  if (!isLoaded || isSyncing || !isSynced || isCheckingOnboarding) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50">
         <div className="text-center space-y-4">
@@ -63,6 +68,23 @@ export default function OnboardingPage() {
   if (!user) {
     router.push('/sign-in');
     return null;
+  }
+
+  if (syncError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50">
+        <div className="text-center space-y-4">
+          <h3 className="text-lg font-medium text-red-900">Setup Error</h3>
+          <p className="text-red-600">{syncError}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!shouldShowOnboarding) {

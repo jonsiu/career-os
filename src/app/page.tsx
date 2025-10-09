@@ -14,14 +14,19 @@ import {
   Shield
 } from "lucide-react";
 import { database } from "@/lib/abstractions";
+import { useUserSync } from "@/lib/hooks/use-user-sync";
 
 export default function HomePage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
+  
+  // Sync user to Convex database
+  const { isSyncing, isSynced } = useUserSync();
 
   useEffect(() => {
     const checkUserAndRedirect = async () => {
-      if (!isLoaded || !user) return;
+      // Wait for user sync to complete first
+      if (!isLoaded || !user || !isSynced) return;
 
       try {
         // Check if user has completed onboarding
@@ -42,10 +47,10 @@ export default function HomePage() {
     };
 
     checkUserAndRedirect();
-  }, [isLoaded, user, router]);
+  }, [isLoaded, user, isSynced, router]);
 
-  // Show loading state while checking user status
-  if (isLoaded && user) {
+  // Show loading state while syncing user or checking user status
+  if (isLoaded && user && (isSyncing || !isSynced)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="text-center space-y-4">

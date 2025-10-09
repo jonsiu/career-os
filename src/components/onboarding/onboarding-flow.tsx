@@ -54,9 +54,9 @@ export function OnboardingFlow({ userId, onComplete, onSkip }: OnboardingFlowPro
   useEffect(() => {
     const loadOnboardingState = async () => {
       try {
-        const user = await database.getUserByClerkId(userId);
-        if (user?.onboardingState) {
-          const stepIndex = ONBOARDING_STEPS.findIndex(step => step.id === user.onboardingState.currentStep);
+        const onboardingState = await database.getUserOnboardingState(userId);
+        if (onboardingState) {
+          const stepIndex = ONBOARDING_STEPS.findIndex(step => step.id === onboardingState.currentStep);
           if (stepIndex !== -1) {
             setCurrentStepIndex(stepIndex);
           }

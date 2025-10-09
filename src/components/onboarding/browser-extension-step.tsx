@@ -9,9 +9,6 @@ import {
   CheckCircle,
   ExternalLink,
   Chrome,
-  Firefox,
-  Safari,
-  Edge,
   Zap,
   Bookmark,
   Target,
@@ -26,9 +23,9 @@ interface BrowserExtensionStepProps {
 
 const browsers = [
   { name: "Chrome", icon: Chrome, color: "text-green-600" },
-  { name: "Firefox", icon: Firefox, color: "text-orange-600" },
-  { name: "Safari", icon: Safari, color: "text-blue-600" },
-  { name: "Edge", icon: Edge, color: "text-blue-700" }
+  { name: "Firefox", icon: Chrome, color: "text-orange-600" }, // Using Chrome icon as fallback
+  { name: "Safari", icon: Chrome, color: "text-blue-600" }, // Using Chrome icon as fallback
+  { name: "Edge", icon: Chrome, color: "text-blue-700" } // Using Chrome icon as fallback
 ];
 
 const extensionFeatures = [

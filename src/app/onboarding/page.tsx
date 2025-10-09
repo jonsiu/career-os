@@ -21,7 +21,7 @@ export default function OnboardingPage() {
         // Check if user has completed onboarding
         const onboardingState = await database.getUserOnboardingState(user.id);
         
-        if (!onboardingState || onboardingState.skipped || onboardingState.currentStep === 'complete') {
+        if (onboardingState && (onboardingState.skipped || onboardingState.currentStep === 'complete')) {
           // User has completed or skipped onboarding, redirect to dashboard
           router.push('/dashboard');
           return;

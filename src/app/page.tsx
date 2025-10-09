@@ -1,4 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { 
   FileText, 
@@ -8,8 +13,49 @@ import {
   Zap,
   Shield
 } from "lucide-react";
+import { database } from "@/lib/abstractions";
 
 export default function HomePage() {
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkUserAndRedirect = async () => {
+      if (!isLoaded || !user) return;
+
+      try {
+        // Check if user has completed onboarding
+        const onboardingState = await database.getUserOnboardingState(user.id);
+        
+        if (onboardingState && (onboardingState.skipped || onboardingState.currentStep === 'complete')) {
+          // User has completed or skipped onboarding, redirect to dashboard
+          router.push('/dashboard');
+        } else {
+          // User needs to complete onboarding (including new users with no onboarding state)
+          router.push('/onboarding');
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        // On error, redirect to onboarding to be safe
+        router.push('/onboarding');
+      }
+    };
+
+    checkUserAndRedirect();
+  }, [isLoaded, user, router]);
+
+  // Show loading state while checking user status
+  if (isLoaded && user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="text-gray-600">Setting up your account...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Hero Section */}

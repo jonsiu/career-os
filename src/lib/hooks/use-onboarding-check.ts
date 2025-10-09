@@ -30,11 +30,11 @@ export function useOnboardingCheck(): OnboardingStatus {
         // Check if user has completed onboarding
         const onboardingState = await database.getUserOnboardingState(user.id);
         
-        if (!onboardingState || onboardingState.skipped || onboardingState.currentStep === 'complete') {
+        if (onboardingState && (onboardingState.skipped || onboardingState.currentStep === 'complete')) {
           // User has completed or skipped onboarding
           setNeedsOnboarding(false);
         } else {
-          // User needs to complete onboarding
+          // User needs to complete onboarding (including new users with no onboarding state)
           setNeedsOnboarding(true);
           // Redirect to onboarding page
           router.push('/onboarding');

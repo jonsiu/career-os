@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { database } from "@/lib/abstractions";
+import { ConvexDatabaseProvider } from "@/lib/abstractions/providers/convex-database";
 
 interface OnboardingStatus {
   needsOnboarding: boolean;
@@ -28,7 +29,8 @@ export function useOnboardingCheck(): OnboardingStatus {
         setError(null);
 
         // Check if user has completed onboarding
-        const onboardingState = await database.getUserOnboardingState(user.id);
+               const dbProvider = new ConvexDatabaseProvider();
+               const onboardingState = await dbProvider.getUserOnboardingState(user.id);
         
         if (onboardingState && (onboardingState.skipped || onboardingState.currentStep === 'complete')) {
           // User has completed or skipped onboarding

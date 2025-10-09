@@ -10,6 +10,7 @@ import { JobInterestsStep } from "./job-interests-step";
 import { BrowserExtensionStep } from "./browser-extension-step";
 import { CompletionStep } from "./completion-step";
 import { database } from "@/lib/abstractions";
+import { ConvexDatabaseProvider } from "@/lib/abstractions/providers/convex-database";
 import { Resume } from "@/lib/abstractions/types";
 import { useToast } from "@/hooks/use-toast";
 
@@ -54,7 +55,8 @@ export function OnboardingFlow({ userId, onComplete, onSkip }: OnboardingFlowPro
   useEffect(() => {
     const loadOnboardingState = async () => {
       try {
-        const onboardingState = await database.getUserOnboardingState(userId);
+        const dbProvider = new ConvexDatabaseProvider();
+        const onboardingState = await dbProvider.getUserOnboardingState(userId);
         if (onboardingState) {
           const stepIndex = ONBOARDING_STEPS.findIndex(step => step.id === onboardingState.currentStep);
           if (stepIndex !== -1) {
@@ -72,7 +74,8 @@ export function OnboardingFlow({ userId, onComplete, onSkip }: OnboardingFlowPro
   const updateOnboardingState = async (stepId: string, data?: any) => {
     try {
       setIsLoading(true);
-      await database.updateUserOnboardingState(userId, {
+      const dbProvider = new ConvexDatabaseProvider();
+      await dbProvider.updateUserOnboardingState(userId, {
         currentStep: stepId,
         completedSteps: ONBOARDING_STEPS.slice(0, currentStepIndex + 1).map(s => s.id),
         stepData: { ...onboardingData, ...data }
@@ -119,7 +122,8 @@ export function OnboardingFlow({ userId, onComplete, onSkip }: OnboardingFlowPro
     try {
       setIsLoading(true);
       
-      await database.updateUserOnboardingState(userId, {
+      const dbProvider = new ConvexDatabaseProvider();
+      await dbProvider.updateUserOnboardingState(userId, {
         currentStep: 'complete',
         completedSteps: ONBOARDING_STEPS.map(s => s.id),
         skipped,

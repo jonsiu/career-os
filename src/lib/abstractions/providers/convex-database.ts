@@ -1,4 +1,4 @@
-import { DatabaseProvider, CreateUserInput, CreateResumeInput, CreateJobInput, CreateAnalysisInput, CreatePlanInput, User, Resume, Job, Analysis, Plan, CreateSkillInput, Skill, SkillResource } from '../types';
+import { DatabaseProvider, CreateUserInput, CreateResumeInput, CreateJobInput, CreateAnalysisInput, CreatePlanInput, User, Resume, Job, Analysis, Plan, CreateSkillInput, Skill, SkillResource, CreateJobCategoryInput, JobCategory } from '../types';
 import { convexClient, api } from '../../convex-client';
 import { Id } from '../../../../convex/_generated/dataModel';
 
@@ -347,9 +347,13 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
         title: job.title,
         company: job.company,
         description: job.description,
+        descriptionHtml: job.descriptionHtml,
         requirements: job.requirements,
         location: job.location,
         salary: job.salary,
+        postedDate: job.postedDate,
+        category: job.category,
+        url: job.url,
         status: job.status,
         metadata: job.metadata,
       });
@@ -371,9 +375,13 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
         title: createdJob.title,
         company: createdJob.company,
         description: createdJob.description,
+        descriptionHtml: createdJob.descriptionHtml,
         requirements: createdJob.requirements,
         location: createdJob.location,
         salary: createdJob.salary,
+        postedDate: createdJob.postedDate,
+        category: createdJob.category,
+        url: createdJob.url,
         status: createdJob.status,
         metadata: createdJob.metadata,
         createdAt: new Date(createdJob.createdAt),
@@ -399,9 +407,13 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
         title: result.title,
         company: result.company,
         description: result.description,
+        descriptionHtml: result.descriptionHtml,
         requirements: result.requirements,
         location: result.location,
         salary: result.salary,
+        postedDate: result.postedDate,
+        category: result.category,
+        url: result.url,
         status: result.status,
         createdAt: new Date(result.createdAt),
         updatedAt: new Date(result.updatedAt),
@@ -436,9 +448,13 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
         title: result.title,
         company: result.company,
         description: result.description,
+        descriptionHtml: result.descriptionHtml,
         requirements: result.requirements,
         location: result.location,
         salary: result.salary,
+        postedDate: result.postedDate,
+        category: result.category,
+        url: result.url,
         status: result.status,
         metadata: result.metadata,
         createdAt: new Date(result.createdAt),
@@ -458,9 +474,13 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
           title: updates.title,
           company: updates.company,
           description: updates.description,
+          descriptionHtml: updates.descriptionHtml,
           requirements: updates.requirements,
           location: updates.location,
           salary: updates.salary,
+          postedDate: updates.postedDate,
+          category: updates.category,
+          url: updates.url,
           status: updates.status,
           metadata: updates.metadata,
         },
@@ -476,9 +496,13 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
         title: result.title,
         company: result.company,
         description: result.description,
+        descriptionHtml: result.descriptionHtml,
         requirements: result.requirements,
         location: result.location,
         salary: result.salary,
+        postedDate: result.postedDate,
+        category: result.category,
+        url: result.url,
         status: result.status,
         createdAt: new Date(result.createdAt),
         updatedAt: new Date(result.updatedAt),
@@ -495,6 +519,163 @@ export class ConvexDatabaseProvider implements DatabaseProvider {
       await convexClient.mutation(api.jobs.remove, { id: id as Id<"jobs"> });
     } catch (error) {
       console.error('Error deleting job:', error);
+      throw error;
+    }
+  }
+
+  // Job Category operations
+  async createJobCategory(category: CreateJobCategoryInput): Promise<JobCategory> {
+    try {
+      // First, get the user by Clerk user ID to get the Convex user ID
+      const user = await convexClient.query(api.users.getByClerkUserId, { 
+        clerkUserId: category.userId 
+      });
+      
+      if (!user) {
+        throw new Error(`User not found for Clerk user ID: ${category.userId}`);
+      }
+
+      const result = await convexClient.mutation(api.jobCategories.create, {
+        userId: user._id,
+        name: category.name,
+        description: category.description,
+        targetRole: category.targetRole,
+        targetCompanies: category.targetCompanies,
+        targetLocations: category.targetLocations,
+        status: category.status,
+      });
+
+      if (!result) {
+        throw new Error('Failed to create job category');
+      }
+
+      // Get the created category to return full category object
+      const createdCategory = await convexClient.query(api.jobCategories.getById, { id: result as Id<"jobCategories"> });
+      
+      if (!createdCategory) {
+        throw new Error('Failed to retrieve created job category');
+      }
+
+      return {
+        id: createdCategory._id,
+        userId: createdCategory.userId,
+        name: createdCategory.name,
+        description: createdCategory.description,
+        targetRole: createdCategory.targetRole,
+        targetCompanies: createdCategory.targetCompanies,
+        targetLocations: createdCategory.targetLocations,
+        status: createdCategory.status,
+        createdAt: new Date(createdCategory.createdAt),
+        updatedAt: new Date(createdCategory.updatedAt),
+      };
+    } catch (error) {
+      console.error('Error creating job category:', error);
+      throw error;
+    }
+  }
+
+  async getJobCategoryById(id: string): Promise<JobCategory | null> {
+    try {
+      const result = await convexClient.query(api.jobCategories.getById, { id: id as Id<"jobCategories"> });
+      
+      if (!result) {
+        return null;
+      }
+      
+      return {
+        id: result._id,
+        userId: result.userId,
+        name: result.name,
+        description: result.description,
+        targetRole: result.targetRole,
+        targetCompanies: result.targetCompanies,
+        targetLocations: result.targetLocations,
+        status: result.status,
+        createdAt: new Date(result.createdAt),
+        updatedAt: new Date(result.updatedAt),
+      };
+    } catch (error) {
+      console.error('Error getting job category by ID:', error);
+      return null;
+    }
+  }
+
+  async getUserJobCategories(userId: string): Promise<JobCategory[]> {
+    try {
+      // First, get the user by Clerk user ID to get the Convex user ID
+      const user = await convexClient.query(api.users.getByClerkUserId, { 
+        clerkUserId: userId 
+      });
+      
+      if (!user) {
+        console.warn(`User not found for Clerk user ID: ${userId}`);
+        return [];
+      }
+
+      // Now use the Convex user ID to get job categories
+      const results = await convexClient.query(api.jobCategories.getByUserId, { 
+        userId: user._id 
+      });
+      
+      return results.map(result => ({
+        id: result._id,
+        userId: result.userId,
+        name: result.name,
+        description: result.description,
+        targetRole: result.targetRole,
+        targetCompanies: result.targetCompanies,
+        targetLocations: result.targetLocations,
+        status: result.status,
+        createdAt: new Date(result.createdAt),
+        updatedAt: new Date(result.updatedAt),
+      }));
+    } catch (error) {
+      console.error('Error getting user job categories:', error);
+      throw error;
+    }
+  }
+
+  async updateJobCategory(id: string, updates: Partial<JobCategory>): Promise<JobCategory> {
+    try {
+      const result = await convexClient.mutation(api.jobCategories.update, {
+        id: id as Id<"jobCategories">,
+        updates: {
+          name: updates.name,
+          description: updates.description,
+          targetRole: updates.targetRole,
+          targetCompanies: updates.targetCompanies,
+          targetLocations: updates.targetLocations,
+          status: updates.status,
+        },
+      });
+      
+      if (!result) {
+        throw new Error('Failed to update job category');
+      }
+      
+      return {
+        id: result._id,
+        userId: result.userId,
+        name: result.name,
+        description: result.description,
+        targetRole: result.targetRole,
+        targetCompanies: result.targetCompanies,
+        targetLocations: result.targetLocations,
+        status: result.status,
+        createdAt: new Date(result.createdAt),
+        updatedAt: new Date(result.updatedAt),
+      };
+    } catch (error) {
+      console.error('Error updating job category:', error);
+      throw error;
+    }
+  }
+
+  async deleteJobCategory(id: string): Promise<void> {
+    try {
+      await convexClient.mutation(api.jobCategories.remove, { id: id as Id<"jobCategories"> });
+    } catch (error) {
+      console.error('Error deleting job category:', error);
       throw error;
     }
   }

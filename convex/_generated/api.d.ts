@@ -16,6 +16,7 @@ import type {
 import type * as analyses from "../analyses.js";
 import type * as analysisResults from "../analysisResults.js";
 import type * as files from "../files.js";
+import type * as jobCategories from "../jobCategories.js";
 import type * as jobs from "../jobs.js";
 import type * as plans from "../plans.js";
 import type * as resumes from "../resumes.js";
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   analyses: typeof analyses;
   analysisResults: typeof analysisResults;
   files: typeof files;
+  jobCategories: typeof jobCategories;
   jobs: typeof jobs;
   plans: typeof plans;
   resumes: typeof resumes;

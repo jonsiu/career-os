@@ -22,6 +22,7 @@ interface JobBookmarkProps {
   onJobUpdated?: (job: Job) => void;
   editingJob?: Job | null;
   onCancelEdit?: () => void;
+  inline?: boolean; // NEW: For inline editing without card wrapper
 }
 
 interface JobFormData {
@@ -45,7 +46,7 @@ const statusOptions = [
   { value: 'rejected', label: 'Rejected', color: 'bg-red-100 text-red-800' },
 ];
 
-export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, onCancelEdit }: JobBookmarkProps) {
+export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, onCancelEdit, inline = false }: JobBookmarkProps) {
   const [formData, setFormData] = useState<JobFormData>({
     title: '',
     company: '',
@@ -204,23 +205,8 @@ export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, on
     }
   };
 
-  return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          {isEditing ? (
-            <Edit className="h-5 w-5 text-blue-600" />
-          ) : (
-            <Briefcase className="h-5 w-5 text-green-600" />
-          )}
-          {isEditing ? 'Edit Job' : 'Bookmark Job'}
-        </CardTitle>
-        <CardDescription>
-          {isEditing ? 'Update job details and application status' : 'Save job opportunities and track your applications'}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+  const formContent = (
+    <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Job Details</h3>
@@ -421,6 +407,29 @@ export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, on
             </Button>
           </div>
         </form>
+  );
+
+  if (inline) {
+    return formContent;
+  }
+
+  return (
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          {isEditing ? (
+            <Edit className="h-5 w-5 text-blue-600" />
+          ) : (
+            <Briefcase className="h-5 w-5 text-green-600" />
+          )}
+          {isEditing ? 'Edit Job' : 'Bookmark Job'}
+        </CardTitle>
+        <CardDescription>
+          {isEditing ? 'Update job details and application status' : 'Save job opportunities and track your applications'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {formContent}
       </CardContent>
     </Card>
   );

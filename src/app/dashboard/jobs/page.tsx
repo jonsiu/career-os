@@ -3,17 +3,20 @@
 import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { JobBookmark } from "@/components/jobs/job-bookmark";
-import { JobList } from "@/components/jobs/job-list";
-import { Job } from "@/lib/abstractions/types";
+import { JobTracker } from "@/components/jobs/job-tracker";
+import { JobCategoryManager } from "@/components/jobs/job-category-manager";
+import { Job, JobCategory } from "@/lib/abstractions/types";
 import { database } from "@/lib/abstractions";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Plus, Bookmark } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Briefcase, Plus, Bookmark, Tag } from "lucide-react";
 
 export default function JobsPage() {
   const { user, isLoaded } = useUser();
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [categories, setCategories] = useState<JobCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'list' | 'add'>('list');
+  const [activeTab, setActiveTab] = useState<'tracker' | 'add' | 'categories'>('tracker');
   const [editingJob, setEditingJob] = useState<Job | null>(null);
 
   const loadJobs = useCallback(async () => {
@@ -30,15 +33,27 @@ export default function JobsPage() {
     }
   }, [user?.id]);
 
+  const loadCategories = useCallback(async () => {
+    if (!user?.id) return;
+    
+    try {
+      const userCategories = await database.getUserJobCategories(user.id);
+      setCategories(userCategories);
+    } catch (error) {
+      console.error('Failed to load categories:', error);
+    }
+  }, [user?.id]);
+
   useEffect(() => {
     if (user?.id && isLoaded) {
       loadJobs();
+      loadCategories();
     }
-  }, [user?.id, isLoaded, loadJobs]);
+  }, [user?.id, isLoaded, loadJobs, loadCategories]);
 
   const handleJobCreated = (newJob: Job) => {
     setJobs(prev => [newJob, ...prev]);
-    setActiveTab('list');
+    setActiveTab('tracker');
   };
 
   const handleJobDeleted = (jobId: string) => {
@@ -50,7 +65,7 @@ export default function JobsPage() {
       job.id === updatedJob.id ? updatedJob : job
     ));
     setEditingJob(null);
-    setActiveTab('list');
+    setActiveTab('tracker');
   };
 
   const handleEditJob = (job: Job) => {
@@ -60,7 +75,21 @@ export default function JobsPage() {
 
   const handleCancelEdit = () => {
     setEditingJob(null);
-    setActiveTab('list');
+    setActiveTab('tracker');
+  };
+
+  const handleCategoryCreated = (newCategory: JobCategory) => {
+    setCategories(prev => [newCategory, ...prev]);
+  };
+
+  const handleCategoryUpdated = (updatedCategory: JobCategory) => {
+    setCategories(prev => prev.map(cat => 
+      cat.id === updatedCategory.id ? updatedCategory : cat
+    ));
+  };
+
+  const handleCategoryDeleted = (categoryId: string) => {
+    setCategories(prev => prev.filter(cat => cat.id !== categoryId));
   };
 
   if (!isLoaded) {
@@ -94,70 +123,25 @@ export default function JobsPage() {
             Save job opportunities and track your application progress
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button 
-            onClick={() => setActiveTab('list')}
-            variant={activeTab === 'list' ? 'default' : 'outline'}
-            className="flex items-center gap-2"
-          >
+      </div>
+
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'tracker' | 'add' | 'categories')}>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="tracker" className="flex items-center gap-2">
             <Briefcase className="h-4 w-4" />
-            My Jobs ({jobs.length})
-          </Button>
-          <Button 
-            onClick={() => setActiveTab('add')}
-            variant={activeTab === 'add' ? 'default' : 'outline'}
-            className="flex items-center gap-2"
-          >
+            Job Tracker ({jobs.length})
+          </TabsTrigger>
+          <TabsTrigger value="add" className="flex items-center gap-2">
             <Bookmark className="h-4 w-4" />
             Add Job
-          </Button>
-        </div>
-      </div>
+          </TabsTrigger>
+          <TabsTrigger value="categories" className="flex items-center gap-2">
+            <Tag className="h-4 w-4" />
+            Categories ({categories.length})
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Tab Navigation */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
-          <button
-            onClick={() => setActiveTab('list')}
-            className={`
-              py-2 px-1 border-b-2 font-medium text-sm
-              ${activeTab === 'list'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }
-            `}
-          >
-            My Jobs ({jobs.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('add')}
-            className={`
-              py-2 px-1 border-b-2 font-medium text-sm
-              ${activeTab === 'add'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }
-            `}
-          >
-            Add New Job
-          </button>
-        </nav>
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === 'list' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Your Job Applications</h2>
-            <Button 
-              variant="outline" 
-              onClick={() => setActiveTab('add')}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Job
-            </Button>
-          </div>
-          
+        <TabsContent value="tracker" className="mt-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
@@ -166,38 +150,52 @@ export default function JobsPage() {
               </div>
             </div>
           ) : (
-            <JobList
+            <JobTracker
               jobs={jobs}
+              categories={categories}
+              userId={user.id}
               onJobDeleted={handleJobDeleted}
               onJobUpdated={handleJobUpdated}
+              onJobCreated={handleJobCreated}
               onEditJob={handleEditJob}
+              onCreateCategory={() => setActiveTab('categories')}
+              onEditCategory={() => setActiveTab('categories')}
             />
           )}
-        </div>
-      )}
+        </TabsContent>
 
-      {activeTab === 'add' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {editingJob ? 'Edit Job' : 'Bookmark New Job'}
-            </h2>
-            <Button 
-              variant="outline" 
-              onClick={() => setActiveTab('list')}
-            >
-              Back to Jobs
-            </Button>
+        <TabsContent value="add" className="mt-6">
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">
+                {editingJob ? 'Edit Job' : 'Add New Job'}
+              </h2>
+              <p className="mt-2 text-gray-600">
+                {editingJob ? 'Update job details and application status' : 'Save job opportunities and track your applications'}
+              </p>
+            </div>
+            
+            <JobBookmark
+              userId={user.id}
+              onJobCreated={handleJobCreated}
+              onJobUpdated={handleJobUpdated}
+              editingJob={editingJob}
+              onCancelEdit={handleCancelEdit}
+              inline={true}
+            />
           </div>
-          <JobBookmark
+        </TabsContent>
+
+        <TabsContent value="categories" className="mt-6">
+          <JobCategoryManager
+            categories={categories}
             userId={user.id}
-            onJobCreated={handleJobCreated}
-            onJobUpdated={handleJobUpdated}
-            editingJob={editingJob}
-            onCancelEdit={handleCancelEdit}
+            onCategoryCreated={handleCategoryCreated}
+            onCategoryUpdated={handleCategoryUpdated}
+            onCategoryDeleted={handleCategoryDeleted}
           />
-        </div>
-      )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

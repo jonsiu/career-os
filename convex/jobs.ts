@@ -19,6 +19,16 @@ export const getByUserId = query({
   },
 });
 
+export const getByCategory = query({
+  args: { category: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("jobs")
+      .withIndex("by_category", (q) => q.eq("category", args.category))
+      .collect();
+  },
+});
+
 export const getByStatus = query({
   args: { status: v.union(
     v.literal("saved"),
@@ -52,9 +62,13 @@ export const create = mutation({
     title: v.string(),
     company: v.string(),
     description: v.string(),
+    descriptionHtml: v.optional(v.string()), // NEW: Sanitized HTML version
     requirements: v.array(v.string()),
     location: v.optional(v.string()),
     salary: v.optional(v.string()),
+    postedDate: v.optional(v.string()), // NEW: Job posting date
+    category: v.optional(v.string()), // NEW: Job category/project
+    url: v.optional(v.string()), // NEW: Original job posting URL
     status: v.union(
       v.literal("saved"),
       v.literal("applied"),
@@ -82,9 +96,13 @@ export const update = mutation({
       title: v.optional(v.string()),
       company: v.optional(v.string()),
       description: v.optional(v.string()),
+      descriptionHtml: v.optional(v.string()), // NEW: Sanitized HTML version
       requirements: v.optional(v.array(v.string())),
       location: v.optional(v.string()),
       salary: v.optional(v.string()),
+      postedDate: v.optional(v.string()), // NEW: Job posting date
+      category: v.optional(v.string()), // NEW: Job category/project
+      url: v.optional(v.string()), // NEW: Original job posting URL
       status: v.optional(v.union(
         v.literal("saved"),
         v.literal("applied"),

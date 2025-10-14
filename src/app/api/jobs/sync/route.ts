@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
 
     const existingUrls = new Set(
       existingJobs
-        .map(job => job.metadata?.url)
+        .map(job => job.url || job.metadata?.url) // Check both new top-level url and legacy metadata.url
         .filter(Boolean)
     );
 
@@ -67,7 +67,25 @@ export async function POST(request: NextRequest) {
 
     // Process each job from the extension
     for (const jobData of jobs) {
-      const { url, title, company, description, requirements = [], location, salary, source, skills = [], remote = false, deadline, userNotes = '', rating = 0 } = jobData;
+      const {
+        url,
+        title,
+        company,
+        description,
+        descriptionHtml, // NEW: HTML description
+        requirements = [],
+        location,
+        salary,
+        postedDate, // NEW: Posted date
+        source,
+        skills = [],
+        remote = false,
+        deadline,
+        userNotes = '',
+        rating = 0,
+        rawJobDescriptionHtml, // NEW: Raw HTML for re-parsing
+        parsingMetadata // NEW: Parsing metadata
+      } = jobData;
 
       // Check if job already exists
       if (url && existingUrls.has(url)) {
@@ -82,18 +100,22 @@ export async function POST(request: NextRequest) {
           title,
           company,
           description,
+          descriptionHtml, // NEW: Store sanitized HTML description
           requirements,
           location: location || 'Not specified',
           salary,
+          postedDate: postedDate || 'Not specified',
+          url, // NEW: Move URL to top-level field
           status: 'saved',
           metadata: {
-            url,
             source,
             skills,
             remote,
             deadline,
             userNotes,
             rating,
+            rawJobDescriptionHtml, // NEW: Store raw HTML for re-parsing
+            parsingMetadata, // NEW: Store parsing metadata
             bookmarkedAt: new Date().toISOString(),
             extensionVersion: '1.0.0',
             syncedAt: new Date().toISOString()
@@ -134,10 +156,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('📊 Getting sync status');
-    
+
     // Authenticate user
     const { userId } = await auth();
     if (!userId) {

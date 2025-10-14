@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Plus, 
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import {
+  Plus,
   Briefcase,
   Save,
   Edit
@@ -29,6 +30,7 @@ interface JobFormData {
   title: string;
   company: string;
   description: string;
+  descriptionHtml: string; // NEW: HTML description from rich text editor
   requirements: string[];
   location: string;
   salary: string;
@@ -51,6 +53,7 @@ export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, on
     title: '',
     company: '',
     description: '',
+    descriptionHtml: '', // NEW: Initialize HTML description
     requirements: [],
     location: '',
     salary: '',
@@ -71,13 +74,14 @@ export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, on
         title: editingJob.title || '',
         company: editingJob.company || '',
         description: editingJob.description || '',
+        descriptionHtml: editingJob.descriptionHtml || '', // NEW: Load HTML description
         requirements: editingJob.requirements || [],
         location: editingJob.location || '',
         salary: editingJob.salary || '',
         status: editingJob.status || 'saved',
         notes: (editingJob.metadata?.notes as string) || '',
-        url: (editingJob.metadata?.url as string) || '',
-        postedDate: (editingJob.metadata?.postedDate as string) || '',
+        url: editingJob.url || (editingJob.metadata?.url as string) || '',
+        postedDate: editingJob.postedDate || (editingJob.metadata?.postedDate as string) || '',
       });
     } else {
       // Reset form when not editing
@@ -85,6 +89,7 @@ export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, on
         title: '',
         company: '',
         description: '',
+        descriptionHtml: '', // NEW: Reset HTML description
         requirements: [],
         location: '',
         salary: '',
@@ -137,15 +142,16 @@ export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, on
           title: formData.title,
           company: formData.company,
           description: formData.description,
+          descriptionHtml: formData.descriptionHtml, // NEW: Save HTML description
           requirements: formData.requirements,
           location: formData.location,
           salary: formData.salary,
+          postedDate: formData.postedDate, // NEW: Save posted date at top level
+          url: formData.url, // NEW: Save URL at top level
           status: formData.status,
           metadata: {
             ...editingJob.metadata,
             notes: formData.notes,
-            url: formData.url,
-            postedDate: formData.postedDate,
           }
         });
 
@@ -159,14 +165,15 @@ export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, on
           title: formData.title,
           company: formData.company,
           description: formData.description,
+          descriptionHtml: formData.descriptionHtml, // NEW: Save HTML description
           requirements: formData.requirements,
           location: formData.location,
           salary: formData.salary,
+          postedDate: formData.postedDate, // NEW: Save posted date at top level
+          url: formData.url, // NEW: Save URL at top level
           status: formData.status,
           metadata: {
             notes: formData.notes,
-            url: formData.url,
-            postedDate: formData.postedDate,
             bookmarkedAt: new Date().toISOString(),
           }
         });
@@ -181,6 +188,7 @@ export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, on
         title: '',
         company: '',
         description: '',
+        descriptionHtml: '', // NEW: Reset HTML description
         requirements: [],
         location: '',
         salary: '',
@@ -329,12 +337,17 @@ export function JobBookmark({ userId, onJobCreated, onJobUpdated, editingJob, on
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Job Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder="Paste the job description here..."
-              rows={4}
+            <RichTextEditor
+              content={formData.descriptionHtml || formData.description}
+              onChange={(html) => {
+                handleInputChange('descriptionHtml', html);
+                // Also update plain text description for fallback
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                handleInputChange('description', tempDiv.textContent || '');
+              }}
+              placeholder="Paste the job description here... You can format text using the toolbar."
+              className="min-h-[200px]"
             />
           </div>
 

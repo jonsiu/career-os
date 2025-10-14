@@ -27,20 +27,24 @@ export async function POST(request: NextRequest) {
     console.log('✅ User authenticated:', userId);
 
     const body = await request.json();
-    const { 
-      title, 
-      company, 
-      description, 
-      requirements = [], 
-      location, 
-      salary, 
-      url, 
+    const {
+      title,
+      company,
+      description,
+      descriptionHtml, // NEW: HTML description
+      requirements = [],
+      location,
+      salary,
+      postedDate, // NEW: Posted date
+      url,
       source,
       skills = [],
       remote = false,
       deadline,
       userNotes = '',
-      rating = 0
+      rating = 0,
+      rawJobDescriptionHtml, // NEW: Raw HTML for re-parsing
+      parsingMetadata // NEW: Parsing metadata
     } = body;
 
     // Validate required fields
@@ -72,18 +76,22 @@ export async function POST(request: NextRequest) {
       title,
       company,
       description,
+      descriptionHtml, // NEW: Store sanitized HTML description
       requirements,
       location: location || 'Not specified',
       salary,
+      postedDate, // NEW: Store posted date
+      url, // NEW: Move URL to top-level field
       status: 'saved',
       metadata: {
-        url,
         source,
         skills,
         remote,
         deadline,
         userNotes,
         rating,
+        rawJobDescriptionHtml, // NEW: Store raw HTML for re-parsing
+        parsingMetadata, // NEW: Store parsing metadata
         bookmarkedAt: new Date().toISOString(),
         extensionVersion: '1.0.0'
       }

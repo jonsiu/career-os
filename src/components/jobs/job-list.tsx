@@ -317,14 +317,25 @@ export function JobList({ jobs, onJobDeleted, onJobUpdated, onEditJob }: JobList
                   ) : null}
 
                   {/* Description Preview */}
-                  {job.description && (
+                  {(job.descriptionHtml || job.description) && (
                     <div className="text-sm text-gray-600">
-                      <p className="line-clamp-2">
-                        {job.description.length > 100 
-                          ? `${job.description.substring(0, 100)}...` 
-                          : job.description
-                        }
-                      </p>
+                      {job.descriptionHtml ? (
+                        <div
+                          className="line-clamp-2 prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{
+                            __html: job.descriptionHtml.length > 200
+                              ? `${job.descriptionHtml.substring(0, 200)}...`
+                              : job.descriptionHtml
+                          }}
+                        />
+                      ) : (
+                        <p className="line-clamp-2">
+                          {job.description.length > 100
+                            ? `${job.description.substring(0, 100)}...`
+                            : job.description
+                          }
+                        </p>
+                      )}
                     </div>
                   )}
 

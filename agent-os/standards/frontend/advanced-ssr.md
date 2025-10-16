@@ -1,0 +1,25 @@
+## Advanced SSR and rendering patterns
+
+- **Server Components**: Use React Server Components; fetch data server-side, reduce client bundle
+- **Client Components**: Mark interactive components with 'use client'; minimize client JavaScript
+- **Streaming SSR**: Stream HTML as it's rendered; progressive page loads, faster TTFB
+- **Suspense Boundaries**: Wrap async components in Suspense; stream content as it becomes available
+- **Partial Prerendering (PPR)**: Combine static and dynamic in single route; static shell with dynamic content
+- **Edge Rendering**: Render at edge (Vercel Edge Functions, Cloudflare Workers); lower latency
+- **Incremental Static Regeneration (ISR)**: Regenerate static pages on-demand; balance static and fresh
+- **On-Demand Revalidation**: Trigger ISR revalidation from webhooks; update content without redeploy
+- **Static Site Generation (SSG)**: Pre-render pages at build time; fastest, works for static content
+- **getStaticProps**: Fetch data at build time; regenerate with ISR
+- **getServerSideProps**: Fetch data on every request; always fresh, slower
+- **Islands Architecture**: Ship minimal JavaScript; only hydrate interactive components
+- **Resumability**: Qwik-style resumability; serialize state, resume on client without re-execution
+- **Progressive Enhancement**: Start with SSR HTML; enhance with JavaScript; works without JS
+- **Hydration Mismatch**: Avoid mismatches; server and client must render identical HTML
+- **Hydration Optimization**: Selective hydration; only hydrate visible or interactive components
+- **Route Segment Config**: Configure per-route rendering strategy (dynamic, force-dynamic, force-static)
+- **Caching Strategies**: Understand Next.js caching layers (fetch cache, router cache, full route cache)
+- **Cache Revalidation**: Use revalidate option; time-based or on-demand revalidation
+- **Edge Config**: Store config at edge; fast reads, global replication
+- **Middleware**: Run code at edge before request completes; auth, redirects, A/B tests
+- **SEO Optimization**: SSR provides complete HTML to crawlers; better SEO than CSR
+- **Core Web Vitals**: Optimize LCP, FID, CLS with SSR and streaming; measure with RUM

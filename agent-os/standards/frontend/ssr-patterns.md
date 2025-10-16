@@ -1,0 +1,33 @@
+## Server-side rendering patterns
+
+- **Server Components First**: Default to React Server Components (RSC); fetch data server-side, reduce client bundle
+- **Client Components**: Only use 'use client' for interactive components (forms, click handlers, useState, useEffect)
+- **Component Composition**: Pass Server Components as children to Client Components; avoid wrapping
+- **Streaming SSR**: Leverage streaming with renderToReadableStream; progressive HTML rendering
+- **Suspense Boundaries**: Wrap async components in Suspense; stream chunks as they complete
+- **Sequential vs Parallel**: Parallel fetch in Server Components (Promise.all); sequential for dependent data
+- **Data Fetching Colocation**: Fetch data where it's needed; avoid prop drilling, reduce waterfalls
+- **Request Memoization**: Next.js auto-memoizes fetch calls in single request; same URL fetched once
+- **Hydration Mismatch**: Server and client must render identical HTML; avoid Date.now(), random(), window APIs
+- **Suppress Hydration Warning**: Use suppressHydrationWarning for known mismatches (time-dependent content)
+- **SEO Benefits**: SSR provides complete HTML to crawlers; better SEO than client-side rendering
+- **Metadata API**: Use Next.js generateMetadata for dynamic meta tags; server-side generation
+- **Structured Data**: Include JSON-LD for rich results; product schema, article schema, breadcrumbs
+- **Loading States**: Use loading.tsx for instant loading UI; shown while async components load
+- **Streaming Indicators**: Skeleton screens for streamed content; better UX than spinners
+- **Error Handling**: error.tsx for error boundaries; catch server-side errors gracefully
+- **Not Found**: notfound.tsx for 404 pages; use notFound() function in Server Components
+- **Client Boundary Placement**: Place 'use client' at lowest level; maximize server rendering
+- **Static Rendering**: Default; pre-render at build time; revalidate with ISR
+- **Dynamic Rendering**: Opt into dynamic with dynamic = 'force-dynamic' or unstable_noStore()
+- **Partial Prerendering**: PPR (experimental); static shell with dynamic holes
+- **Cache Strategies**: fetch(url, { cache: 'force-cache' }) for static, { cache: 'no-store' } for dynamic
+- **Revalidation**: Time-based revalidate in seconds; fetch(url, { next: { revalidate: 3600 } })
+- **On-Demand Revalidation**: revalidatePath() and revalidateTag() for instant updates
+- **Route Handlers**: API routes for API endpoints; support GET, POST, PUT, DELETE, PATCH
+- **Server Actions**: 'use server' for form submissions; progressively enhanced forms
+- **Form Validation**: Server-side validation in Server Actions; client-side for UX
+- **Optimistic Updates**: useOptimistic for instant feedback; revert on error
+- **Middleware**: Run at edge before request; auth checks, redirects, rewrites
+- **Edge Runtime**: Fast cold starts; limited Node.js APIs; good for auth, redirects
+- **Node.js Runtime**: Full Node.js APIs; default for Server Components and Route Handlers

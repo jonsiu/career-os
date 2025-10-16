@@ -1,0 +1,25 @@
+## Multi-tenancy advanced patterns
+
+- **Tenant Identification**: Store tenant_id/organization_id on all tenant-scoped tables
+- **Row-Level Security**: Implement RLS (PostgreSQL) or query-level filtering for data isolation
+- **Global Query Filters**: Use ORM global filters; automatic tenant scoping on every query
+- **Foreign Key Constraints**: Include tenant_id in FKs; ensure referential integrity within tenant
+- **Composite Primary Keys**: Consider composite PKs (tenant_id, id) for strict isolation
+- **Shared Schema**: Most common; single database, shared tables, tenant_id column
+- **Schema Per Tenant**: Separate schema per tenant; better isolation, harder to manage at scale
+- **Database Per Tenant**: Ultimate isolation; expensive, complex backups, difficult cross-tenant queries
+- **Tenant Context Middleware**: Establish tenant context early in request; make available throughout
+- **Context Storage**: Thread-local storage, async context, or request object for tenant context
+- **Testing Isolation**: Write tests that verify tenant isolation; try to access other tenant's data
+- **Admin Operations**: Clearly mark admin operations that span tenants; separate permissions
+- **Data Export**: Provide tenant-specific data export; verify only tenant's data included
+- **Data Deletion**: Implement tenant data deletion for GDPR; cascade delete all tenant data
+- **Soft Delete Scoping**: Ensure soft delete queries are scoped by tenant; prevent data leakage
+- **Index Optimization**: Include tenant_id as first column in composite indexes for efficient queries
+- **Query Performance**: Ensure queries use tenant_id index; avoid full table scans
+- **Migration Testing**: Test migrations with multi-tenant data; ensure tenant isolation intact
+- **Backup and Restore**: Backup strategy for multi-tenant; per-tenant restore capability
+- **Cross-Tenant Queries**: Rare but needed for analytics; use separate read replica, explicit permission checks
+- **Tenant Provisioning**: Automate tenant creation; seed data, default settings
+- **Tenant Limits**: Enforce per-tenant limits (users, storage, API calls) to prevent noisy neighbors
+- **Monitoring Per Tenant**: Track metrics per tenant; identify resource hogs

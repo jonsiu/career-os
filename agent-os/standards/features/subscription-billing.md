@@ -1,0 +1,50 @@
+## Subscription and billing management
+
+- **Payment Provider**: Use Stripe or Paddle; don't build payment processing from scratch
+- **Stripe Billing**: Use Stripe Billing for subscription management; handles complex billing logic
+- **Webhook Handling**: Implement robust webhook handlers; listen to customer.subscription events
+- **Webhook Security**: Verify webhook signatures; prevent spoofed webhooks
+- **Idempotent Processing**: Use Stripe event ID as idempotency key; prevent double processing
+- **Webhook Retries**: Handle retries gracefully; Stripe retries failed webhooks with exponential backoff
+- **Event Types**: Handle customer.subscription.created, updated, deleted, trial_will_end, payment_succeeded, payment_failed
+- **Subscription States**: Track status (active, past_due, canceled, trialing, unpaid)
+- **Feature Access**: Enforce feature access based on subscription status; block when past_due or canceled
+- **Grace Period**: Provide grace period for past_due; typically 7-14 days before blocking access
+- **Plan Management**: Define plans in Stripe; sync plan metadata to database for display
+- **Plan Tiers**: Common tiers (Free, Pro, Team, Enterprise); price points (e.g., $10, $25, $50, $100)
+- **Pricing Models**: Support monthly/annual pricing; offer annual discount (typically 15-20%)
+- **Usage-Based Billing**: Implement metering for usage-based features (API calls, storage, users)
+- **Usage Reporting**: Batch usage reports to Stripe; use usage records API
+- **Overage Charges**: Handle overages; charge for usage above plan limits
+- **Proration**: Automatic proration on plan changes; Stripe handles calculation
+- **Upgrade Flow**: Immediate upgrade; charge prorated amount for remaining period
+- **Downgrade Flow**: Schedule downgrade for end of period; prevent immediate feature loss
+- **Trial Periods**: Support free trials (7, 14, 30 days); collect payment method upfront
+- **Trial Conversion**: Auto-convert to paid at trial end; send reminders 3 days before
+- **No-Credit-Card Trials**: Optional; higher fraud risk but better conversion for some markets
+- **Cancellation Flow**: Make cancellation easy (legal requirement); FTC regulations
+- **Cancellation Survey**: Optional survey to understand churn reasons; improve product
+- **Pause Option**: Offer pause instead of cancel; reduces churn
+- **Downgrade Option**: Offer downgrade to cheaper plan; retain customer
+- **Cancel at Period End**: Allow canceling at period end; no immediate access loss
+- **Immediate Cancellation**: Optionally allow immediate cancel with prorated refund
+- **Payment Method Updates**: Provide UI to update card; handle expiring cards
+- **Failed Payment Recovery**: Email sequence for failed payments; retry with updated card
+- **Dunning**: Implement dunning to recover failed payments; Stripe Smart Retries
+- **Invoice History**: Display all invoices; download PDF for accounting
+- **Receipt Emails**: Auto-send receipt emails after successful payment
+- **Upcoming Invoice**: Show upcoming invoice amount; preview before charge
+- **Tax Handling**: Use Stripe Tax; automatic tax calculation for 100+ countries
+- **Tax ID Collection**: Collect business tax IDs (VAT, GST); support reverse charge
+- **Billing Portal**: Use Stripe Customer Portal; self-service subscription management
+- **Portal Customization**: Customize portal with branding, allowed operations
+- **Coupons and Promotions**: Support discount codes; percentage off or fixed amount
+- **Annual Prepay**: Support annual prepayment; cash flow benefit
+- **Seats and Quantity**: Support seat-based pricing; charge per user
+- **Add-Ons**: Support add-ons; additional features for extra cost
+- **Multi-Currency**: Support multiple currencies; localized pricing
+- **Payment Methods**: Support cards, ACH, SEPA, Alipay; regional preferences
+- **SCA Compliance**: Support Strong Customer Authentication (EU requirement); 3D Secure
+- **Invoice Sequences**: Maintain invoice sequence numbers; required for some jurisdictions
+- **Billing Alerts**: Alert customers before renewal; reduce surprise charges
+- **Metrics**: Track MRR, churn rate, LTV, ARPU; monitor business health

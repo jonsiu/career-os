@@ -1,0 +1,37 @@
+## Multi-tenancy data isolation
+
+- **Tenant Identification**: Store organization_id or tenant_id on all tenant-scoped tables
+- **Universal Column**: tenant_id/org_id on every tenant-scoped table; consistent naming
+- **Row-Level Security**: Implement Postgres RLS for database-level enforcement; CREATE POLICY commands
+- **RLS Policies**: CREATE POLICY tenant_isolation ON table USING (org_id = current_setting('app.current_org_id')::bigint)
+- **Query-Level Filtering**: Alternative to RLS; ORM global filters automatically add WHERE org_id = ?
+- **Global Query Filters**: Prisma middleware, TypeORM subscribers, ActiveRecord default_scope
+- **Set Current Tenant**: SET LOCAL app.current_org_id = 123; per-transaction setting for RLS
+- **Middleware Pattern**: Set current_org_id from authenticated user early in request lifecycle
+- **Foreign Key Constraints**: Include org_id in composite foreign keys; FK on (org_id, resource_id)
+- **Referential Integrity**: Ensures FKs can't point to resources in different tenants
+- **Composite Keys**: Consider composite PKs (org_id, id) for strictest isolation; trade-off: complexity
+- **Shared Schema Pattern**: Single database, shared tables, org_id column; most common for SaaS
+- **Schema Per Tenant**: Separate schema per tenant; better isolation, harder to manage at scale (1000+ tenants)
+- **Database Per Tenant**: Ultimate isolation; very expensive, complex backups, no cross-tenant analytics
+- **Tenant Context Storage**: Store current tenant in request context, async local storage, or thread-local
+- **Context Propagation**: Propagate tenant context to background jobs, async operations
+- **Testing Isolation**: Write integration tests that attempt cross-tenant access; must fail
+- **Automated Testing**: Test framework that seeds multiple tenants; every test scoped to tenant
+- **Admin Operations**: Super-admin operations that span tenants; disable tenant filter, log all access
+- **Admin Audit**: Audit all admin cross-tenant queries; who accessed what tenant's data
+- **Data Export**: GDPR export; ensure only tenant's data included in export file
+- **Data Deletion**: Tenant deletion; cascade delete all org-owned data; verify completeness
+- **Soft Delete Scope**: Soft delete queries must include org_id; don't show deleted data from other tenants
+- **Index Optimization**: Composite indexes with org_id first; INDEX (org_id, created_at) for efficient scans
+- **Query Performance**: Queries must use org_id index; EXPLAIN ANALYZE to verify index usage
+- **Avoid Full Scans**: Ensure all queries filter by org_id; full table scans are red flag
+- **Migration Testing**: Test migrations with multi-tenant data; ensure RLS policies survive migration
+- **Schema Changes**: Ensure schema changes don't break tenant isolation; add org_id to new tables
+- **Backup and Restore**: Can you restore single tenant?; per-tenant backup if regulated industry
+- **Cross-Tenant Analytics**: Rare but needed; use separate read replica, explicit admin permission
+- **Monitoring**: Track queries by tenant; identify resource-heavy tenants (noisy neighbors)
+- **Rate Limiting**: Per-tenant rate limits; prevent single tenant from overwhelming system
+- **Resource Quotas**: Per-tenant quotas (storage, users, API calls); enforce at application level
+- **Tenant Provisioning**: Automated tenant creation; seed default data, create admin user
+- **Tenant Onboarding**: Welcome flow; guide new organizations through setup

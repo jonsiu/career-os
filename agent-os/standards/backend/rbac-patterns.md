@@ -1,0 +1,24 @@
+## Role-based access control (RBAC)
+
+- **Roles**: Define roles (Admin, Member, Viewer); assign permissions to roles
+- **Permissions**: Granular permissions (read:projects, write:projects, delete:projects)
+- **Role Assignment**: Assign roles to users; user can have multiple roles
+- **Resource-Based**: Scope permissions to resources; user has Admin role on Project A, Viewer on Project B
+- **Hierarchical Roles**: Support role hierarchy; Admin inherits all permissions from Member
+- **Default Roles**: Assign default role to new users; typically Member or Viewer
+- **Permission Check**: Check permissions before every operation; never trust client
+- **Authorization Middleware**: Centralized authorization check; require('permission') middleware
+- **Policy-Based**: Use policies for complex logic; "user can edit if creator or has edit permission"
+- **Attribute-Based (ABAC)**: Extend RBAC with attributes; permissions based on user, resource, environment
+- **Dynamic Permissions**: Calculate permissions dynamically; depends on resource state
+- **Permission Caching**: Cache user permissions; invalidate on role changes
+- **Admin Role**: Admin has all permissions; be careful, can be dangerous
+- **Custom Roles**: Allow creating custom roles; enterprise feature
+- **Permission Groups**: Group related permissions; easier to assign (e.g., Project Manager role)
+- **Invite Flow**: Specify role when inviting; default to safe role if not specified
+- **Role Changes**: Audit role changes; security-sensitive operation
+- **Least Privilege**: Default to least privilege; grant only necessary permissions
+- **Permission UI**: Show what each role can do; helps users understand access levels
+- **Testing**: Test permission checks; ensure unauthorized users can't access resources
+- **Database Schema**: Store roles and permissions; users_roles, roles_permissions tables
+- **Scope to Tenant**: Roles scoped to organization/tenant; user has different roles in different orgs

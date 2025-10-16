@@ -1,0 +1,26 @@
+## Database scaling patterns
+
+- **Connection Pooling**: Use connection pooler (PgBouncer, RDS Proxy); connection limits are finite
+- **Pool Sizing**: Size pool appropriately; too small = queuing, too large = overhead
+- **Read Replicas**: Add read replicas for read-heavy workloads; scale reads horizontally
+- **Read-Write Split**: Route reads to replicas, writes to primary; application or proxy level
+- **Replica Lag**: Monitor replica lag; stale reads if lag is high
+- **Eventual Consistency**: Accept eventual consistency for reads from replicas
+- **Query Optimization**: Optimize queries before scaling; often fixes performance without scaling
+- **Index Strategy**: Index frequently queried columns; composite indexes for multi-column queries
+- **Query Analysis**: Use EXPLAIN ANALYZE; identify slow queries, missing indexes
+- **Slow Query Log**: Enable slow query logging; track queries exceeding threshold
+- **Query Caching**: Cache query results in Redis; avoid hitting database for repeated queries
+- **Materialized Views**: Pre-compute expensive queries; refresh periodically or on-demand
+- **Denormalization**: Selectively denormalize for read performance; trade consistency for speed
+- **Partitioning**: Partition large tables by date, tenant, or range; improves query performance
+- **Sharding**: Shard database across multiple servers; horizontal scaling for writes
+- **Shard Key**: Choose shard key carefully (tenant_id common); avoid hot shards
+- **Cross-Shard Queries**: Minimize cross-shard queries; they're slow and complex
+- **Database Federation**: Separate databases per service (microservices); own their data
+- **CQRS**: Separate read and write models; optimize each independently
+- **Event Sourcing**: Store events instead of current state; rebuild state from events
+- **Database Backup**: Automated backups; test restore procedures regularly
+- **Point-in-Time Recovery**: Enable PITR; recover to specific timestamp
+- **Disaster Recovery**: Have DR plan; multi-region setup for critical systems
+- **Monitoring**: Monitor database metrics (CPU, memory, connections, query time, replication lag)

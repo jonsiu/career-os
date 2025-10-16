@@ -1,0 +1,24 @@
+## Audit logging for compliance
+
+- **What to Log**: Security events, data access, config changes, user actions
+- **Event Types**: login, logout, password_change, role_change, resource_create/update/delete
+- **Structured Format**: JSON logs with consistent schema; easier to parse and search
+- **Required Fields**: timestamp, user_id, organization_id, event_type, resource_type, resource_id
+- **Optional Fields**: IP address, user agent, changed_fields, previous_values, request_id
+- **Immutable Logs**: Audit logs should be append-only; no deletion or modification
+- **Separate Storage**: Store audit logs separately from application database; prevent tampering
+- **Log Aggregation**: Centralize audit logs; dedicated table or external service (AWS CloudTrail)
+- **Retention Period**: Retain audit logs for compliance period (7 years for SOC 2, varies by regulation)
+- **Search and Filter**: Provide audit log search; filter by user, resource, date range, event type
+- **Export**: Allow exporting audit logs; CSV, JSON for compliance audits
+- **Real-Time Logs**: Stream audit events in real-time; admin can monitor suspicious activity
+- **Alerting**: Alert on suspicious patterns; multiple failed logins, privilege escalation
+- **GDPR Considerations**: Include audit logs in data export; may need to redact after user deletion
+- **Admin Access Logging**: Log admin access to sensitive data; who accessed what and when
+- **Data Modification**: Log before and after values for updates; track what changed
+- **Bulk Operations**: Log bulk operations; indicate number of records affected
+- **API Access**: Log API calls; track programmatic access to data
+- **Failed Operations**: Log failed operations; failed login attempts, unauthorized access attempts
+- **Performance**: Async audit logging; don't block request on audit log write
+- **Sampling**: For very high volume, consider sampling; log 100% of critical events, sample routine events
+- **Integration**: Integrate with SIEM (Splunk, DataDog, Elastic) for security monitoring

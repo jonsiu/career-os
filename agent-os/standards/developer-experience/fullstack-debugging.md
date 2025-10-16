@@ -1,0 +1,26 @@
+## Full-stack debugging strategies
+
+- **Browser DevTools**: Use Chrome DevTools for frontend debugging; Network, Console, React DevTools
+- **React DevTools**: Inspect component tree, props, state, hooks
+- **Redux DevTools**: Debug Redux state; time-travel debugging
+- **Next.js DevTools**: View route info, Server Component boundaries, cache status
+- **Server Logs**: Structured logging on server; request_id to correlate frontend and backend
+- **Log Levels**: Use appropriate log levels (debug, info, warn, error); filter in production
+- **Request ID**: Generate unique request ID; include in all logs and pass to frontend
+- **Correlation**: Correlate frontend errors with backend logs using request ID
+- **Error Boundaries**: Use React error boundaries; catch and log frontend errors
+- **Error Tracking**: Use Sentry or similar; capture errors from production
+- **Source Maps**: Upload source maps to error tracker; debug original code, not minified
+- **Breadcrumbs**: Capture breadcrumbs (user actions); understand what led to error
+- **Network Debugging**: Inspect API calls in DevTools Network tab; check requests, responses, timing
+- **Proxy Tools**: Use Charles, Proxyman, or mitmproxy for detailed network inspection
+- **Database Query Logging**: Log slow queries; include execution time and query plan
+- **ORM Debug Mode**: Enable ORM debug mode in development; see generated SQL
+- **API Response Time**: Log API response times; identify slow endpoints
+- **Profiling**: Profile server performance; identify bottlenecks (Node.js --inspect, py-spy)
+- **Flamegraphs**: Generate flamegraphs to visualize CPU usage; find hot paths
+- **Memory Debugging**: Debug memory leaks; heap snapshots, memory profilers
+- **Distributed Tracing**: Use OpenTelemetry for tracing across frontend and backend
+- **Local Reproduction**: Reproduce issues locally; use production data (anonymized) if needed
+- **Debug Mode**: Environment variable to enable debug mode; verbose logging, extra checks
+- **Replay Sessions**: Use session replay (LogRocket, FullStory); see exactly what user did

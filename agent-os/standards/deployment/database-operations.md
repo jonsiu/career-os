@@ -1,0 +1,26 @@
+## Database operations and migrations
+
+- **Automated Backups**: Daily automated backups; multiple retention points
+- **Backup Verification**: Regularly test restoring from backup; untested backups are useless
+- **Point-in-Time Recovery**: Enable PITR; restore to any point in time within retention window
+- **Backup Retention**: Keep backups for 30+ days; longer for compliance (7 years SOC 2)
+- **Offsite Backups**: Store backups in different region; protect against regional failure
+- **Migration Framework**: Use migration framework (Prisma Migrate, TypeORM, Alembic, Flyway)
+- **Version Control Migrations**: Migrations in version control; track database schema changes
+- **Up and Down Migrations**: Write both up and down; allow rollback if needed
+- **Idempotent Migrations**: Make migrations idempotent; safe to run multiple times
+- **Data Migrations**: Separate data migrations from schema migrations; data can take longer
+- **Zero-Downtime Migrations**: Design migrations for zero downtime; backward compatible changes
+- **Expand-Contract Pattern**: Add new column, migrate data, switch code, remove old column
+- **Migration Testing**: Test migrations on production-like data; catch issues before production
+- **Migration Rollback Plan**: Have rollback plan; some migrations can't be rolled back
+- **Lock Timeouts**: Set lock timeout for migrations; prevent long-running locks
+- **Maintenance Window**: Schedule migrations during low-traffic window; reduce user impact
+- **Blue-Green Deployment**: Use blue-green deployment for major migrations; instant rollback
+- **Connection Pooling**: Account for migration in connection pool; migrations hold connections
+- **Performance Impact**: Monitor performance during migration; large table alterations can lock
+- **Incremental Migration**: Migrate large datasets incrementally; batch updates to avoid locks
+- **Replica Lag**: Monitor replica lag during migration; replication can fall behind
+- **Disaster Recovery Plan**: Document DR procedures; RTO and RPO targets
+- **DR Testing**: Test DR procedures annually; ensure they work when needed
+- **Multi-Region**: For critical apps, run in multiple regions; failover capability

@@ -1,0 +1,25 @@
+## Team and organization features
+
+- **Organization Model**: Top-level entity; users belong to organizations
+- **Team Model**: Optional sub-groups within organization; organize users by team
+- **Workspace Model**: Alternative to organization; depends on your domain
+- **User Membership**: Users can belong to multiple organizations; separate contexts
+- **Organization Switcher**: UI to switch between organizations; clear which org user is in
+- **Invitations**: Invite users by email; pending invitations table
+- **Invitation Expiry**: Invitations expire (7 days typical); prevent stale invitations
+- **Invite Resend**: Allow resending invitations; original may get lost
+- **Accept/Reject**: Users accept or reject invitations; don't auto-add to org
+- **Invitation Roles**: Specify role in invitation; user gets role upon acceptance
+- **Pending Members**: Show pending invitations in members list; indicate status
+- **Member Management**: List members, change roles, remove members
+- **Owner Role**: Organization owner; special role with full permissions
+- **Transfer Ownership**: Allow transferring ownership; require confirmation
+- **Leave Organization**: Members can leave; owners may need to transfer ownership first
+- **Organization Settings**: Org-level settings; name, logo, domain, billing
+- **Personal vs Organization**: Distinguish personal workspace from organizations
+- **Default Organization**: Set default organization; where user lands on login
+- **Organization Deletion**: Allow deleting organizations; soft delete, confirm, cascade delete all data
+- **Member Limits**: Enforce member limits per plan; prompt upgrade if limit reached
+- **Activity Log**: Audit log of organization activities; member changes, settings updates
+- **Organization Branding**: Allow custom branding; logo, colors, domain
+- **SSO per Organization**: Enterprise feature; different SSO config per organization

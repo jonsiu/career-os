@@ -1,0 +1,25 @@
+## Local SaaS development environment
+
+- **One Command Start**: Make setup as simple as `npm install && npm run dev`
+- **Docker Compose**: Provide docker-compose.yml with PostgreSQL, Redis, any other services
+- **Environment Variables**: Use .env.example; document all required variables
+- **Database Setup**: Auto-run migrations on first start; seed data for development
+- **Seed Data**: Provide realistic seed data; users, organizations, sample content
+- **Hot Reload**: Next.js Fast Refresh, Vite HMR; instant updates on file save
+- **Full-Stack Dev Server**: Single command runs both frontend and backend
+- **API Mocking**: Mock external APIs (Stripe, SendGrid); use environment variables to toggle
+- **Local HTTPS**: Use mkcert for local HTTPS; needed for OAuth, secure cookies
+- **Port Configuration**: Consistent ports across team (3000 for Next.js, 5432 for Postgres)
+- **Database Client**: Document connecting with GUI client (TablePlus, DBeaver, pgAdmin)
+- **Email Testing**: Use Mailhog or Mailtrap for local email testing; see all outgoing emails
+- **Webhook Testing**: Use ngrok or smee.io for testing webhooks locally
+- **Payment Testing**: Use Stripe test mode; test cards for various scenarios
+- **Multi-Tenant Local**: Seed multiple tenants; test multi-tenant functionality locally
+- **Feature Flags**: Local override for feature flags; test features before rollout
+- **Testing**: Easy to run tests; npm test for unit, npm run test:e2e for E2E
+- **Linting**: ESLint, Prettier run on save; consistent code style
+- **Type Checking**: TypeScript with strict mode; catch errors at compile time
+- **Pre-commit Hooks**: Husky for pre-commit linting, type checking, tests
+- **Troubleshooting Guide**: Maintain troubleshooting doc; common issues and solutions
+- **Onboarding Checklist**: New developer checklist; verify setup works correctly
+- **Documentation**: Keep README updated; prerequisites, setup steps, common tasks

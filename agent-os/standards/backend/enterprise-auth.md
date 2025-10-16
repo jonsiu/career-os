@@ -1,0 +1,24 @@
+## Enterprise authentication patterns
+
+- **SAML SSO**: Implement SAML 2.0 for enterprise customers; industry standard for SSO
+- **Identity Provider**: Integrate with IdPs (Okta, Azure AD, OneLogin, Google Workspace)
+- **Service Provider Metadata**: Provide SP metadata XML; IdP needs this for configuration
+- **SAML Assertions**: Validate SAML assertions; check signature, expiration, audience
+- **Attribute Mapping**: Map SAML attributes to user fields; email, name, groups
+- **Just-in-Time Provisioning**: Auto-create users on first SAML login; reduce admin overhead
+- **SCIM Provisioning**: Implement SCIM 2.0 for automated user provisioning from IdP
+- **SCIM Operations**: Support user create, update, delete, get, list
+- **Group Provisioning**: Sync groups from IdP; map to roles in your app
+- **Deprovisioning**: Handle user deprovisioning; suspend or delete account when removed from IdP
+- **OAuth for Enterprises**: Support OAuth 2.0; used by some enterprise IdPs
+- **Multi-Factor Authentication**: Support MFA; often enforced by IdP, respect MFA claims
+- **Session Management**: Manage SSO sessions; respect IdP session lifetime
+- **Single Logout**: Implement SLO; log out from all apps when user logs out from IdP
+- **Multiple Domains**: Support multiple SSO configurations; different IdP per customer domain
+- **Domain Verification**: Verify domain ownership before enabling SSO; prevent hijacking
+- **Fallback Authentication**: Provide fallback (email/password) if SSO fails
+- **Admin Override**: Allow admins to bypass SSO; recovery mechanism if IdP down
+- **Audit Logging**: Log all SSO events; authentication, provisioning, configuration changes
+- **Security Headers**: Set secure headers; HSTS, CSP, X-Frame-Options for SSO endpoints
+- **Testing**: Test SSO with major IdPs; each has quirks
+- **Documentation**: Provide SSO setup guide for customers; common pain point

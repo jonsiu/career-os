@@ -1,0 +1,15 @@
+task_assignments:
+  - task_group: "Task Group 1: Database Schema Extensions & Convex Operations"
+    assigned_subagent: "database-engineer"
+
+  - task_group: "Task Group 2: API Routes & External Integrations"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 3: UI Components & Transition Assessment Flow"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 4: Transition Analysis Provider & AI Prompts"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 5: Test Review, Gap Analysis & Documentation"
+    assigned_subagent: "testing-engineer"

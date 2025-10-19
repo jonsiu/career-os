@@ -15,15 +15,15 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** None
 **Estimated Effort:** 1-1.5 days
 
-- [ ] 1.0 Complete database schema extensions and Convex operations
-  - [ ] 1.1 Write 2-8 focused tests for schema extensions and Convex operations
+- [x] 1.0 Complete database schema extensions and Convex operations
+  - [x] 1.1 Write 2-8 focused tests for schema extensions and Convex operations
     - Test plan extensions (transitionTypes, primaryTransitionType, bridgeRoles, estimatedTimeline, benchmarkData, careerCapitalAssessment, progressPercentage)
     - Test skills extensions (transitionPlanId, criticalityLevel, transferableFrom, onetCode, skillComplexity, estimatedLearningTime, affiliateCourses)
     - Test new indexes (by_transition_type, by_transition_plan, by_criticality)
     - Test transition queries (getTransitionPlans, getTransitionPlanById, getPlansByTransitionType)
     - Test backward compatibility (existing plans and skills continue to work without new fields)
     - Limit to 6-8 highly focused tests maximum
-  - [ ] 1.2 Extend plans table schema in convex/schema.ts
+  - [x] 1.2 Extend plans table schema in convex/schema.ts
     - Add optional transitionTypes field (array of cross-role, cross-industry, cross-function)
     - Add optional primaryTransitionType field (string)
     - Add optional currentRole and targetRole fields (strings)
@@ -35,10 +35,10 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Add optional careerCapitalAssessment field (object with uniqueSkills, rareSkillCombinations, competitiveAdvantages)
     - Ensure all new fields are optional to maintain backward compatibility
     - Reference existing schema pattern from convex/schema.ts
-  - [ ] 1.3 Add new index to plans table for transition type queries
+  - [x] 1.3 Add new index to plans table for transition type queries
     - Add index: by_transition_type on ["userId", "primaryTransitionType"]
     - Optimize for queries filtering by user and transition type
-  - [ ] 1.4 Extend skills table schema in convex/schema.ts
+  - [x] 1.4 Extend skills table schema in convex/schema.ts
     - Add optional transitionPlanId field (foreign key to plans table)
     - Add optional criticalityLevel field (union of critical, important, nice-to-have)
     - Add optional transferableFrom field (array of strings - current skills that transfer)
@@ -47,11 +47,11 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Add optional estimatedLearningTime field (object with minWeeks, maxWeeks)
     - Add optional affiliateCourses field (array of objects with provider, title, url, affiliateLink, price)
     - Ensure all new fields are optional to maintain backward compatibility
-  - [ ] 1.5 Add new indexes to skills table for transition plan queries
+  - [x] 1.5 Add new indexes to skills table for transition plan queries
     - Add index: by_transition_plan on ["transitionPlanId"]
     - Add index: by_criticality on ["userId", "criticalityLevel"]
     - Optimize for queries filtering by plan and criticality
-  - [ ] 1.6 Create new Convex operations file: convex/transitions.ts
+  - [x] 1.6 Create new Convex operations file: convex/transitions.ts
     - Create query: getTransitionPlans(userId) - get all transition plans for user
     - Create query: getTransitionPlanById(planId) - get single transition plan with details
     - Create query: getPlansByTransitionType(userId, transitionType) - filter by type
@@ -60,7 +60,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Create mutation: updateTransitionProgress(planId, progressPercentage) - update progress
     - Create mutation: deleteTransitionPlan(planId) - delete transition plan
     - Follow existing Convex patterns from convex/plans.ts and convex/skills.ts
-  - [ ] 1.7 Ensure database layer tests pass
+  - [x] 1.7 Ensure database layer tests pass
     - Run ONLY the 6-8 tests written in 1.1
     - Verify schema extensions deploy successfully
     - Verify indexes are created correctly
@@ -85,8 +85,8 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 1
 **Estimated Effort:** 1.5-2 days
 
-- [ ] 2.0 Complete API routes and external integrations
-  - [ ] 2.1 Write 2-8 focused tests for API endpoints
+- [x] 2.0 Complete API routes and external integrations
+  - [x] 2.1 Write 2-8 focused tests for API endpoints
     - Test POST /api/transitions/identify (transition type detection from resume)
     - Test POST /api/transitions/roadmap (AI-powered roadmap generation)
     - Test POST /api/transitions/skills-gap (skill gap analysis with O*NET)
@@ -95,7 +95,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Test authentication/authorization on all routes
     - Test error handling (missing parameters, invalid data, API failures)
     - Limit to 6-8 highly focused tests maximum
-  - [ ] 2.2 Create API route: POST /api/transitions/identify
+  - [x] 2.2 Create API route: POST /api/transitions/identify
     - Accept: userId, resumeId, targetRole, targetIndustry
     - Use AI provider (Claude/GPT-4) to analyze resume content
     - Detect transition types: cross-role, cross-industry, cross-function
@@ -105,7 +105,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Follow existing AI analysis patterns from src/lib/abstractions/providers/
     - Include Clerk auth check
     - Handle errors with appropriate status codes (400, 401, 500)
-  - [ ] 2.3 Create API route: POST /api/transitions/roadmap
+  - [x] 2.3 Create API route: POST /api/transitions/roadmap
     - Accept: userId, transitionData (types, roles, industries)
     - Use AI provider to generate personalized roadmap
     - Calculate estimated timeline (6-18 months typical range)
@@ -115,7 +115,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Return: roadmap with timeline, milestones, bridgeRoles
     - Implement caching using SHA-256 content hashing (target 60%+ cache hit rate)
     - Follow existing analysis caching pattern from convex/analysisResults.ts
-  - [ ] 2.4 Create API route: POST /api/transitions/skills-gap
+  - [x] 2.4 Create API route: POST /api/transitions/skills-gap
     - Accept: userId, currentRole, targetRole, resumeId
     - Use AI provider to identify required skills for target role
     - Validate skills against O*NET API (https://services.onetcenter.org/ws/)
@@ -125,13 +125,13 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Return: skillGaps array with criticality, transferability, learning time
     - Handle O*NET API failures gracefully (fallback to AI-only analysis)
     - Stay within O*NET free tier limits (1000 calls/day)
-  - [ ] 2.5 Create API route: GET /api/transitions/benchmarks
+  - [x] 2.5 Create API route: GET /api/transitions/benchmarks
     - Accept: transitionType, currentRole, targetRole
     - Retrieve or generate benchmarking data for similar transitions
     - Return: similarTransitions, averageTimeline, successRate
     - Use AI-generated benchmarks initially (future: real user data)
     - Cache results for common transition combinations
-  - [ ] 2.6 Create API route: POST /api/transitions/courses
+  - [x] 2.6 Create API route: POST /api/transitions/courses
     - Accept: skillName, criticalityLevel, targetRole
     - Integrate with course provider APIs (Coursera, Udemy, LinkedIn Learning)
     - Search for relevant courses for the skill
@@ -140,7 +140,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Include affiliate disclosure in response metadata
     - Handle API failures gracefully (fallback to alternative providers)
     - Track which provider was used for revenue attribution
-  - [ ] 2.7 Create O*NET API integration utility
+  - [x] 2.7 Create O*NET API integration utility
     - Location: src/lib/integrations/onet-api.ts
     - Implement skill validation function
     - Implement skill importance retrieval
@@ -148,7 +148,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Add error handling and retry logic
     - Add request caching to stay within free tier
     - Environment variable: ONET_API_KEY
-  - [ ] 2.8 Create course provider integration utilities
+  - [x] 2.8 Create course provider integration utilities
     - Location: src/lib/integrations/course-providers.ts
     - Implement Coursera API integration (search, affiliate link generation)
     - Implement Udemy API integration (search, affiliate link generation)
@@ -156,7 +156,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Add fallback logic if one provider fails
     - Add affiliate tracking UTM parameters
     - Environment variables: COURSERA_AFFILIATE_ID, UDEMY_AFFILIATE_ID, LINKEDIN_AFFILIATE_ID
-  - [ ] 2.9 Ensure API layer tests pass
+  - [x] 2.9 Ensure API layer tests pass
     - Run ONLY the 6-8 tests written in 2.1
     - Verify all API routes work correctly
     - Verify authentication is enforced
@@ -182,8 +182,8 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 2
 **Estimated Effort:** 2-2.5 days
 
-- [ ] 3.0 Complete UI components and transition assessment flow
-  - [ ] 3.1 Write 2-8 focused tests for UI components
+- [x] 3.0 Complete UI components and transition assessment flow
+  - [x] 3.1 Write 2-8 focused tests for UI components
     - Test TransitionAssessmentFlow navigation (step progression, back button)
     - Test TransitionPlanCard rendering (displays transition metadata correctly)
     - Test SkillGapAnalysis display (critical vs nice-to-have skills, course links)
@@ -191,7 +191,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Test form validation in assessment steps
     - Test affiliate link rendering and disclosure
     - Limit to 6-8 highly focused tests maximum
-  - [ ] 3.2 Create TransitionAssessmentFlow component
+  - [x] 3.2 Create TransitionAssessmentFlow component
     - Location: src/components/planning/transition-assessment-flow.tsx
     - Multi-step flow with 6 steps: CurrentRole, TargetRole, IndustryChanges, AIAnalysis, Results, PlanCustomization
     - Step state management (currentStepIndex, onboardingData pattern from onboarding-flow.tsx)
@@ -201,7 +201,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Error handling for API failures
     - Data persistence between steps (local state)
     - Reuse patterns from src/components/onboarding/onboarding-flow.tsx
-  - [ ] 3.3 Create individual step components for TransitionAssessmentFlow
+  - [x] 3.3 Create individual step components for TransitionAssessmentFlow
     - CurrentRoleStep: Input current role title, industry, years of experience
     - TargetRoleStep: Input target role title, industry
     - IndustryChangesStep: Select if changing industry/function (checkboxes)
@@ -210,7 +210,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - PlanCustomizationStep: Adjust timeline, select skills to prioritize, name plan
     - All steps use existing UI components (Input, Label, Textarea, Card, Badge)
     - Follow accessibility patterns (Radix UI primitives, keyboard navigation)
-  - [ ] 3.4 Create TransitionPlanCard component
+  - [x] 3.4 Create TransitionPlanCard component
     - Location: src/components/planning/transition-plan-card.tsx
     - Display plan title and description
     - Show transition type badges (cross-role, cross-industry, cross-function)
@@ -222,7 +222,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Actions: View details, Edit, Delete
     - Follow card pattern from development-roadmap.tsx
     - Use existing Badge, Progress, Card components
-  - [ ] 3.5 Create SkillGapAnalysis component
+  - [x] 3.5 Create SkillGapAnalysis component
     - Location: src/components/planning/skill-gap-analysis.tsx
     - Group skills by criticality (critical, important, nice-to-have)
     - Display skill name, current level, target level
@@ -232,7 +232,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Progress tracking per skill (integrate with existing skills tracking)
     - O*NET validation indicator (checkmark if validated)
     - Reuse patterns from src/components/planning/skills-tracking.tsx
-  - [ ] 3.6 Create CourseRecommendations sub-component
+  - [x] 3.6 Create CourseRecommendations sub-component
     - Location: src/components/planning/course-recommendations.tsx
     - Display 2-4 recommended courses per skill
     - Show course provider logo (Coursera, Udemy, LinkedIn Learning)
@@ -241,7 +241,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Track clicks on affiliate links (analytics event)
     - Fallback UI if no courses found
     - Use existing Card, Badge components for layout
-  - [ ] 3.7 Create BenchmarkingDisplay component
+  - [x] 3.7 Create BenchmarkingDisplay component
     - Location: src/components/planning/benchmarking-display.tsx
     - Display similar transition statistics
     - Show average timeline range with visual indicator (e.g., progress bar)
@@ -250,7 +250,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Visual comparison: user's timeline vs. average
     - Use existing BarChart or custom visualization
     - Follow existing UI patterns from dashboard components
-  - [ ] 3.8 Create TransitionPlanningTab component (parent)
+  - [x] 3.8 Create TransitionPlanningTab component (parent)
     - Location: src/components/planning/transition-planning-tab.tsx
     - Entry point for transition planning feature
     - Display grid of existing transition plans (TransitionPlanCard)
@@ -259,14 +259,14 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Plan comparison view (side-by-side for Plan A vs Plan B)
     - Empty state if no plans yet (call-to-action to start assessment)
     - Use existing grid layout patterns from development-roadmap.tsx
-  - [ ] 3.9 Integrate TransitionPlanningTab into Career Planning page
+  - [x] 3.9 Integrate TransitionPlanningTab into Career Planning page
     - Location: src/app/dashboard/plan/page.tsx
     - Add new tab: "Transition Planning" alongside "Development Roadmap" and "Skills Tracking"
     - Tab navigation with active state
     - Lazy load TransitionPlanningTab component when tab selected
     - Maintain existing tabs functionality
     - Follow existing tab pattern from plan/page.tsx
-  - [ ] 3.10 Add styling and responsive design
+  - [x] 3.10 Add styling and responsive design
     - Mobile-first approach
     - Breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px)
     - Collapsible sidebar on mobile for plan comparison
@@ -274,13 +274,13 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Loading skeletons for async content
     - Error states with retry actions
     - Follow existing Tailwind CSS 4 patterns
-  - [ ] 3.11 Implement streaming AI responses for roadmap generation
+  - [x] 3.11 Implement streaming AI responses for roadmap generation
     - Use streaming response pattern from agent-os/standards/ai-integration/streaming-responses.md
     - Display progressive roadmap generation (milestones appear as generated)
     - Improve UX during 30-second roadmap generation
     - Loading indicators with progress updates
     - Handle stream errors gracefully
-  - [ ] 3.12 Ensure UI component tests pass
+  - [x] 3.12 Ensure UI component tests pass
     - Run ONLY the 6-8 tests written in 3.1
     - Verify critical component behaviors work
     - Verify navigation flows correctly
@@ -309,8 +309,8 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Groups 1, 2
 **Estimated Effort:** 1 day
 
-- [ ] 4.0 Complete AI analysis provider and prompt management
-  - [ ] 4.1 Write 2-8 focused tests for TransitionAnalysisProvider
+- [x] 4.0 Complete AI analysis provider and prompt management
+  - [x] 4.1 Write 2-8 focused tests for TransitionAnalysisProvider
     - Test transition type detection logic (cross-role, cross-industry, cross-function)
     - Test hybrid transition detection (multiple types simultaneously)
     - Test primary challenge prioritization
@@ -319,7 +319,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Test career capital assessment
     - Test caching behavior (cache hit/miss scenarios)
     - Limit to 6-8 highly focused tests maximum
-  - [ ] 4.2 Create TransitionAnalysisProvider
+  - [x] 4.2 Create TransitionAnalysisProvider
     - Location: src/lib/abstractions/providers/transition-analysis.ts
     - Extend AnalysisProvider interface with transition methods
     - Implement identifyTransitionType(resumeContent, currentRole, targetRole, targetIndustry)
@@ -329,7 +329,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Use multi-model approach: GPT-4 for structured analysis, Claude for narrative coaching
     - Implement caching using SHA-256 content hashing (target 60%+ cache hit rate)
     - Follow existing provider pattern from src/lib/abstractions/providers/anthropic-analysis.ts
-  - [ ] 4.3 Create AI prompt templates for transition analysis
+  - [x] 4.3 Create AI prompt templates for transition analysis
     - Location: src/lib/prompts/transition-prompts.ts
     - Prompt: detectTransitionTypePrompt (analyze resume and roles to identify transition types)
     - Prompt: generateRoadmapPrompt (create personalized roadmap with timeline and milestones)
@@ -340,7 +340,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Follow prompt management best practices from agent-os/standards/ai-integration/prompt-management.md
     - Use structured output (JSON mode) for consistent parsing
     - Version prompts for A/B testing and iteration
-  - [ ] 4.4 Implement caching for transition analysis results
+  - [x] 4.4 Implement caching for transition analysis results
     - Extend analysisResults table pattern or create new transitionAnalysisCache table
     - Cache key: SHA-256 hash of (resumeContent + transitionData)
     - Cache transition type detection results
@@ -349,13 +349,13 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Implement cache invalidation when resume or goals change
     - Target: 60%+ cache hit rate to reduce AI costs
     - Average AI cost per plan: <$2
-  - [ ] 4.5 Update ServiceFactory to include TransitionAnalysisProvider
+  - [x] 4.5 Update ServiceFactory to include TransitionAnalysisProvider
     - Location: src/lib/abstractions/service-factory.ts
     - Add transition analysis provider to factory
     - Configure with environment variables (OPENAI_API_KEY, ANTHROPIC_API_KEY)
     - Export configured instance
     - Update src/lib/abstractions/index.ts to export transition analysis
-  - [ ] 4.6 Ensure AI analysis tests pass
+  - [x] 4.6 Ensure AI analysis tests pass
     - Run ONLY the 6-8 tests written in 4.1
     - Verify transition type detection works correctly
     - Verify roadmap generation produces valid output
@@ -382,15 +382,15 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Groups 1-4
 **Estimated Effort:** 1 day
 
-- [ ] 5.0 Review existing tests and fill critical gaps only
-  - [ ] 5.1 Review tests from Task Groups 1-4
+- [x] 5.0 Review existing tests and fill critical gaps only
+  - [x] 5.1 Review tests from Task Groups 1-4
     - Review 6-8 tests written by database-engineer (Task 1.1)
     - Review 6-8 tests written by api-engineer (Task 2.1)
     - Review 6-8 tests written by ui-designer (Task 3.1)
     - Review 6-8 tests written by api-engineer (Task 4.1)
     - Total existing tests: approximately 24-32 tests
     - Verify test quality, coverage of critical paths, edge cases
-  - [ ] 5.2 Analyze test coverage gaps for THIS feature only
+  - [x] 5.2 Analyze test coverage gaps for THIS feature only
     - Identify critical user workflows that lack test coverage
     - End-to-end transition assessment flow (create plan from start to finish)
     - Plan revision and regeneration workflow
@@ -401,7 +401,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Focus ONLY on gaps related to this spec's feature requirements
     - Do NOT assess entire application test coverage
     - Prioritize end-to-end workflows over unit test gaps
-  - [ ] 5.3 Write up to 10 additional strategic tests maximum
+  - [x] 5.3 Write up to 10 additional strategic tests maximum
     - Integration test: Complete transition assessment flow (all 6 steps)
     - Integration test: Create transition plan and link skills to plan
     - Integration test: Update transition progress and verify milestone tracking
@@ -416,7 +416,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Focus on integration points and end-to-end workflows
     - Do NOT write comprehensive coverage for all scenarios
     - Skip edge cases, performance tests, and accessibility tests unless business-critical
-  - [ ] 5.4 Create test fixtures and mock data
+  - [x] 5.4 Create test fixtures and mock data
     - Sample resume content for transition analysis
     - Sample transition plans (cross-role, cross-industry, hybrid)
     - Sample skill gaps with O*NET codes
@@ -425,14 +425,14 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Mock O*NET API responses
     - Mock course provider API responses
     - Location: src/__tests__/fixtures/transition-data.ts
-  - [ ] 5.5 Run feature-specific tests only
+  - [x] 5.5 Run feature-specific tests only
     - Run ONLY tests related to this spec's feature (tests from 1.1, 2.1, 3.1, 4.1, and 5.3)
     - Expected total: approximately 34-42 tests maximum
     - Do NOT run the entire application test suite
     - Verify critical workflows pass
     - Verify integration points work correctly
     - Generate coverage report for transition feature files only
-  - [ ] 5.6 Update documentation for this feature
+  - [x] 5.6 Update documentation for this feature
     - Update CLAUDE.md with new feature overview
     - Document new API routes (POST /api/transitions/identify, roadmap, skills-gap, benchmarks, courses)
     - Document new Convex operations (convex/transitions.ts)
@@ -444,7 +444,7 @@ Assigned roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Add environment variables section (ONET_API_KEY, COURSERA_AFFILIATE_ID, etc.)
     - Add user flow documentation (transition assessment workflow)
     - Add troubleshooting section (common errors, API failures)
-  - [ ] 5.7 Verify backward compatibility
+  - [x] 5.7 Verify backward compatibility
     - Test that existing plans without transition fields still load and display
     - Test that existing skills without transition fields still work
     - Test that existing Career Planning page tabs (Development Roadmap, Skills Tracking) still function

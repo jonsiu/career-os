@@ -55,15 +55,18 @@ jest.mock('@/lib/integrations/onet-api', () => ({
 }));
 
 jest.mock('@/lib/integrations/course-providers', () => ({
-  searchCourses: jest.fn().mockResolvedValue([
-    {
-      provider: 'Coursera',
-      title: 'Advanced React Development',
-      url: 'https://coursera.org/course/react',
-      affiliateLink: 'https://coursera.org/course/react?affiliate=test',
-      price: 49.99,
-    },
-  ]),
+  searchCourses: jest.fn().mockResolvedValue({
+    courses: [
+      {
+        provider: 'Coursera',
+        title: 'Advanced React Development',
+        url: 'https://coursera.org/course/react',
+        affiliateLink: 'https://coursera.org/course/react?affiliate=test',
+        price: 49.99,
+      },
+    ],
+    providers: ['Coursera'],
+  }),
 }));
 
 describe('Transition API Routes', () => {

@@ -8,6 +8,7 @@ const serviceFactory = ServiceFactory.getInstance();
 export const database = new ConvexDatabaseProvider();
 export const fileStorage = serviceFactory.createFileStorageProvider();
 export const analysis = serviceFactory.createAnalysisProvider();
+export const transitionAnalysis = serviceFactory.createTransitionAnalysisProvider();
 
 // Export types
 export * from './types';

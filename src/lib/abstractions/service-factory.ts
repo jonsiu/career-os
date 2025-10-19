@@ -3,13 +3,14 @@ import { ConvexDatabaseProvider } from './providers/convex-database';
 import { ConvexFileStorageProvider } from './providers/convex-file-storage';
 import { ConvexAnalysisProvider } from './providers/convex-analysis';
 import { AnthropicAnalysisProvider } from './providers/anthropic-analysis';
+import { TransitionAnalysisProvider } from './providers/transition-analysis';
 
 // Service factory for creating provider instances
 export class ServiceFactory {
   private static instance: ServiceFactory;
-  
+
   private constructor() {}
-  
+
   static getInstance(): ServiceFactory {
     if (!ServiceFactory.instance) {
       ServiceFactory.instance = new ServiceFactory();
@@ -37,6 +38,12 @@ export class ServiceFactory {
   createAIAnalysisProvider(): AnalysisProvider {
     console.log('✅ ServiceFactory: Using Anthropic-based AI analysis provider');
     return new AnthropicAnalysisProvider();
+  }
+
+  // Create transition analysis provider - specialized for career transitions
+  createTransitionAnalysisProvider(): TransitionAnalysisProvider {
+    console.log('✅ ServiceFactory: Using Transition Analysis provider (multi-model AI)');
+    return new TransitionAnalysisProvider();
   }
 
   // Get database provider for AI parsing (server-side)

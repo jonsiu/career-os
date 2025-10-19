@@ -120,12 +120,41 @@ export default defineSchema({
       v.literal("completed")
     ),
     metadata: v.optional(v.any()),
+    // NEW: Transition-specific fields (all optional for backward compatibility)
+    transitionTypes: v.optional(v.array(v.union(
+      v.literal("cross-role"),
+      v.literal("cross-industry"),
+      v.literal("cross-function")
+    ))),
+    primaryTransitionType: v.optional(v.string()),
+    currentRole: v.optional(v.string()),
+    targetRole: v.optional(v.string()),
+    currentIndustry: v.optional(v.string()),
+    targetIndustry: v.optional(v.string()),
+    bridgeRoles: v.optional(v.array(v.string())),
+    estimatedTimeline: v.optional(v.object({
+      minMonths: v.number(),
+      maxMonths: v.number(),
+      factors: v.array(v.string()),
+    })),
+    benchmarkData: v.optional(v.object({
+      similarTransitions: v.string(),
+      averageTimeline: v.string(),
+      successRate: v.optional(v.number()),
+    })),
+    progressPercentage: v.optional(v.number()),
+    careerCapitalAssessment: v.optional(v.object({
+      uniqueSkills: v.array(v.string()),
+      rareSkillCombinations: v.array(v.string()),
+      competitiveAdvantages: v.array(v.string()),
+    })),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user_id", ["userId"])
     .index("by_status", ["status"])
-    .index("by_created_at", ["createdAt"]),
+    .index("by_created_at", ["createdAt"])
+    .index("by_transition_type", ["userId", "primaryTransitionType"]),
 
   skills: defineTable({
     userId: v.id("users"),
@@ -160,6 +189,31 @@ export default defineSchema({
     resources: v.array(v.any()), // Resource objects
     notes: v.optional(v.string()),
     metadata: v.optional(v.any()),
+    // NEW: Transition-specific fields (all optional for backward compatibility)
+    transitionPlanId: v.optional(v.id("plans")),
+    criticalityLevel: v.optional(v.union(
+      v.literal("critical"),
+      v.literal("important"),
+      v.literal("nice-to-have")
+    )),
+    transferableFrom: v.optional(v.array(v.string())),
+    onetCode: v.optional(v.string()),
+    skillComplexity: v.optional(v.union(
+      v.literal("basic"),
+      v.literal("intermediate"),
+      v.literal("advanced")
+    )),
+    estimatedLearningTime: v.optional(v.object({
+      minWeeks: v.number(),
+      maxWeeks: v.number(),
+    })),
+    affiliateCourses: v.optional(v.array(v.object({
+      provider: v.string(),
+      title: v.string(),
+      url: v.string(),
+      affiliateLink: v.string(),
+      price: v.optional(v.number()),
+    }))),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -167,7 +221,9 @@ export default defineSchema({
     .index("by_category", ["category"])
     .index("by_status", ["status"])
     .index("by_priority", ["priority"])
-    .index("by_created_at", ["createdAt"]),
+    .index("by_created_at", ["createdAt"])
+    .index("by_transition_plan", ["transitionPlanId"])
+    .index("by_criticality", ["userId", "criticalityLevel"]),
 
   files: defineTable({
     userId: v.id("users"),

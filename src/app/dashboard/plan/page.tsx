@@ -5,15 +5,17 @@ import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Target, 
-  Calendar, 
-  Clock, 
+import {
+  Target,
+  Calendar,
+  Clock,
   Award,
   BarChart3,
+  TrendingUp,
 } from "lucide-react";
 import { DevelopmentRoadmap } from "@/components/planning/development-roadmap";
 import { SkillsTracking } from "@/components/planning/skills-tracking";
+import { TransitionPlanningTab } from "@/components/planning/transition-planning-tab";
 import { Plan } from "@/lib/abstractions/types";
 
 export default function PlanPage() {
@@ -113,7 +115,7 @@ export default function PlanPage() {
 
       {/* Development Planning Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="roadmap" className="flex items-center gap-2">
             <Target className="h-4 w-4" />
             Development Roadmap
@@ -122,10 +124,14 @@ export default function PlanPage() {
             <Award className="h-4 w-4" />
             Skills Tracking
           </TabsTrigger>
+          <TabsTrigger value="transitions" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Transition Planning
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="roadmap" className="mt-6">
-          <DevelopmentRoadmap 
+          <DevelopmentRoadmap
             plans={userPlans}
             onPlanCreated={handlePlanCreated}
             onPlanUpdated={handlePlanUpdated}
@@ -134,6 +140,10 @@ export default function PlanPage() {
 
         <TabsContent value="skills" className="mt-6">
           <SkillsTracking />
+        </TabsContent>
+
+        <TabsContent value="transitions" className="mt-6">
+          <TransitionPlanningTab />
         </TabsContent>
       </Tabs>
 

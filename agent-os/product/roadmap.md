@@ -30,13 +30,13 @@ Focus on features that help users successfully transition between roles, industr
 
 ### Transition-Specific Features
 
-1. [ ] **Transition Type Identification & Planning** — Guided assessment to identify transition type (cross-role, cross-industry, cross-function) and create tailored roadmap. Generate realistic timeline based on skill gaps and development speed. `M`
+1. [x] **Transition Type Identification & Planning** — Guided assessment to identify transition type (cross-role, cross-industry, cross-function) and create tailored roadmap. Generate realistic timeline based on skill gaps and development speed. `COMPLETED`
 
 2. [ ] **Experience Translation Engine** — AI-powered tool that reframes existing experience for new role/industry context. Input: "Finance Analyst experience" → Output: "How to position for FinTech Product Manager role." Includes keyword mapping and narrative guidance. `L`
 
-3. [ ] **Skill Gap Analysis for Transitions** — Compare current skills (from resume) to target role requirements. Identify critical gaps, nice-to-have skills, and transferable strengths. Prioritize skill development by impact and timeline. Research-backed skill taxonomies. `M`
+3. [x] **Skill Gap Analysis for Transitions** — Compare current skills (from resume) to target role requirements. Identify critical gaps, nice-to-have skills, and transferable strengths. Prioritize skill development by impact and timeline. Research-backed skill taxonomies. `COMPLETED` *(Integrated with Transition Type Identification & Planning feature)*
 
-4. [ ] **Career Capital Assessment** — Analyze user's unique skill combinations to identify rare and valuable "career capital." Highlight which skills are common vs. differentiated. Recommend skill combinations that create competitive advantages. `M`
+4. [x] **Career Capital Assessment** — Analyze user's unique skill combinations to identify rare and valuable "career capital." Highlight which skills are common vs. differentiated. Recommend skill combinations that create competitive advantages. `COMPLETED` *(Integrated with Transition Type Identification & Planning feature)*
 
 5. [ ] **Deliberate Practice Tracker** — Structured skill development system with practice session logging, progress tracking, and feedback loops. Integrate with learning resources (Coursera, Udemy, LinkedIn Learning) via affiliate partnerships. `L`
 

@@ -10,6 +10,115 @@ jest.mock('@clerk/nextjs/server', () => ({
   auth: jest.fn(() => Promise.resolve({ userId: 'test-user-123' })),
 }));
 
+// Mock Anthropic SDK
+jest.mock('@anthropic-ai/sdk', () => {
+  return jest.fn().mockImplementation(() => ({
+    messages: {
+      create: jest.fn().mockImplementation((params) => {
+        const prompt = params.messages[0].content;
+        let responseData;
+
+        // Return different data based on which endpoint is calling
+        // Check most specific patterns first
+        if (prompt.includes('Generate a personalized')) {
+          // Roadmap endpoint
+          responseData = {
+            timeline: {
+              minMonths: 8,
+              maxMonths: 12,
+              factors: ['Leadership experience', 'Team size', 'Company culture'],
+            },
+            milestones: [
+              {
+                title: 'Leadership Training',
+                description: 'Complete leadership courses',
+                targetMonth: 2,
+                effortWeeks: 4,
+                status: 'pending',
+              },
+              {
+                title: 'Mentor Junior Engineers',
+                description: 'Start mentoring 1-2 junior team members',
+                targetMonth: 6,
+                effortWeeks: 12,
+                status: 'pending',
+              },
+            ],
+            bridgeRoles: ['Tech Lead', 'Team Lead'],
+            recommendations: ['Build leadership skills', 'Gain team management experience'],
+          };
+        } else if (prompt.includes('Analyze the skill gap')) {
+          // Skills gap endpoint - use specific phrase from route
+          responseData = {
+            skillGaps: [
+              {
+                skill: 'People Management',
+                criticality: 'critical',
+                currentLevel: 'beginner',
+                targetLevel: 'intermediate',
+                transferable: false,
+                transferableFrom: [],
+                learningTime: { minWeeks: 12, maxWeeks: 24 },
+                complexity: 'advanced',
+              },
+              {
+                skill: 'Strategic Planning',
+                criticality: 'important',
+                currentLevel: 'beginner',
+                targetLevel: 'advanced',
+                transferable: true,
+                transferableFrom: ['Project Management'],
+                learningTime: { minWeeks: 8, maxWeeks: 16 },
+                complexity: 'intermediate',
+              },
+            ],
+          };
+        } else if (prompt.includes('benchmarking data')) {
+          // Benchmark endpoint
+          responseData = {
+            similarTransitions: 'IC to Manager transitions in tech',
+            averageTimeline: '8-12 months',
+            successRate: 75,
+            keyFactors: ['Leadership skills', 'Team management experience', 'Strategic thinking'],
+            challenges: ['Skill gaps', 'Time management', 'Team dynamics'],
+            sampleSize: 150,
+            confidence: 'high',
+          };
+        } else {
+          // Default response for identify endpoint
+          responseData = {
+            transitionTypes: ['cross-role'],
+            primaryTransitionType: 'cross-role',
+            currentRole: 'Software Engineer',
+            targetRole: 'Engineering Manager',
+            currentIndustry: 'Technology',
+            targetIndustry: 'Technology',
+            analysis: 'This is a cross-role transition focusing on leadership development.',
+          };
+        }
+
+        return Promise.resolve({
+          id: 'msg_test123',
+          type: 'message',
+          role: 'assistant',
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(responseData),
+            },
+          ],
+          model: 'claude-3-5-sonnet-20241022',
+          stop_reason: 'end_turn',
+          usage: {
+            input_tokens: 100,
+            output_tokens: 200,
+          },
+        });
+      }),
+    },
+  }));
+});
+
 // Mock Convex database provider
 jest.mock('@/lib/abstractions/providers/convex-database', () => ({
   ConvexDatabaseProvider: jest.fn().mockImplementation(() => ({
@@ -223,7 +332,7 @@ describe('Transition API Routes', () => {
 
       const data = await response.json();
       expect(data.success).toBe(true);
-      expect(data.data.onetValidation).toBe(false);
+      expect(data.onetValidation).toBe(false);
     });
   });
 

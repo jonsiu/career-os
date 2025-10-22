@@ -12,10 +12,12 @@ import {
   Award,
   BarChart3,
   TrendingUp,
+  Lightbulb,
 } from "lucide-react";
 import { DevelopmentRoadmap } from "@/components/planning/development-roadmap";
 import { SkillsTracking } from "@/components/planning/skills-tracking";
 import { TransitionPlanningTab } from "@/components/planning/transition-planning-tab";
+import { SkillGapAnalysisTab } from "@/components/skill-gap/SkillGapAnalysisTab";
 import { Plan } from "@/lib/abstractions/types";
 
 export default function PlanPage() {
@@ -115,7 +117,7 @@ export default function PlanPage() {
 
       {/* Development Planning Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="roadmap" className="flex items-center gap-2">
             <Target className="h-4 w-4" />
             Development Roadmap
@@ -123,6 +125,10 @@ export default function PlanPage() {
           <TabsTrigger value="skills" className="flex items-center gap-2">
             <Award className="h-4 w-4" />
             Skills Tracking
+          </TabsTrigger>
+          <TabsTrigger value="skill-gap" className="flex items-center gap-2">
+            <Lightbulb className="h-4 w-4" />
+            Skill Gap Analysis
           </TabsTrigger>
           <TabsTrigger value="transitions" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
@@ -140,6 +146,10 @@ export default function PlanPage() {
 
         <TabsContent value="skills" className="mt-6">
           <SkillsTracking />
+        </TabsContent>
+
+        <TabsContent value="skill-gap" className="mt-6">
+          <SkillGapAnalysisTab userId={user.id} />
         </TabsContent>
 
         <TabsContent value="transitions" className="mt-6">

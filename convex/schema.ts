@@ -277,4 +277,95 @@ export default defineSchema({
     .index("by_user_id", ["userId"])
     .index("by_current_step", ["currentStep"])
     .index("by_created_at", ["createdAt"]),
+
+  // NEW: O*NET Cache table for occupation data caching
+  onetCache: defineTable({
+    occupationCode: v.string(), // O*NET SOC code (e.g., "15-1252.00")
+    occupationTitle: v.string(),
+    skills: v.array(v.object({
+      skillName: v.string(),
+      skillCode: v.string(),
+      importance: v.number(), // 1-100
+      level: v.number(), // 0-7 scale from O*NET
+      category: v.string(), // "Basic Skills", "Technical Skills", etc.
+    })),
+    knowledgeAreas: v.array(v.object({
+      name: v.string(),
+      level: v.number(),
+      importance: v.number(),
+    })),
+    abilities: v.array(v.object({
+      name: v.string(),
+      level: v.number(),
+      importance: v.number(),
+    })),
+    laborMarketData: v.object({
+      employmentOutlook: v.string(),
+      medianSalary: v.optional(v.number()),
+      growthRate: v.optional(v.number()),
+    }),
+    cacheVersion: v.string(), // O*NET database version
+    createdAt: v.number(),
+    expiresAt: v.number(), // 30-day TTL
+  })
+    .index("by_occupation_code", ["occupationCode"])
+    .index("by_expires_at", ["expiresAt"]), // for cache cleanup
+
+  // NEW: Skill Gap Analyses table for career transition planning
+  skillGapAnalyses: defineTable({
+    userId: v.id("users"),
+    resumeId: v.id("resumes"),
+    targetRole: v.string(),
+    targetRoleONetCode: v.optional(v.string()), // O*NET SOC code
+    criticalGaps: v.array(v.object({
+      skillName: v.string(),
+      onetCode: v.optional(v.string()),
+      importance: v.number(), // 1-100
+      currentLevel: v.number(), // 0-100
+      targetLevel: v.number(), // 0-100
+      priorityScore: v.number(), // composite score
+      timeEstimate: v.number(), // hours
+      marketDemand: v.number(), // 1-100 from O*NET
+    })),
+    niceToHaveGaps: v.array(v.object({
+      skillName: v.string(),
+      onetCode: v.optional(v.string()),
+      importance: v.number(),
+      currentLevel: v.number(),
+      targetLevel: v.number(),
+      priorityScore: v.number(),
+      timeEstimate: v.number(),
+    })),
+    transferableSkills: v.array(v.object({
+      skillName: v.string(),
+      currentLevel: v.number(),
+      applicability: v.number(), // 1-100
+      transferExplanation: v.string(), // AI-generated
+      confidence: v.number(), // 0-1
+    })),
+    prioritizedRoadmap: v.array(v.object({
+      phase: v.number(), // 1, 2, 3 for learning sequence
+      skills: v.array(v.string()),
+      estimatedDuration: v.number(), // weeks
+      milestoneTitle: v.string(),
+    })),
+    userAvailability: v.number(), // hours per week
+    transitionType: v.string(), // "lateral", "upward", "career-change"
+    completionProgress: v.number(), // 0-100, calculated from Skills Tracker
+    contentHash: v.string(), // SHA-256 of resume content
+    analysisVersion: v.string(), // "1.0" for versioning algorithm changes
+    metadata: v.object({
+      onetDataVersion: v.string(),
+      aiModel: v.string(), // "claude-3-5-sonnet" or "gpt-4"
+      affiliateClickCount: v.number(),
+      lastProgressUpdate: v.number(),
+    }),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user_id", ["userId"])
+    .index("by_resume_id", ["resumeId"])
+    .index("by_target_role", ["targetRole"])
+    .index("by_content_hash", ["contentHash"])
+    .index("by_created_at", ["createdAt"]),
 });

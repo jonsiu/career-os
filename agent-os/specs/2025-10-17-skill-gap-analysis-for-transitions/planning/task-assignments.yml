@@ -1,0 +1,48 @@
+task_assignments:
+  - task_group: "Task Group 1.1: Schema Design & O*NET Cache"
+    assigned_subagent: "database-engineer"
+
+  - task_group: "Task Group 1.2: Skill Gap Analysis Schema"
+    assigned_subagent: "database-engineer"
+
+  - task_group: "Task Group 2.1: O*NET Provider Abstraction"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 2.2: Multi-Factor Prioritization Algorithm"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 2.3: AI Transferable Skills Matcher"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 3.1: Skill Gap Analysis API Endpoints"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 3.2: O*NET Integration API Endpoints"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 3.3: Affiliate Recommendations API"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 4.1: Analysis Wizard Flow"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 4.2: Visualization Components"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 4.3: Course Recommendations UI"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 4.4: Progress Dashboard & Historical Tracking"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 4.5: Integration with Career Planning Page"
+    assigned_subagent: "ui-designer"
+
+  - task_group: "Task Group 5.1: End-to-End Integration Testing"
+    assigned_subagent: "testing-engineer"
+
+  - task_group: "Task Group 5.2: Performance Optimization & Monitoring"
+    assigned_subagent: "api-engineer"
+
+  - task_group: "Task Group 5.3: Revenue Analytics & Affiliate Tracking"
+    assigned_subagent: "api-engineer"

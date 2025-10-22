@@ -14,24 +14,24 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** None
 **Estimated Time:** 4-6 hours
 
-- [ ] 1.1.0 Complete database foundation layer
-  - [ ] 1.1.1 Write 2-8 focused tests for `onetCache` table operations
+- [x] 1.1.0 Complete database foundation layer
+  - [x] 1.1.1 Write 2-8 focused tests for `onetCache` table operations
     - Test O*NET occupation data insertion with TTL
     - Test cache retrieval by occupation code
     - Test cache expiration logic (30-day TTL)
     - Verify cache cleanup of expired entries
     - Limit to critical CRUD operations only
-  - [ ] 1.1.2 Create `onetCache` table in Convex schema
+  - [x] 1.1.2 Create `onetCache` table in Convex schema
     - Fields: occupationCode, occupationTitle, skills[], knowledgeAreas[], abilities[], laborMarketData, cacheVersion, createdAt, expiresAt
     - Follow pattern from: `convex/schema.ts` existing tables
     - Add indexes: by_occupation_code, by_expires_at
-  - [ ] 1.1.3 Create Convex operations file `convex/onetCache.ts`
+  - [x] 1.1.3 Create Convex operations file `convex/onetCache.ts`
     - Query: `getOccupation(code: string)`
     - Query: `searchOccupations(query: string)`
     - Query: `getValidCache(code: string)` - checks expiration
     - Mutation: `cacheOccupation(code: string, data: OccupationSkills)`
     - Mutation: `cleanupExpiredCache()` - removes expired entries
-  - [ ] 1.1.4 Ensure O*NET cache tests pass
+  - [x] 1.1.4 Ensure O*NET cache tests pass
     - Run ONLY the 2-8 tests written in 1.1.1
     - Verify cache TTL logic works correctly
     - Do NOT run entire test suite at this stage
@@ -47,18 +47,18 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** None (parallel with 1.1)
 **Estimated Time:** 4-6 hours
 
-- [ ] 1.2.0 Complete skill gap analysis data model
-  - [ ] 1.2.1 Write 2-8 focused tests for `skillGapAnalyses` table operations
+- [x] 1.2.0 Complete skill gap analysis data model
+  - [x] 1.2.1 Write 2-8 focused tests for `skillGapAnalyses` table operations
     - Test analysis creation with all required fields
     - Test retrieval by userId and resumeId
     - Test content hash-based cache lookup
     - Test progress update mutation
     - Limit to critical data integrity tests only
-  - [ ] 1.2.2 Create `skillGapAnalyses` table in Convex schema
+  - [x] 1.2.2 Create `skillGapAnalyses` table in Convex schema
     - Fields: userId, resumeId, targetRole, targetRoleONetCode, criticalGaps[], niceToHaveGaps[], transferableSkills[], prioritizedRoadmap[], userAvailability, transitionType, completionProgress, contentHash, analysisVersion, metadata, createdAt, updatedAt
     - Follow pattern from: `convex/schema.ts` analysisResults table
     - Add indexes: by_user_id, by_resume_id, by_target_role, by_content_hash, by_created_at
-  - [ ] 1.2.3 Create Convex operations file `convex/skillGapAnalyses.ts`
+  - [x] 1.2.3 Create Convex operations file `convex/skillGapAnalyses.ts`
     - Query: `getById(analysisId: Id<"skillGapAnalyses">)`
     - Query: `getByUserId(userId: Id<"users">)`
     - Query: `getByResumeId(resumeId: Id<"resumes">)`
@@ -68,7 +68,7 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Mutation: `update(analysisId: Id<"skillGapAnalyses">, updates: Partial<SkillGapAnalysis>)`
     - Mutation: `updateProgress(analysisId: Id<"skillGapAnalyses">, completionProgress: number)`
     - Mutation: `delete(analysisId: Id<"skillGapAnalyses">)`
-  - [ ] 1.2.4 Ensure skill gap analysis schema tests pass
+  - [x] 1.2.4 Ensure skill gap analysis schema tests pass
     - Run ONLY the 2-8 tests written in 1.2.1
     - Verify content hash caching works
     - Do NOT run entire test suite at this stage
@@ -86,31 +86,31 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 1.1
 **Estimated Time:** 6-8 hours
 
-- [ ] 2.1.0 Complete O*NET integration provider
-  - [ ] 2.1.1 Write 2-8 focused tests for O*NET provider
+- [x] 2.1.0 Complete O*NET integration provider
+  - [x] 2.1.1 Write 2-8 focused tests for O*NET provider
     - Test occupation search with valid query
     - Test occupation skills retrieval with caching
     - Test cache hit vs. cache miss scenarios
     - Test API rate limit handling
     - Limit to critical integration paths only
-  - [ ] 2.1.2 Add ONetProvider interface to `src/lib/abstractions/types.ts`
+  - [x] 2.1.2 Add ONetProvider interface to `src/lib/abstractions/types.ts`
     - Methods: searchOccupations(query: string), getOccupationSkills(code: string), getSkillComplexity(skillCode: string), getCachedOccupation(code: string), cacheOccupation(code: string, data: OccupationSkills)
     - Follow pattern from: existing provider interfaces (AnalysisProvider, DatabaseProvider)
     - Include proper TypeScript types for O*NET data structures
-  - [ ] 2.1.3 Implement ONetProvider in `src/lib/abstractions/providers/onet-provider.ts`
+  - [x] 2.1.3 Implement ONetProvider in `src/lib/abstractions/providers/onet-provider.ts`
     - Use O*NET Web Services API (https://services.onetcenter.org/)
     - Implement caching layer using `onetCache` Convex table from 1.1.3
     - Handle API rate limits (5 requests/second)
     - Fallback to cached data if API unavailable
     - Map O*NET skill levels (0-7 scale) to CareerOS scale (0-100)
-  - [ ] 2.1.4 Update ServiceFactory in `src/lib/abstractions/service-factory.ts`
+  - [x] 2.1.4 Update ServiceFactory in `src/lib/abstractions/service-factory.ts`
     - Add createONetProvider(): ONetProvider method
     - Follow pattern from: existing provider factory methods
     - Export singleton instance
-  - [ ] 2.1.5 Update exports in `src/lib/abstractions/index.ts`
+  - [x] 2.1.5 Update exports in `src/lib/abstractions/index.ts`
     - Export onet provider instance
     - Follow pattern from: database, analysis exports
-  - [ ] 2.1.6 Ensure O*NET provider tests pass
+  - [x] 2.1.6 Ensure O*NET provider tests pass
     - Run ONLY the 2-8 tests written in 2.1.1
     - Verify cache layer integration works
     - Do NOT run entire test suite at this stage
@@ -126,38 +126,38 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 2.1
 **Estimated Time:** 6-8 hours
 
-- [ ] 2.2.0 Complete skill gap prioritization logic
-  - [ ] 2.2.1 Write 2-8 focused tests for prioritization algorithm
+- [x] 2.2.0 Complete skill gap prioritization logic
+  - [x] 2.2.1 Write 2-8 focused tests for prioritization algorithm
     - Test priority score calculation with different weights
     - Test quick wins identification (high impact, low time)
     - Test learning velocity multiplier from Skills Tracker history
     - Test edge cases (no skills history, missing O*NET data)
     - Limit to algorithm logic verification only
-  - [ ] 2.2.2 Create SkillGapAnalyzer service class in `src/lib/services/skill-gap-analyzer.ts`
+  - [x] 2.2.2 Create SkillGapAnalyzer service class in `src/lib/services/skill-gap-analyzer.ts`
     - Method: analyzeGap(resumeSkills[], targetSkills[], userAvailability: number)
     - Method: prioritizeGaps(gaps[], learningVelocity: number) - implements multi-factor algorithm
     - Method: estimateTimeline(gap, userAvailability, learningVelocity)
     - Method: generateRoadmap(prioritizedGaps[], userAvailability)
     - Follow pattern from: existing service classes
-  - [ ] 2.2.3 Implement multi-factor prioritization algorithm
+  - [x] 2.2.3 Implement multi-factor prioritization algorithm
     - Formula: PriorityScore = (ImpactOnRoleReadiness * 0.30 + (1/TimeToAcquire_normalized) * 0.25 + MarketDemand * 0.20 + CareerCapital * 0.15 + LearningVelocity * 0.10) * 100
     - ImpactOnRoleReadiness: from O*NET importance rating (0-1)
     - TimeToAcquire: from O*NET complexity, normalized (0-1, inverse)
     - MarketDemand: from O*NET labor market data (0-1)
     - CareerCapital: calculated as (importance * rarity_inverse) (0-1)
     - LearningVelocity: from user's Skills Tracker historical velocity (0-1)
-  - [ ] 2.2.4 Implement timeline estimation algorithm
+  - [x] 2.2.4 Implement timeline estimation algorithm
     - BaseComplexityHours: Basic (O*NET 0-3): 40-80h, Intermediate (4-5): 80-160h, Advanced (6-7): 160-400h
     - LearningVelocityMultiplier: Fast (>1.2): 0.8x, Average (0.8-1.2): 1.0x, Slow (<0.8): 1.3x
     - SkillLevelGapMultiplier: Gap 0-30%: 1.0x, 31-60%: 1.5x, 61-100%: 2.0x
     - EstimatedHours = BaseComplexityHours * LearningVelocityMultiplier * SkillLevelGapMultiplier
     - WeeksToComplete = EstimatedHours / UserAvailabilityHoursPerWeek
-  - [ ] 2.2.5 Calculate learning velocity from Skills Tracker history
+  - [x] 2.2.5 Calculate learning velocity from Skills Tracker history
     - Query user's skills via DatabaseProvider.getUserSkills()
     - Calculate velocity = average(timeSpent / estimatedTimeToTarget) across completed skills
     - Handle edge case: no skills history (default to 1.0 = average learner)
     - Reuse pattern from: convex/skills.ts
-  - [ ] 2.2.6 Ensure prioritization algorithm tests pass
+  - [x] 2.2.6 Ensure prioritization algorithm tests pass
     - Run ONLY the 2-8 tests written in 2.2.1
     - Verify weighted scoring produces expected rankings
     - Do NOT run entire test suite at this stage
@@ -173,34 +173,34 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 2.1
 **Estimated Time:** 6-8 hours
 
-- [ ] 2.3.0 Complete AI-powered transferable skills analysis
-  - [ ] 2.3.1 Write 2-8 focused tests for transferable skills matcher
+- [x] 2.3.0 Complete AI-powered transferable skills analysis
+  - [x] 2.3.1 Write 2-8 focused tests for transferable skills matcher
     - Test AI prompt construction with resume/target skills
     - Test response parsing and validation
     - Test confidence scoring (0-1 scale)
     - Test fallback to O*NET baseline if AI fails
     - Limit to critical AI integration paths only
-  - [ ] 2.3.2 Create TransferableSkillsMatcher service in `src/lib/services/transferable-skills-matcher.ts`
+  - [x] 2.3.2 Create TransferableSkillsMatcher service in `src/lib/services/transferable-skills-matcher.ts`
     - Method: findTransferableSkills(currentSkills[], targetSkills[], currentRole: string, targetRole: string)
     - Method: explainTransfer(skillName: string, currentContext: string, targetContext: string)
     - Method: calculateTransferConfidence(skill, explanation) - returns 0-1 confidence score
     - Follow pattern from: src/lib/abstractions/providers/anthropic-analysis.ts
-  - [ ] 2.3.3 Implement AI prompt template for skill transfer analysis
+  - [x] 2.3.3 Implement AI prompt template for skill transfer analysis
     - System: "You are a career transition expert analyzing transferable skills."
     - User prompt includes: CURRENT ROLE SKILLS (from resume), TARGET ROLE REQUIREMENTS (from O*NET)
     - Prompt requests: (1) Direct skill overlap, (2) Adjacent skills, (3) Meta-skills, (4) Domain knowledge transfer
     - Expected JSON response: { transferableSkills: [{ skillName, currentLevel, applicabilityToTarget, transferRationale, confidence }], transferPatterns: [] }
     - Reuse pattern from: existing AI analysis prompts
-  - [ ] 2.3.4 Integrate with Anthropic Claude API (claude-3-5-sonnet model)
+  - [x] 2.3.4 Integrate with Anthropic Claude API (claude-3-5-sonnet model)
     - Server-side API call to avoid exposing API keys
     - Use streaming for real-time feedback (optional for MVP)
     - Implement proper error handling and timeout (30 sec max)
     - Cache AI responses by skill pair hash to reduce costs
-  - [ ] 2.3.5 Implement O*NET baseline skill overlap detection
+  - [x] 2.3.5 Implement O*NET baseline skill overlap detection
     - Use O*NET skill codes to find exact matches
     - Calculate baseline transferability score without AI
     - Use as fallback if AI analysis fails or times out
-  - [ ] 2.3.6 Ensure transferable skills matcher tests pass
+  - [x] 2.3.6 Ensure transferable skills matcher tests pass
     - Run ONLY the 2-8 tests written in 2.3.1
     - Verify AI responses parsed correctly
     - Do NOT run entire test suite at this stage
@@ -218,14 +218,14 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Groups 2.1, 2.2, 2.3
 **Estimated Time:** 6-8 hours
 
-- [ ] 3.1.0 Complete skill gap analysis API layer
-  - [ ] 3.1.1 Write 2-8 focused tests for analysis API endpoints
+- [x] 3.1.0 Complete skill gap analysis API layer
+  - [x] 3.1.1 Write 2-8 focused tests for analysis API endpoints
     - Test POST /api/skill-gap/analyze with valid inputs
     - Test authentication requirement (Clerk)
     - Test cache hit scenario (existing contentHash)
     - Test error handling (missing resume, invalid O*NET code)
     - Limit to critical API contract tests only
-  - [ ] 3.1.2 Create POST /api/skill-gap/analyze endpoint in `src/app/api/skill-gap/analyze/route.ts`
+  - [x] 3.1.2 Create POST /api/skill-gap/analyze endpoint in `src/app/api/skill-gap/analyze/route.ts`
     - Input: { resumeId, targetRole, targetRoleONetCode?, userAvailability }
     - Validate Clerk authentication
     - Extract skills from resume using AnalysisProvider.parseResumeContent()
@@ -235,22 +235,22 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - Save analysis to skillGapAnalyses table
     - Output: { analysisId, criticalGaps, niceToHaveGaps, transferableSkills, roadmap }
     - Follow pattern from: src/app/api/analysis/ existing routes
-  - [ ] 3.1.3 Create GET /api/skill-gap/[analysisId] endpoint
+  - [x] 3.1.3 Create GET /api/skill-gap/[analysisId] endpoint
     - Retrieve analysis by ID via skillGapAnalyses.getById()
     - Validate user owns the analysis (security check)
     - Return full analysis data
-  - [ ] 3.1.4 Create GET /api/skill-gap/history endpoint
+  - [x] 3.1.4 Create GET /api/skill-gap/history endpoint
     - Query: userId from Clerk session
     - Retrieve via skillGapAnalyses.getByUserId()
     - Return array of historical analyses with metadata
     - Sort by createdAt descending
-  - [ ] 3.1.5 Create POST /api/skill-gap/progress endpoint
+  - [x] 3.1.5 Create POST /api/skill-gap/progress endpoint
     - Input: { analysisId }
     - Calculate completionProgress from Skills Tracker
     - Query skills matching analysis gaps via DatabaseProvider.getUserSkillsByStatus()
     - Progress = (completedSkillsCount / totalGapsCount) * 100
     - Update via skillGapAnalyses.updateProgress()
-  - [ ] 3.1.6 Ensure skill gap API tests pass
+  - [x] 3.1.6 Ensure skill gap API tests pass
     - Run ONLY the 2-8 tests written in 3.1.1
     - Verify authentication and authorization working
     - Do NOT run entire test suite at this stage
@@ -266,28 +266,28 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 2.1
 **Estimated Time:** 3-4 hours
 
-- [ ] 3.2.0 Complete O*NET API integration layer
-  - [ ] 3.2.1 Write 2-8 focused tests for O*NET API endpoints
+- [x] 3.2.0 Complete O*NET API integration layer
+  - [x] 3.2.1 Write 2-8 focused tests for O*NET API endpoints
     - Test GET /api/onet/search with query string
     - Test GET /api/onet/occupation/[code] with valid code
     - Test cache utilization (no redundant API calls)
     - Test error handling (invalid code, API timeout)
     - Limit to critical O*NET integration tests only
-  - [ ] 3.2.2 Create GET /api/onet/search endpoint in `src/app/api/onet/search/route.ts`
+  - [x] 3.2.2 Create GET /api/onet/search endpoint in `src/app/api/onet/search/route.ts`
     - Query param: query (occupation name search string)
     - Call ONetProvider.searchOccupations(query)
     - Return: { occupations: [{ code, title, description }] }
     - Implement pagination (limit: 20 results)
-  - [ ] 3.2.3 Create GET /api/onet/occupation/[code] endpoint
+  - [x] 3.2.3 Create GET /api/onet/occupation/[code] endpoint
     - Param: code (O*NET SOC code)
     - Call ONetProvider.getOccupationSkills(code)
     - Return full occupation details with skills, knowledge areas, abilities
     - Cache result via ONetProvider.cacheOccupation()
-  - [ ] 3.2.4 Create GET /api/onet/skills/[code] endpoint
+  - [x] 3.2.4 Create GET /api/onet/skills/[code] endpoint
     - Param: code (O*NET SOC code)
     - Return only skills array (subset of occupation details)
     - Optimized for skill gap analysis consumption
-  - [ ] 3.2.5 Ensure O*NET API tests pass
+  - [x] 3.2.5 Ensure O*NET API tests pass
     - Run ONLY the 2-8 tests written in 3.2.1
     - Verify cache layer reduces API calls
     - Do NOT run entire test suite at this stage
@@ -303,41 +303,41 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 3.1
 **Estimated Time:** 4-6 hours
 
-- [ ] 3.3.0 Complete affiliate course recommendations API
-  - [ ] 3.3.1 Write 2-8 focused tests for affiliate API endpoints
+- [x] 3.3.0 Complete affiliate course recommendations API
+  - [x] 3.3.1 Write 2-8 focused tests for affiliate API endpoints
     - Test POST /api/recommendations/courses with skill gaps
     - Test affiliate link generation with tracking tags
     - Test prioritization (top 3 courses per skill)
     - Test click tracking (POST /api/recommendations/track-click)
     - Limit to critical revenue-related tests only
-  - [ ] 3.3.2 Create AffiliateRecommendationEngine service in `src/lib/services/affiliate-recommendations.ts`
+  - [x] 3.3.2 Create AffiliateRecommendationEngine service in `src/lib/services/affiliate-recommendations.ts`
     - Method: getCourseRecommendations(skillGaps[], userPreferences?)
     - Method: generateAffiliateLink(course, userId, analysisId, skillName)
     - Method: prioritizeCourses(courses[], gap) - prioritize by gap criticality, ratings
     - Method: trackAffiliateClic(analysisId, skillName, courseProvider)
     - Follow pattern from: existing service classes
-  - [ ] 3.3.3 Create POST /api/recommendations/courses endpoint in `src/app/api/recommendations/courses/route.ts`
+  - [x] 3.3.3 Create POST /api/recommendations/courses endpoint in `src/app/api/recommendations/courses/route.ts`
     - Input: { analysisId, skillGaps[] }
     - For each skill gap, query affiliate partner APIs (Coursera, Udemy, LinkedIn Learning)
     - Generate affiliate links with unique tracking tags: careerosapp-{userId}-{analysisId}-{skillName}
     - Prioritize: top 3 courses per skill, sorted by ratings and relevance
     - Include free and paid options with clear labeling
     - Output: { recommendations: [{ skillName, courses: [{ title, provider, url, affiliateUrl, price, rating, estimatedHours }] }] }
-  - [ ] 3.3.4 Create POST /api/recommendations/track-click endpoint
+  - [x] 3.3.4 Create POST /api/recommendations/track-click endpoint
     - Input: { analysisId, skillName, courseProvider, courseUrl }
     - Increment metadata.affiliateClickCount in skillGapAnalyses table
     - Log click event for analytics (timestamp, skill, provider)
     - Return: { success: true }
-  - [ ] 3.3.5 Implement affiliate partner API integrations
+  - [x] 3.3.5 Implement affiliate partner API integrations
     - Coursera Partner API for course search and metadata
     - Udemy Affiliate API for course recommendations
     - LinkedIn Learning API (if available, or manual curation for MVP)
     - Handle API errors gracefully with fallback to cached data
-  - [ ] 3.3.6 Add affiliate disclosure per FTC guidelines
+  - [x] 3.3.6 Add affiliate disclosure per FTC guidelines
     - Return disclosure text with recommendations response
     - Text: "We may earn a commission from course purchases made through our links, at no additional cost to you."
     - Ensure disclosure is displayed in UI (handled in Phase 4)
-  - [ ] 3.3.7 Ensure affiliate recommendations API tests pass
+  - [x] 3.3.7 Ensure affiliate recommendations API tests pass
     - Run ONLY the 2-8 tests written in 3.3.1
     - Verify tracking tags generated correctly
     - Do NOT run entire test suite at this stage
@@ -355,35 +355,35 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Groups 3.1, 3.2
 **Estimated Time:** 6-8 hours
 
-- [ ] 4.1.0 Complete skill gap analysis wizard UI
-  - [ ] 4.1.1 Write 2-8 focused tests for wizard components
+- [x] 4.1.0 Complete skill gap analysis wizard UI
+  - [x] 4.1.1 Write 2-8 focused tests for wizard components
     - Test wizard navigation (next/prev step)
     - Test form validation (target role required, availability > 0)
     - Test submission flow (API call, loading states)
     - Test error handling (API failure, network timeout)
     - Limit to critical user interaction tests only
-  - [ ] 4.1.2 Create SkillGapWizard component in `src/components/skill-gap/SkillGapWizard.tsx`
+  - [x] 4.1.2 Create SkillGapWizard component in `src/components/skill-gap/SkillGapWizard.tsx`
     - Multi-step wizard: (1) Select Target Role, (2) Configure Analysis, (3) View Results, (4) Take Action
     - Use Radix UI Dialog or Tabs for wizard container
     - State management: current step, form data, loading states
     - Follow pattern from: src/components/onboarding/ wizard flow
-  - [ ] 4.1.3 Create TargetRoleSelector component in `src/components/skill-gap/TargetRoleSelector.tsx`
+  - [x] 4.1.3 Create TargetRoleSelector component in `src/components/skill-gap/TargetRoleSelector.tsx`
     - Autocomplete search using Radix UI Combobox
     - Fetch occupations from GET /api/onet/search on user input (debounced)
     - Display: occupation title, O*NET code, brief description
     - Option to enter custom role (not in O*NET)
     - Reuse pattern from: existing autocomplete components
-  - [ ] 4.1.4 Create AnalysisConfiguration component in `src/components/skill-gap/AnalysisConfiguration.tsx`
+  - [x] 4.1.4 Create AnalysisConfiguration component in `src/components/skill-gap/AnalysisConfiguration.tsx`
     - Input: user availability (hours/week) - number input with validation (1-40 range)
     - Optional: focus areas (checkboxes for skill categories)
     - Optional: preferred learning formats (online courses, books, mentorship)
     - Use existing form components from src/components/ui/
-  - [ ] 4.1.5 Integrate wizard with analysis API
+  - [x] 4.1.5 Integrate wizard with analysis API
     - On wizard completion, POST to /api/skill-gap/analyze
     - Handle loading state with spinner/skeleton
     - Handle errors with toast notifications
     - On success, navigate to results view (step 3)
-  - [ ] 4.1.6 Ensure wizard component tests pass
+  - [x] 4.1.6 Ensure wizard component tests pass
     - Run ONLY the 2-8 tests written in 4.1.1
     - Verify form validation and submission working
     - Do NOT run entire test suite at this stage
@@ -451,33 +451,33 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 3.3
 **Estimated Time:** 4-6 hours
 
-- [ ] 4.3.0 Complete course recommendations UI
-  - [ ] 4.3.1 Write 2-8 focused tests for recommendations components
+- [x] 4.3.0 Complete course recommendations UI
+  - [x] 4.3.1 Write 2-8 focused tests for recommendations components
     - Test course card rendering with affiliate links
     - Test click tracking (POST /api/recommendations/track-click)
     - Test free vs. paid course labeling
     - Test affiliate disclosure display
     - Limit to critical revenue interaction tests only
-  - [ ] 4.3.2 Create CourseRecommendations component in `src/components/skill-gap/CourseRecommendations.tsx`
+  - [x] 4.3.2 Create CourseRecommendations component in `src/components/skill-gap/CourseRecommendations.tsx`
     - Card-based layout: one card per skill gap
     - Each card shows top 3 courses with: title, provider logo, rating (stars), estimated hours, price (Free/Paid), affiliate link
     - Affiliate link onClick: track click via POST /api/recommendations/track-click, then open in new tab
     - Badge: "Quick Win" for high-priority, low-time courses
     - Lazy-load recommendations after initial analysis display (performance optimization)
-  - [ ] 4.3.3 Display affiliate disclosure per FTC guidelines
+  - [x] 4.3.3 Display affiliate disclosure per FTC guidelines
     - Prominent disclosure text above recommendations
     - Text: "We may earn a commission from course purchases made through our links, at no additional cost to you."
     - Use info icon with tooltip for detailed explanation
     - Ensure disclosure is visible before user clicks affiliate links
-  - [ ] 4.3.4 Implement course filtering and sorting
+  - [x] 4.3.4 Implement course filtering and sorting
     - Filter: by provider (Coursera, Udemy, LinkedIn Learning), by price (Free, Paid), by duration (<10hrs, 10-40hrs, >40hrs)
     - Sort: by rating (default), by price (low to high), by duration (shortest first)
     - Persist filter/sort preferences in localStorage
-  - [ ] 4.3.5 Add course preview modal (optional enhancement)
+  - [x] 4.3.5 Add course preview modal (optional enhancement)
     - On course card click (not affiliate link), show modal with: full description, syllabus, instructor info, reviews
     - Modal includes "Enroll Now" button with affiliate link
     - Use Radix UI Dialog for modal
-  - [ ] 4.3.6 Ensure course recommendations UI tests pass
+  - [x] 4.3.6 Ensure course recommendations UI tests pass
     - Run ONLY the 2-8 tests written in 4.3.1
     - Verify click tracking fires on affiliate link clicks
     - Do NOT run entire test suite at this stage
@@ -493,35 +493,35 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Groups 4.1, 4.2
 **Estimated Time:** 5-6 hours
 
-- [ ] 4.4.0 Complete progress tracking UI
-  - [ ] 4.4.1 Write 2-8 focused tests for progress components
+- [x] 4.4.0 Complete progress tracking UI
+  - [x] 4.4.1 Write 2-8 focused tests for progress components
     - Test progress calculation (closed gaps / total gaps)
     - Test historical analysis comparison (before/after)
     - Test gap closure trajectory chart rendering
     - Test re-run analysis flow
     - Limit to critical progress tracking tests only
-  - [ ] 4.4.2 Create ProgressDashboard component in `src/components/skill-gap/ProgressDashboard.tsx`
+  - [x] 4.4.2 Create ProgressDashboard component in `src/components/skill-gap/ProgressDashboard.tsx`
     - Summary metrics: "You've closed X of Y critical gaps since [date]"
     - Progress bar: visual representation of completion percentage
     - Gap closure trajectory: line chart showing progress over time (recharts/visx)
     - Milestone markers: link to Career Plan milestones created from roadmap
     - Motivational messaging: "Great progress!", "Keep learning!", "Almost there!"
-  - [ ] 4.4.3 Implement historical analysis comparison
+  - [x] 4.4.3 Implement historical analysis comparison
     - Fetch historical analyses via GET /api/skill-gap/history
     - Display timeline of past analyses with target roles and dates
     - On selection, show before/after comparison: gaps closed, new gaps identified, skills improved
     - Use diff highlighting (green = closed, red = new, yellow = still open)
-  - [ ] 4.4.4 Implement re-run analysis flow
+  - [x] 4.4.4 Implement re-run analysis flow
     - Button: "Re-run Analysis" to detect changes after resume updates
     - Check if resume content hash changed (indicates new resume version)
     - If changed, run new analysis; if unchanged, show cached result with message
     - Auto-calculate progress based on Skills Tracker status
-  - [ ] 4.4.5 Integrate with Skills Tracker for progress calculation
+  - [x] 4.4.5 Integrate with Skills Tracker for progress calculation
     - Query user's skills via GET from Skills Tracker
     - Match skill names to analysis gaps
     - Progress = (skills with status "mastered" or "practicing" / total gaps) * 100
     - Update analysis.completionProgress via POST /api/skill-gap/progress
-  - [ ] 4.4.6 Ensure progress dashboard tests pass
+  - [x] 4.4.6 Ensure progress dashboard tests pass
     - Run ONLY the 2-8 tests written in 4.4.1
     - Verify progress calculation accuracy
     - Do NOT run entire test suite at this stage
@@ -620,25 +620,25 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 5.1
 **Estimated Time:** 3-4 hours
 
-- [ ] 5.2.0 Optimize performance and add monitoring
-  - [ ] 5.2.1 Implement performance optimizations
+- [x] 5.2.0 Optimize performance and add monitoring
+  - [x] 5.2.1 Implement performance optimizations
     - Batch O*NET API requests where possible (multi-skill lookup)
     - Lazy-load course recommendations after initial analysis display (already in 4.3.2)
     - Implement pagination for large roadmaps (>20 skills)
     - Add database indexes for frequently queried fields (already in 1.1.2, 1.2.2)
     - Optimize AI prompt size (remove redundant context, compress skill lists)
-  - [ ] 5.2.2 Add performance monitoring
+  - [x] 5.2.2 Add performance monitoring
     - Track O*NET API response times and cache hit rate
     - Monitor AI analysis duration and timeout rate
     - Measure affiliate click-through rate (CTR) and conversion
     - Alert on analysis failures or API errors (>1% error rate)
     - Log to console for MVP (Sentry/DataDog integration out of scope)
-  - [ ] 5.2.3 Validate performance targets from spec
+  - [x] 5.2.3 Validate performance targets from spec
     - Initial analysis completes in <10 seconds (measure and verify)
     - AI transferable skills analysis completes in <30 seconds (measure and verify)
     - O*NET cache hit rate >85% after initial warmup (monitor over time)
     - Convex query response time <500ms (verify with Convex dashboard)
-  - [ ] 5.2.4 Add error tracking and recovery
+  - [x] 5.2.4 Add error tracking and recovery
     - Graceful degradation: if AI fails, fall back to O*NET baseline
     - If O*NET API unavailable, use cached data with warning
     - If affiliate API fails, show manual search option

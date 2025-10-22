@@ -10,9 +10,10 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
   moduleNameMapper: {
+    '^@/convex/(.*)$': '<rootDir>/convex/$1',
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom', // Changed from 'node' to 'jsdom' for UI component tests
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',

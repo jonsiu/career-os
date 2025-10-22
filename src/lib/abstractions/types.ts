@@ -134,7 +134,7 @@ export interface AnalysisProvider {
   scoreResumeQuality(resume: Resume): Promise<ResumeQualityScore>;
   getResumeById(resumeId: string): Promise<Resume | null>;
   performAdvancedResumeAnalysis(resume: Resume): Promise<any>;
-  
+
   // Caching and persistence methods
   getCachedAnalysisResult(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered'): Promise<any>;
   checkAnalysisCache(resumeId: string, analysisType: 'basic' | 'advanced' | 'ai-powered', contentHash: string): Promise<{ exists: boolean; analysis: any }>;
@@ -158,6 +158,85 @@ export interface AuthProvider {
   signUp(email: string, password: string, userData: Partial<User>): Promise<User>;
   signOut(): Promise<void>;
   isAuthenticated(): Promise<boolean>;
+}
+
+// O*NET Provider Interface for occupational data integration
+export interface ONetProvider {
+  /**
+   * Search occupations by query string
+   * @param query - Search query (occupation title or keyword)
+   * @returns Array of matching occupations with code and title
+   */
+  searchOccupations(query: string): Promise<OccupationSearchResult[]>;
+
+  /**
+   * Get detailed occupation skills and requirements
+   * @param code - O*NET SOC code (e.g., "15-1252.00" for Software Developers)
+   * @returns Detailed occupation skills, knowledge, and abilities
+   */
+  getOccupationSkills(code: string): Promise<OccupationSkills>;
+
+  /**
+   * Get skill complexity/level from O*NET
+   * @param skillCode - O*NET skill code
+   * @returns Complexity rating (0-7 scale from O*NET, normalized to 0-100)
+   */
+  getSkillComplexity(skillCode: string): Promise<number>;
+
+  /**
+   * Get cached occupation data if available and not expired
+   * @param code - O*NET SOC code
+   * @returns Cached occupation data or null if not cached/expired
+   */
+  getCachedOccupation(code: string): Promise<OccupationSkills | null>;
+
+  /**
+   * Cache occupation data for future use (30-day TTL)
+   * @param code - O*NET SOC code
+   * @param data - Occupation skills data to cache
+   */
+  cacheOccupation(code: string, data: OccupationSkills): Promise<void>;
+}
+
+// O*NET Data Types
+export interface OccupationSearchResult {
+  code: string; // O*NET SOC code
+  title: string; // Occupation title
+  description?: string; // Brief description
+}
+
+export interface OccupationSkills {
+  occupationCode: string;
+  occupationTitle: string;
+  skills: ONetSkill[];
+  knowledgeAreas: ONetKnowledge[];
+  abilities: ONetAbility[];
+  laborMarketData: {
+    employmentOutlook: string;
+    medianSalary?: number;
+    growthRate?: number;
+  };
+  cacheVersion: string; // O*NET database version
+}
+
+export interface ONetSkill {
+  skillName: string;
+  skillCode: string;
+  importance: number; // 1-100
+  level: number; // 0-7 scale from O*NET
+  category: string; // "Basic Skills", "Technical Skills", etc.
+}
+
+export interface ONetKnowledge {
+  name: string;
+  level: number;
+  importance: number;
+}
+
+export interface ONetAbility {
+  name: string;
+  level: number;
+  importance: number;
 }
 
 // Input types for database operations

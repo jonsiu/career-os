@@ -36,7 +36,7 @@ const REVENUE_ESTIMATES = {
   },
 };
 
-// Target metrics from spec
+// Target metrics from spec (Task 5.3.4)
 const TARGET_METRICS = {
   clickThroughRate: 0.45, // 45%+ target
   conversionRate: 0.10, // 8-12% target (using midpoint 10%)
@@ -96,7 +96,26 @@ export async function GET(request: NextRequest) {
     // Calculate revenue analytics
     const analytics = calculateRevenueAnalytics(filteredAnalyses);
 
-    // Log metrics to console (MVP approach)
+    // Determine target status for each metric
+    const ctrPercent = analytics.clickThroughRate * 100;
+    const status = {
+      ctr: ctrPercent >= 45 ? 'meeting' : 'below',
+      revenuePerAnalysis:
+        analytics.revenuePerAnalysis >= 3 && analytics.revenuePerAnalysis <= 5
+          ? 'meeting'
+          : analytics.revenuePerAnalysis > 5
+          ? 'exceeding'
+          : 'below',
+    };
+
+    // Format targets for response
+    const targets = {
+      clickThroughRate: 45, // 45%+
+      conversionRate: { min: 8, max: 12 }, // 8-12%
+      revenuePerAnalysis: { min: 3, max: 5 }, // $3-5
+    };
+
+    // Log metrics to console (MVP approach - Task 5.3.1)
     console.log('=== Revenue Analytics Report ===');
     console.log(`Period: ${startDate || 'All time'} to ${endDate || 'Present'}`);
     console.log(`Total Analyses: ${analytics.totalAnalyses}`);
@@ -104,16 +123,16 @@ export async function GET(request: NextRequest) {
       `Total Affiliate Clicks: ${analytics.totalAffiliateClicks}`
     );
     console.log(
-      `Click-Through Rate: ${(analytics.clickThroughRate * 100).toFixed(2)}%`
+      `Click-Through Rate: ${(analytics.clickThroughRate * 100).toFixed(2)}% [Target: 45%+] - ${status.ctr.toUpperCase()}`
     );
     console.log(
-      `Estimated Conversion Rate: ${(analytics.estimatedConversionRate * 100).toFixed(2)}%`
+      `Estimated Conversion Rate: ${(analytics.estimatedConversionRate * 100).toFixed(2)}% [Target: 8-12%]`
     );
     console.log(
       `Estimated Revenue: $${analytics.estimatedTotalRevenue.toFixed(2)}`
     );
     console.log(
-      `Revenue Per Analysis: $${analytics.revenuePerAnalysis.toFixed(2)}`
+      `Revenue Per Analysis: $${analytics.revenuePerAnalysis.toFixed(2)} [Target: $3-5] - ${status.revenuePerAnalysis.toUpperCase()}`
     );
     console.log('\nAffiliate Clicks by Partner:');
     Object.entries(analytics.clicksByPartner).forEach(([partner, clicks]) => {
@@ -125,6 +144,9 @@ export async function GET(request: NextRequest) {
         `  ${index + 1}. ${category.category}: ${category.clicks} clicks`
       );
     });
+    console.log('\nAI-Powered vs Rule-Based ROI:');
+    console.log(`  AI-Powered: ${analytics.aiPoweredAnalyses} analyses, ${analytics.roiComparison.aiPowered.clicks} clicks, $${analytics.roiComparison.aiPowered.estimatedRevenue.toFixed(2)} revenue`);
+    console.log(`  Rule-Based: ${analytics.ruleBasedAnalyses} analyses, ${analytics.roiComparison.ruleBased.clicks} clicks, $${analytics.roiComparison.ruleBased.estimatedRevenue.toFixed(2)} revenue`);
     console.log('================================\n');
 
     // Return analytics data
@@ -142,6 +164,8 @@ export async function GET(request: NextRequest) {
             analytics.revenuePerAnalysis >= TARGET_METRICS.revenuePerAnalysis,
         },
       },
+      targets,
+      status,
       message: 'Revenue analytics calculated successfully. See console for detailed report.',
     });
   } catch (error) {
@@ -191,7 +215,7 @@ function calculateRevenueAnalytics(analyses: any[]): {
     0
   );
 
-  // Calculate click-through rate (CTR)
+  // Calculate click-through rate (CTR) - Task 5.3.3
   // CTR = total clicks / total analyses (impressions)
   const clickThroughRate =
     totalAnalyses > 0 ? totalAffiliateClicks / totalAnalyses : 0;
@@ -199,7 +223,7 @@ function calculateRevenueAnalytics(analyses: any[]): {
   // Use target conversion rate for estimation (in production, track actual conversions)
   const estimatedConversionRate = TARGET_METRICS.conversionRate;
 
-  // Estimate revenue by partner
+  // Estimate revenue by partner - Task 5.3.1
   const clicksByPartner: Record<string, number> = {
     Coursera: 0,
     Udemy: 0,
@@ -209,7 +233,7 @@ function calculateRevenueAnalytics(analyses: any[]): {
   // Track skill categories with clicks
   const skillCategoryClicks: Record<string, number> = {};
 
-  // Track AI-powered vs. rule-based analyses
+  // Track AI-powered vs. rule-based analyses - Task 5.3.1 (ROI comparison)
   let aiPoweredAnalyses = 0;
   let ruleBasedAnalyses = 0;
   let aiPoweredClicks = 0;
@@ -242,7 +266,7 @@ function calculateRevenueAnalytics(analyses: any[]): {
     }
   });
 
-  // Calculate estimated revenue
+  // Calculate estimated revenue - Task 5.3.4
   let estimatedTotalRevenue = 0;
   Object.entries(clicksByPartner).forEach(([partner, clicks]) => {
     const partnerKey = partner.toLowerCase().replace(' ', '') as keyof typeof REVENUE_ESTIMATES;
@@ -255,17 +279,17 @@ function calculateRevenueAnalytics(analyses: any[]): {
     estimatedTotalRevenue += revenue;
   });
 
-  // Revenue per analysis
+  // Revenue per analysis - Task 5.3.4
   const revenuePerAnalysis =
     totalAnalyses > 0 ? estimatedTotalRevenue / totalAnalyses : 0;
 
-  // Top skill categories by clicks
+  // Top skill categories by clicks - Task 5.3.1
   const topSkillCategories = Object.entries(skillCategoryClicks)
     .map(([category, clicks]) => ({ category, clicks }))
     .sort((a, b) => b.clicks - a.clicks)
     .slice(0, 10); // Top 10 categories
 
-  // ROI comparison between AI-powered and rule-based
+  // ROI comparison between AI-powered and rule-based - Task 5.3.1
   const aiRevenuePerAnalysis =
     aiPoweredAnalyses > 0
       ? (aiPoweredClicks * estimatedConversionRate * 30 * 0.3) /

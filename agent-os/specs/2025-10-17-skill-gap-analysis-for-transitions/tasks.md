@@ -399,43 +399,43 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 4.1
 **Estimated Time:** 8-10 hours
 
-- [ ] 4.2.0 Complete skill gap visualization UI
-  - [ ] 4.2.1 Write 2-8 focused tests for visualization components
+- [x] 4.2.0 Complete skill gap visualization UI
+  - [x] 4.2.1 Write 2-8 focused tests for visualization components
     - Test SkillsMatrix rendering with gap data
     - Test RadarChart data transformation and rendering
     - Test PrioritizedRoadmap sorting and filtering
     - Test responsive breakpoints (mobile, tablet, desktop)
     - Limit to critical rendering and interaction tests only
-  - [ ] 4.2.2 Create SkillsMatrix component in `src/components/skill-gap/SkillsMatrix.tsx`
+  - [x] 4.2.2 Create SkillsMatrix component in `src/components/skill-gap/SkillsMatrix.tsx`
     - Grid layout: skill categories (rows) vs. proficiency levels (columns)
     - Color-coded cells: red (critical gap), yellow (nice-to-have), green (transferable)
     - Include icons for colorblind accessibility (circle, triangle, checkmark)
     - Responsive: desktop (full grid), tablet (scrollable), mobile (list view)
     - Use Tailwind CSS for styling, follow existing design system
-  - [ ] 4.2.3 Create RadarChart component in `src/components/skill-gap/RadarChart.tsx`
+  - [x] 4.2.3 Create RadarChart component in `src/components/skill-gap/RadarChart.tsx`
     - Multi-dimensional chart comparing current vs. target skill profile
     - Use chart library: recharts or visx (already in dependencies?)
     - Dimensions: technical skills, soft skills, domain knowledge, leadership, tools
     - Two overlapping polygons: current (blue), target (green)
     - Accessible: provide data table alternative for screen readers
-  - [ ] 4.2.4 Create PrioritizedRoadmap component in `src/components/skill-gap/PrioritizedRoadmap.tsx`
+  - [x] 4.2.4 Create PrioritizedRoadmap component in `src/components/skill-gap/PrioritizedRoadmap.tsx`
     - Vertical timeline layout with skill cards
     - Each card: skill name, priority score badge, time estimate, quick win indicator
     - Phases: 1 (immediate - 0-3 months), 2 (short-term - 3-6 months), 3 (long-term - 6-12 months)
     - Sorting: by priority score (default), by time estimate, by skill category
     - Filtering: by skill category, by priority level
     - Follow pattern from: Career Planning milestone timeline
-  - [ ] 4.2.5 Create AnalysisResults container in `src/components/skill-gap/AnalysisResults.tsx`
+  - [x] 4.2.5 Create AnalysisResults container in `src/components/skill-gap/AnalysisResults.tsx`
     - Tabbed interface using Radix UI Tabs: Overview, Skills Matrix, Radar Chart, Roadmap, Resources
     - Overview tab: summary stats (X critical gaps, Y nice-to-have, Z transferable)
     - Integration with visualizations from 4.2.2, 4.2.3, 4.2.4
     - Share/export actions (copy link, download PDF - future enhancement, out of MVP scope)
-  - [ ] 4.2.6 Implement responsive design for all visualizations
+  - [x] 4.2.6 Implement responsive design for all visualizations
     - Desktop (1024px+): side-by-side skills matrix and roadmap
     - Tablet (768px-1023px): stacked layout, collapsible sections
     - Mobile (<768px): single column, progressive disclosure for details
     - Test on all breakpoints
-  - [ ] 4.2.7 Ensure visualization component tests pass
+  - [x] 4.2.7 Ensure visualization component tests pass
     - Run ONLY the 2-8 tests written in 4.2.1
     - Verify responsive behavior at all breakpoints
     - Do NOT run entire test suite at this stage
@@ -537,30 +537,30 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Groups 4.1, 4.2, 4.3, 4.4
 **Estimated Time:** 3-4 hours
 
-- [ ] 4.5.0 Complete Career Planning page integration
-  - [ ] 4.5.1 Write 2-8 focused tests for page integration
+- [x] 4.5.0 Complete Career Planning page integration
+  - [x] 4.5.1 Write 2-8 focused tests for page integration
     - Test new "Skill Gap Analysis" tab navigation
     - Test analysis results display in context
     - Test one-click actions (add to Skills Tracker, create Career Plan)
     - Test page state persistence (tab selection, scroll position)
     - Limit to critical page integration tests only
-  - [ ] 4.5.2 Add "Skill Gap Analysis" tab to Career Planning page
+  - [x] 4.5.2 Add "Skill Gap Analysis" tab to Career Planning page
     - Location: `/dashboard/plan` (existing page from spec)
     - New tab alongside existing Career Plan tabs
     - Tab content: SkillGapWizard (if no analysis) or AnalysisResults (if analysis exists)
     - Use Radix UI Tabs component (consistent with existing tabs)
-  - [ ] 4.5.3 Implement one-click "Add to Skills Tracker" action
+  - [x] 4.5.3 Implement one-click "Add to Skills Tracker" action
     - From AnalysisResults, button: "Track All Gaps" or individual skill "Track This"
     - For each gap, create skill via POST to Skills Tracker API (reuse existing endpoint)
     - Pre-fill: name, category, currentLevel (beginner), targetLevel (from O*NET), status (not-started), estimatedTimeToTarget (from timeline)
     - Show success toast with link to Skills Tracker page
-  - [ ] 4.5.4 Implement one-click "Create Career Plan" action
+  - [x] 4.5.4 Implement one-click "Create Career Plan" action
     - From AnalysisResults, button: "Create Plan from Roadmap"
     - Auto-generate plan via POST to Career Plans API (reuse existing endpoint)
     - Pre-fill: title ("Transition to [target role]"), goals (skill gaps), milestones (from prioritized roadmap phases)
     - Each milestone: title, description, targetDate (calculated from timeline), status (pending)
     - Show success toast with link to newly created plan
-  - [ ] 4.5.5 Ensure page integration tests pass
+  - [x] 4.5.5 Ensure page integration tests pass
     - Run ONLY the 2-8 tests written in 4.5.1
     - Verify one-click actions create resources correctly
     - Do NOT run entire test suite at this stage
@@ -578,19 +578,19 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Groups 4.1-4.5
 **Estimated Time:** 6-8 hours
 
-- [ ] 5.1.0 Review existing tests and fill critical gaps only
-  - [ ] 5.1.1 Review tests from Task Groups 1.1-4.5
+- [x] 5.1.0 Review existing tests and fill critical gaps only
+  - [x] 5.1.1 Review tests from Task Groups 1.1-4.5
     - Review database-engineer tests (1.1.1, 1.2.1): ~4-6 tests
     - Review api-engineer tests (2.1.1, 2.2.1, 2.3.1, 3.1.1, 3.2.1, 3.3.1): ~12-18 tests
     - Review ui-designer tests (4.1.1, 4.2.1, 4.3.1, 4.4.1, 4.5.1): ~10-15 tests
     - Total existing tests: approximately 26-39 tests
-  - [ ] 5.1.2 Analyze test coverage gaps for THIS feature only
+  - [x] 5.1.2 Analyze test coverage gaps for THIS feature only
     - Identify critical user workflows that lack test coverage
     - Focus ONLY on skill gap analysis feature requirements from spec.md
     - DO NOT assess entire application test coverage
     - Prioritize end-to-end workflows over unit test gaps
     - Critical workflows: (1) Full analysis flow (select role → analyze → view results → track skills), (2) Cache invalidation (resume update → re-run), (3) Affiliate click-through tracking, (4) Historical comparison, (5) Skills Tracker auto-population
-  - [ ] 5.1.3 Write up to 10 additional strategic tests maximum
+  - [x] 5.1.3 Write up to 10 additional strategic tests maximum
     - E2E Test 1: Complete analysis workflow (wizard → API → results display)
     - E2E Test 2: Cache hit scenario (same resume + target role = cached result)
     - E2E Test 3: Resume update invalidates cache (new content hash triggers re-analysis)
@@ -603,7 +603,7 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
     - E2E Test 10: Multi-factor prioritization produces expected ranking (test data validation)
     - Do NOT write comprehensive coverage for all scenarios
     - Skip edge cases, performance tests, accessibility tests unless business-critical
-  - [ ] 5.1.4 Run feature-specific tests only
+  - [x] 5.1.4 Run feature-specific tests only
     - Run ONLY tests related to skill gap analysis feature (tests from 1.1.1-4.5.1 + 5.1.3)
     - Expected total: approximately 36-49 tests maximum
     - Do NOT run the entire application test suite
@@ -655,18 +655,18 @@ Assigned Roles: database-engineer, api-engineer, ui-designer, testing-engineer
 **Dependencies:** Task Group 3.3, 4.3
 **Estimated Time:** 2-3 hours
 
-- [ ] 5.3.0 Implement revenue analytics and tracking
-  - [ ] 5.3.1 Add affiliate analytics dashboard (admin view - future enhancement, out of MVP)
+- [x] 5.3.0 Implement revenue analytics and tracking
+  - [x] 5.3.1 Add affiliate analytics dashboard (admin view - future enhancement, out of MVP)
     - For MVP: log metrics to console and database metadata
     - Track: monthly affiliate clicks by partner, revenue per user (estimate), skill gap category with highest conversion, ROI of AI-powered vs. rule-based recommendations
-  - [ ] 5.3.2 Implement A/B test framework for recommendations (future - out of MVP)
+  - [x] 5.3.2 Implement A/B test framework for recommendations (future - out of MVP)
     - For MVP: baseline implementation with single recommendation algorithm
     - Future: test card vs. list layout, top 3 vs. top 5 courses, AI-curated vs. manual recommendations
-  - [ ] 5.3.3 Add conversion tracking (if partner APIs support it)
+  - [x] 5.3.3 Add conversion tracking (if partner APIs support it)
     - Track affiliate click-through rate (CTR): clicks / impressions
     - If possible, track conversions (enrollments) via partner webhooks
     - Store in metadata.affiliateClickCount and future conversions table
-  - [ ] 5.3.4 Validate revenue targets from spec
+  - [x] 5.3.4 Validate revenue targets from spec
     - Affiliate click-through rate (CTR) target: 45%+ (measure and monitor)
     - Affiliate conversion rate target: 8-12% (measure if partner data available)
     - Revenue per analysis target: $3-5 (estimate based on CTR * conversion * avg commission)

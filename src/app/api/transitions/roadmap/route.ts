@@ -3,10 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { ConvexDatabaseProvider } from '@/lib/abstractions/providers/convex-database';
 import { generateContentHash } from '@/lib/utils/content-hash';
 import Anthropic from '@anthropic-ai/sdk';
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-});
+import { DEFAULT_CLAUDE_MODEL } from '@/lib/constants/ai-models';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,6 +12,20 @@ export async function POST(request: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Initialize Anthropic client
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      console.error('ANTHROPIC_API_KEY is not set');
+      return NextResponse.json(
+        { error: 'AI service not configured' },
+        { status: 500 }
+      );
+    }
+
+    const anthropic = new Anthropic({
+      apiKey: apiKey,
+    });
 
     const body = await request.json();
     const {
@@ -120,7 +131,7 @@ Respond with a JSON object containing:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: DEFAULT_CLAUDE_MODEL,
       max_tokens: 2048,
       messages: [
         {

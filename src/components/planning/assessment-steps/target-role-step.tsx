@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Target, Building2 } from "lucide-react";
@@ -10,10 +11,16 @@ interface TargetRoleStepProps {
   isLoading: boolean;
 }
 
-export function TargetRoleStep({ data, onNext }: TargetRoleStepProps) {
-  const handleChange = (field: keyof TransitionAssessmentData, value: string) => {
-    onNext({ [field]: value });
-  };
+export function TargetRoleStep({ data }: TargetRoleStepProps) {
+  // Use local state instead of calling onNext on every change
+  const [targetRole, setTargetRole] = useState(data.targetRole || '');
+  const [targetIndustry, setTargetIndustry] = useState(data.targetIndustry || '');
+
+  // Update the parent data object directly (it's passed by reference)
+  useEffect(() => {
+    data.targetRole = targetRole || undefined;
+    data.targetIndustry = targetIndustry || undefined;
+  }, [targetRole, targetIndustry, data]);
 
   return (
     <div className="space-y-6">
@@ -36,8 +43,8 @@ export function TargetRoleStep({ data, onNext }: TargetRoleStepProps) {
           <Input
             id="target-role"
             placeholder="e.g., Engineering Manager, Senior Designer, Solutions Architect"
-            value={data.targetRole || ''}
-            onChange={(e) => handleChange('targetRole', e.target.value)}
+            value={targetRole}
+            onChange={(e) => setTargetRole(e.target.value)}
             className="text-lg"
             autoFocus
           />
@@ -54,8 +61,8 @@ export function TargetRoleStep({ data, onNext }: TargetRoleStepProps) {
           <Input
             id="target-industry"
             placeholder="e.g., Technology, Healthcare, Finance"
-            value={data.targetIndustry || ''}
-            onChange={(e) => handleChange('targetIndustry', e.target.value)}
+            value={targetIndustry}
+            onChange={(e) => setTargetIndustry(e.target.value)}
             className="text-lg"
           />
           <p className="text-sm text-gray-500">

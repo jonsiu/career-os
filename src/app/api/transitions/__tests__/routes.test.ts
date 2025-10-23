@@ -107,7 +107,7 @@ jest.mock('@anthropic-ai/sdk', () => {
               text: JSON.stringify(responseData),
             },
           ],
-          model: 'claude-3-5-sonnet-20241022',
+          model: 'claude-3-5-sonnet-20250122',
           stop_reason: 'end_turn',
           usage: {
             input_tokens: 100,

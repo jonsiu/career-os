@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from '@jest/globals';
-import { ConvexTestingHelper } from './helpers/convex-testing-helper';
+import { ConvexTestingHelper } from './helpers/convex_testing_helper';
 
 describe('O*NET Cache Operations', () => {
   let testHelper: ConvexTestingHelper;

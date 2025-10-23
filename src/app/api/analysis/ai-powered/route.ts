@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     let response;
     try {
       response = await anthropic.messages.create({
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-3-5-sonnet-20250122",
         max_tokens: 1500,
         temperature: 0.3,
         messages: [

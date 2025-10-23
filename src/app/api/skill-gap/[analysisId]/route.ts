@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { ConvexHttpClient } from 'convex/nextjs';
+import { ConvexHttpClient } from 'convex/browser';
 import { api } from '@/lib/convex-client';
 import { performanceMonitor } from '@/lib/utils/performance-monitor';
 

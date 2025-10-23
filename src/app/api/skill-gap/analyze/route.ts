@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { ConvexHttpClient } from 'convex/nextjs';
+import { ConvexHttpClient } from 'convex/browser';
 import { api } from '@/lib/convex-client';
 import { SkillGapAnalyzer } from '@/lib/services/skill-gap-analyzer';
 import { TransferableSkillsMatcher } from '@/lib/services/transferable-skills-matcher';
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
 
     // 5. Get resume from Convex with performance tracking
     const resumeQueryStart = Date.now();
-    const resume = await convex.query(api.resumes.getById, { resumeId });
+    const resume = await convex.query(api.resumes.getById, { id: resumeId });
     performanceMonitor.recordMetric({
       operation: 'convex-query-resume',
       duration: Date.now() - resumeQueryStart,

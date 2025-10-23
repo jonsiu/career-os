@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     try {
       const response = await anthropic.messages.create(
         {
-          model: 'claude-3-5-sonnet-20241022',
+          model: 'claude-3-5-sonnet-20250122',
           max_tokens: 1000,
           temperature: 0.3,
           system: 'You are a career transition expert explaining skill transferability.',

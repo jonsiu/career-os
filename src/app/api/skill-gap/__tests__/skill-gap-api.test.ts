@@ -158,7 +158,7 @@ jest.mock('@/lib/utils/content-hash', () => ({
 const mockConvexQuery = jest.fn();
 const mockConvexMutation = jest.fn();
 
-jest.mock('convex/nextjs', () => ({
+jest.mock('convex/browser', () => ({
   ConvexHttpClient: jest.fn().mockImplementation(() => ({
     query: mockConvexQuery,
     mutation: mockConvexMutation,

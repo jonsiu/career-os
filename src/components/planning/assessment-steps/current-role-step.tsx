@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Briefcase, Building2, Calendar } from "lucide-react";
@@ -10,10 +11,18 @@ interface CurrentRoleStepProps {
   isLoading: boolean;
 }
 
-export function CurrentRoleStep({ data, onNext }: CurrentRoleStepProps) {
-  const handleChange = (field: keyof TransitionAssessmentData, value: string | number) => {
-    onNext({ [field]: value });
-  };
+export function CurrentRoleStep({ data }: CurrentRoleStepProps) {
+  // Use local state instead of calling onNext on every change
+  const [currentRole, setCurrentRole] = useState(data.currentRole || '');
+  const [currentIndustry, setCurrentIndustry] = useState(data.currentIndustry || '');
+  const [yearsOfExperience, setYearsOfExperience] = useState(data.yearsOfExperience || 0);
+
+  // Update the parent data object directly (it's passed by reference)
+  useEffect(() => {
+    data.currentRole = currentRole || undefined;
+    data.currentIndustry = currentIndustry || undefined;
+    data.yearsOfExperience = yearsOfExperience || undefined;
+  }, [currentRole, currentIndustry, yearsOfExperience, data]);
 
   return (
     <div className="space-y-6">
@@ -36,8 +45,8 @@ export function CurrentRoleStep({ data, onNext }: CurrentRoleStepProps) {
           <Input
             id="current-role"
             placeholder="e.g., Software Engineer, Product Manager, Designer"
-            value={data.currentRole || ''}
-            onChange={(e) => handleChange('currentRole', e.target.value)}
+            value={currentRole}
+            onChange={(e) => setCurrentRole(e.target.value)}
             className="text-lg"
             autoFocus
           />
@@ -54,8 +63,8 @@ export function CurrentRoleStep({ data, onNext }: CurrentRoleStepProps) {
           <Input
             id="current-industry"
             placeholder="e.g., Technology, Healthcare, Finance"
-            value={data.currentIndustry || ''}
-            onChange={(e) => handleChange('currentIndustry', e.target.value)}
+            value={currentIndustry}
+            onChange={(e) => setCurrentIndustry(e.target.value)}
             className="text-lg"
           />
           <p className="text-sm text-gray-500">
@@ -74,8 +83,8 @@ export function CurrentRoleStep({ data, onNext }: CurrentRoleStepProps) {
             min="0"
             max="50"
             placeholder="e.g., 5"
-            value={data.yearsOfExperience || ''}
-            onChange={(e) => handleChange('yearsOfExperience', parseInt(e.target.value) || 0)}
+            value={yearsOfExperience || ''}
+            onChange={(e) => setYearsOfExperience(parseInt(e.target.value) || 0)}
             className="text-lg"
           />
           <p className="text-sm text-gray-500">

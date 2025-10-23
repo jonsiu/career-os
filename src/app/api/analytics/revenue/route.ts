@@ -18,7 +18,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { ConvexHttpClient } from 'convex/browser';
-import { api } from '@/convex/_generated/api';
+import { api } from '@convex/_generated/api';
 
 // Revenue estimation constants (based on affiliate program averages)
 const REVENUE_ESTIMATES = {

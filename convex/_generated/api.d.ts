@@ -13,8 +13,8 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as __tests___helpers_convex_testing_helper from "../__tests__/helpers/convex-testing-helper.js";
-import type * as __tests___test_helpers from "../__tests__/test-helpers.js";
+import type * as __tests___helpers_convex_testing_helper from "../__tests__/helpers/convex_testing_helper.js";
+import type * as __tests___test_helpers from "../__tests__/test_helpers.js";
 import type * as analyses from "../analyses.js";
 import type * as analysisResults from "../analysisResults.js";
 import type * as files from "../files.js";
@@ -37,8 +37,8 @@ import type * as users from "../users.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "__tests__/helpers/convex-testing-helper": typeof __tests___helpers_convex_testing_helper;
-  "__tests__/test-helpers": typeof __tests___test_helpers;
+  "__tests__/helpers/convex_testing_helper": typeof __tests___helpers_convex_testing_helper;
+  "__tests__/test_helpers": typeof __tests___test_helpers;
   analyses: typeof analyses;
   analysisResults: typeof analysisResults;
   files: typeof files;

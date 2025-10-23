@@ -170,7 +170,7 @@ export const parseResumeWithAI = action({
       `;
 
       // Try different Claude models in order of preference
-      const models = ["claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022", "claude-3-opus-20240229"];
+      const models = ["claude-3-5-sonnet-20250122", "claude-3-5-haiku-20241022", "claude-3-opus-20240229"];
       let response;
       let lastError;
 

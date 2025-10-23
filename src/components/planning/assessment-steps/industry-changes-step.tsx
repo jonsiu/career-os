@@ -11,13 +11,15 @@ interface IndustryChangesStepProps {
   isLoading: boolean;
 }
 
-export function IndustryChangesStep({ data, onNext }: IndustryChangesStepProps) {
+export function IndustryChangesStep({ data }: IndustryChangesStepProps) {
   const [changingIndustry, setChangingIndustry] = useState(data.changingIndustry || false);
   const [changingFunction, setChangingFunction] = useState(data.changingFunction || false);
 
+  // Update the parent data object directly (it's passed by reference)
   useEffect(() => {
-    onNext({ changingIndustry, changingFunction });
-  }, [changingIndustry, changingFunction, onNext]);
+    data.changingIndustry = changingIndustry;
+    data.changingFunction = changingFunction;
+  }, [changingIndustry, changingFunction, data]);
 
   const industryChangeDetected =
     data.currentIndustry &&

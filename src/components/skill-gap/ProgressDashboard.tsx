@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, RotateCcw, TrendingUp, Target, CheckCircle2, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Id } from "@/convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 
 interface Gap {
   skillName: string;

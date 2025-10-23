@@ -17,8 +17,8 @@ import { auth } from '@clerk/nextjs/server';
 import { AffiliateRecommendationEngine, UserPreferences } from '@/lib/services/affiliate-recommendations';
 import { PrioritizedSkillGap } from '@/lib/services/skill-gap-analyzer';
 import { ConvexHttpClient } from 'convex/browser';
-import { api } from '@/convex/_generated/api';
-import { Id } from '@/convex/_generated/dataModel';
+import { api } from '@convex/_generated/api';
+import { Id } from '@convex/_generated/dataModel';
 import { performanceMonitor } from '@/lib/utils/performance-monitor';
 import {
   getUserFriendlyError,

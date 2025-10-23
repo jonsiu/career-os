@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import Anthropic from '@anthropic-ai/sdk';
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-});
+import { DEFAULT_CLAUDE_MODEL } from '@/lib/constants/ai-models';
 
 // In-memory cache for benchmarking data (will be moved to database later)
 const benchmarkCache = new Map<string, { data: any; timestamp: number }>();
@@ -17,6 +14,20 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Initialize Anthropic client
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      console.error('ANTHROPIC_API_KEY is not set');
+      return NextResponse.json(
+        { error: 'AI service not configured' },
+        { status: 500 }
+      );
+    }
+
+    const anthropic = new Anthropic({
+      apiKey: apiKey,
+    });
 
     const { searchParams } = new URL(request.url);
     const transitionType = searchParams.get('transitionType');
@@ -69,7 +80,7 @@ Respond with a JSON object containing:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: DEFAULT_CLAUDE_MODEL,
       max_tokens: 1024,
       messages: [
         {

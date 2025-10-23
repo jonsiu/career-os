@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { ConvexDatabaseProvider } from '@/lib/abstractions/providers/convex-database';
 import Anthropic from '@anthropic-ai/sdk';
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-});
+import { DEFAULT_CLAUDE_MODEL } from '@/lib/constants/ai-models';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,12 +12,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { resumeId, targetRole, targetIndustry } = body;
-
-    if (!resumeId || !targetRole) {
+    // Initialize Anthropic client with API key
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      console.error('ANTHROPIC_API_KEY is not set');
       return NextResponse.json(
-        { error: 'Resume ID and target role are required' },
+        { error: 'AI service not configured' },
+        { status: 500 }
+      );
+    }
+
+    const anthropic = new Anthropic({
+      apiKey: apiKey,
+    });
+
+    const body = await request.json();
+    const { resumeId, currentRole, currentIndustry, targetRole, targetIndustry, changingIndustry, changingFunction } = body;
+
+    if (!targetRole) {
+      return NextResponse.json(
+        { error: 'Target role is required' },
         { status: 400 }
       );
     }
@@ -33,37 +44,42 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Get resume data
-    const resume = await databaseProvider.getResumeById(resumeId);
+    // Initialize resume data
+    let resumeData: any = {};
+    let actualCurrentRole = currentRole || 'Current Professional';
+    let actualCurrentIndustry = currentIndustry || 'Current Industry';
 
-    if (!resume) {
-      return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
+    // If resumeId is provided, fetch resume data
+    if (resumeId) {
+      const resume = await databaseProvider.getResumeById(resumeId);
+
+      if (resume && resume.userId === user._id) {
+        // Parse resume content
+        try {
+          resumeData = JSON.parse(resume.content);
+        } catch {
+          resumeData = { content: resume.content };
+        }
+
+        // Extract current role from resume if not provided
+        if (!currentRole) {
+          actualCurrentRole = resumeData.experience?.[0]?.title || 'Current Professional';
+        }
+        if (!currentIndustry) {
+          actualCurrentIndustry = resumeData.experience?.[0]?.company || 'Current Industry';
+        }
+      }
     }
-
-    // Verify resume ownership
-    if (resume.userId !== user._id) {
-      return NextResponse.json({ error: 'Not authorized to access this resume' }, { status: 403 });
-    }
-
-    // Parse resume content
-    let resumeData;
-    try {
-      resumeData = JSON.parse(resume.content);
-    } catch {
-      resumeData = { content: resume.content };
-    }
-
-    // Extract current role from resume
-    const currentRole = resumeData.experience?.[0]?.title || 'Current Professional';
-    const currentIndustry = resumeData.experience?.[0]?.company || 'Current Industry';
 
     // Use AI to identify transition type
     const prompt = `Analyze the following career transition and identify the transition type(s):
 
-Current Role: ${currentRole}
-Current Industry: ${currentIndustry}
+Current Role: ${actualCurrentRole}
+Current Industry: ${actualCurrentIndustry}
 Target Role: ${targetRole}
 Target Industry: ${targetIndustry || 'Same as current'}
+Changing Industry: ${changingIndustry ? 'Yes' : 'No'}
+Changing Function: ${changingFunction ? 'Yes' : 'No'}
 
 Resume Summary:
 ${JSON.stringify(resumeData, null, 2)}
@@ -85,7 +101,7 @@ Respond with a JSON object containing:
 }`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: DEFAULT_CLAUDE_MODEL,
       max_tokens: 1024,
       messages: [
         {

@@ -142,7 +142,7 @@ Generate a roadmap in this JSON format:
   }
 }`,
 
-  model: 'claude-3-5-sonnet-20241022',
+  model: 'claude-3-5-sonnet-20250122',
   temperature: 0.4,
   maxTokens: 2000
 });
@@ -274,7 +274,7 @@ Provide bridge role recommendations in this JSON format:
   "alternativeApproach": "If bridge roles aren't needed, what's the direct path?"
 }`,
 
-  model: 'claude-3-5-sonnet-20241022',
+  model: 'claude-3-5-sonnet-20250122',
   temperature: 0.4,
   maxTokens: 1500
 });
@@ -332,7 +332,7 @@ Provide career capital assessment in this JSON format:
   ]
 }`,
 
-  model: 'claude-3-5-sonnet-20241022',
+  model: 'claude-3-5-sonnet-20250122',
   temperature: 0.4,
   maxTokens: 1500
 });

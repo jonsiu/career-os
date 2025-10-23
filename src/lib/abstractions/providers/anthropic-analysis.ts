@@ -26,7 +26,7 @@ export class AnthropicAnalysisProvider implements AnalysisProvider {
       `;
 
       const response = await this.anthropic.messages.create({
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-3-5-sonnet-20250122",
         max_tokens: 1000,
         temperature: 0.3,
         messages: [
@@ -97,7 +97,7 @@ export class AnthropicAnalysisProvider implements AnalysisProvider {
       `;
 
       const response = await this.anthropic.messages.create({
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-3-5-sonnet-20250122",
         max_tokens: 1000,
         temperature: 0.3,
         messages: [
@@ -241,7 +241,7 @@ export class AnthropicAnalysisProvider implements AnalysisProvider {
       `;
 
       const response = await this.anthropic.messages.create({
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-3-5-sonnet-20250122",
         max_tokens: 2000,
         temperature: 0.1,
         messages: [
@@ -301,7 +301,7 @@ export class AnthropicAnalysisProvider implements AnalysisProvider {
       `;
 
       const response = await this.anthropic.messages.create({
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-3-5-sonnet-20250122",
         max_tokens: 1000,
         temperature: 0.3,
         messages: [
@@ -351,7 +351,7 @@ export class AnthropicAnalysisProvider implements AnalysisProvider {
       `;
 
       const response = await this.anthropic.messages.create({
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-3-5-sonnet-20250122",
         max_tokens: 1000,
         temperature: 0.3,
         messages: [
@@ -412,7 +412,7 @@ export class AnthropicAnalysisProvider implements AnalysisProvider {
       `;
 
       const response = await this.anthropic.messages.create({
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-3-5-sonnet-20250122",
         max_tokens: 1500,
         temperature: 0.3,
         messages: [
